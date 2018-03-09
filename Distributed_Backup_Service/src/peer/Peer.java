@@ -16,16 +16,12 @@ public class Peer {
 		
 		FilesManager filesmanager = new FilesManager(1);
 
-		File file = new File("test.jpg");
+		File file = new File("test2.png");
 		
 		ArrayList<Chunk> chunks = filesmanager.splitToChunks(file);
 		
-		System.out.println(chunks.size());
-		
 		for(Chunk chunk : chunks) {
-			System.out.println(chunk.getChunkNo());
 			filesmanager.saveChunk(chunk);
-			
 		}
 		
 	}

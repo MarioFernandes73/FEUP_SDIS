@@ -1,7 +1,7 @@
 package utils;
 import java.io.Serializable;
 
-public class Chunk implements Serializable {
+public class Chunk {
 
 	private static final long serialVersionUID = 1L;
 	

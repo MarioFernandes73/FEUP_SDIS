@@ -16,9 +16,26 @@ public class FilesManager {
 	private int ownerId;
 
 	public FilesManager(int ownerId) {
-		// inicializar diretorios
-
 		this.ownerId = ownerId;
+		setupDirectory();
+	}
+
+	public String getDirName() {
+		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk";
+	}
+	
+	public void setupDirectory() {
+
+System.out.println(this.getDirName());
+		File dir = new File(this.getDirName());
+		// if the directory does not exist, create it
+		if (!dir.exists()) {
+			try {
+				dir.mkdir();
+			} catch (SecurityException se) {
+
+			}
+		}
 	}
 
 	public ArrayList<Chunk> splitToChunks(File file) {
@@ -63,12 +80,12 @@ public class FilesManager {
 	}
 
 	public void saveChunk(Chunk chunk) {
-
+		
 		byte data[] = chunk.getData();
 		FileOutputStream out;
 		try {
-			
-			out = new FileOutputStream(chunk.getFileId() + chunk.getChunkNo());
+
+			out = new FileOutputStream(this.getDirName() + "\\" + chunk.getFileId() + chunk.getChunkNo());
 			out.write(data);
 			out.close();
 
@@ -78,6 +95,10 @@ public class FilesManager {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public void repeatedChunk(Chunk chunk) {
+		
 	}
 
 	public String encryptFileId(File file) throws NoSuchAlgorithmException {

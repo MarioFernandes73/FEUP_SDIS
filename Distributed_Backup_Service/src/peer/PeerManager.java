@@ -2,43 +2,30 @@ package peer;
 
 import java.io.IOException;
 
-import channels.MCChannel;
-import channels.MDBChannel;
-import channels.MDRChannel;
+import channels.MulticastChannel;
 
 public class PeerManager {
 
-	private MDBChannel mdbChannel = null;
-	private MCChannel mcChannel = null;
-	private MDRChannel mdrChannel = null;
+	private MulticastChannel MCChannel = null;
+	private MulticastChannel MDBChannel = null;
+	private MulticastChannel MDRChannel = null;
 
 	public PeerManager(String[] args) {
-		// TODO Auto-generated constructor stub
+		initializeThreads(args);
 	}
 	
 	
-	private void initializeThreads() {
+	private void initializeThreads(String args[]) {
 		
 		try {
-			mdbChannel = (new MDBChannel(args[0], Integer.parseInt(args[2])));
+			MCChannel = (new MulticastChannel(args[0], Integer.parseInt(args[1])));
 		} catch (NumberFormatException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		mdbChannel.start();
 		
-		try {
-			mdbChannel.send("ola");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			mdbChannel.receive();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		System.out.println("goodbye");
 		
 	}
 

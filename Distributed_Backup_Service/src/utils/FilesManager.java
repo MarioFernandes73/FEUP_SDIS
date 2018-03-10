@@ -14,26 +14,46 @@ import javax.xml.bind.DatatypeConverter;
 public class FilesManager {
 
 	private int ownerId;
+	private int currentDiskSpace = Utils.MAX_DISK_SPACE;
+	private File[] peerFiles = null;
 
 	public FilesManager(int ownerId) {
 		this.ownerId = ownerId;
-		setupDirectory();
+		loadDirectory();
 	}
 
 	public String getDirName() {
 		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk";
 	}
 	
-	public void setupDirectory() {
+	public boolean canSaveChunk(Chunk chunk) {
+		if(chunk.getData().length > currentDiskSpace) {
+			return false;
+		}
+		
+		for(File file : peerFiles) {
+			if(file.getName().equals(chunk.getFileId() + chunk.getChunkNo()) ) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public void loadDirectory() {
 
-System.out.println(this.getDirName());
 		File dir = new File(this.getDirName());
 		// if the directory does not exist, create it
 		if (!dir.exists()) {
 			try {
 				dir.mkdir();
 			} catch (SecurityException se) {
-
+				se.printStackTrace();
+			}
+		} else {
+			peerFiles = dir.listFiles();
+			for(File file : peerFiles) {
+				currentDiskSpace -= file.length();
 			}
 		}
 	}
@@ -80,12 +100,9 @@ System.out.println(this.getDirName());
 	}
 
 	public void saveChunk(Chunk chunk) {
-		
-		byte data[] = chunk.getData();
-		FileOutputStream out;
+		byte data[] = chunk.getData();		
 		try {
-
-			out = new FileOutputStream(this.getDirName() + "\\" + chunk.getFileId() + chunk.getChunkNo());
+			FileOutputStream out = new FileOutputStream(this.getDirName() + "\\" + chunk.getFileId() + chunk.getChunkNo());
 			out.write(data);
 			out.close();
 

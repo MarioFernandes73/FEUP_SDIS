@@ -7,7 +7,7 @@ import utils.Chunk;
 
 public class BackupInitiator implements Runnable {
 	
-	public BackupInitiator() {
+	public BackupInitiator(int ownerId, ) {
 		
 	}
 	

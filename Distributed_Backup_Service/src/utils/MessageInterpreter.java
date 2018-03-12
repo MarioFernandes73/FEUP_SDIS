@@ -11,7 +11,7 @@ public class MessageInterpreter {
 	public void run() {	
 		//Verify message header
 		String operation = "(PUTCHUNK)|(STORED)|(GETCHUNK)|(CHUNK)|(DELETE)|(REMOVED)";
-		String version = " [0-9]\.[0-9]";
+		String version = " [0-9]\\.[0-9]";
 		String senderId = " (0)|([0-9]+)";
 		String fileId = " [.]{64}";
 		String chunckNo = " [0-9]{1,6}";

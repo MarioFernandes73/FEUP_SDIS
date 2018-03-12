@@ -1,9 +1,11 @@
 package initiators;
 
 import java.io.File;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import peer.Peer;
+import protocols.ChunkBackupProtocol;
 import utils.Chunk;
 import utils.FileInfo;
 import utils.Utils;
@@ -24,7 +26,60 @@ public class BackupInitiator implements Runnable {
 	
 	@Override
 	public void run() {
-		this.peer.getFilesManager().saveInfo();
+		FileInfo fileInfo = peer.getFilesManager().getFileInfo(this.fileName);
+		if(fileInfo == null) {
+			System.out.println("File doesn't exist!");
+			return;
+		}
+		
+		File existingFile = peer.getFilesManager().getExistingFile(fileName);
+		if(existingFile == null) {
+			System.out.println("Program integrity violation. File doesn't exist. Please restart the program.");
+			return;
+		}
+		
+		//file exists
+		if(fileInfo.isBackedUp()) {
+			String ecryptedExistingFileId = null;
+			try {
+				ecryptedExistingFileId = peer.getFilesManager().encryptFileId(existingFile);
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+			
+			if(fileInfo.getId().equals(ecryptedExistingFileId)) {
+				System.out.println("File is already backed up!");
+				return;
+			} else {
+				//file is a modification -> delete protocol
+				
+			}
+		}
+		
+		ArrayList<Chunk> chunks = this.peer.getFilesManager().splitToChunks(existingFile, replicationDegree);
+		ArrayList<Thread> protocolThreads = new ArrayList<Thread>();
+		
+		for(Chunk chunk : chunks) {
+			//construir mensagem PUTCHUNK
+			
+			//mandar mensagem PUTCHUNK usando o protocolo
+			Thread thread = new Thread(new ChunkBackupProtocol());
+			protocolThreads.add(thread);
+			thread.start();
+		}
+		
+		for(Thread thread : protocolThreads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println("Successfull backup!");
+		return;
+		
+		
 	}
 	
 }

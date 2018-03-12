@@ -1,5 +1,6 @@
 package utils;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Chunk implements Serializable {
 
@@ -8,11 +9,15 @@ public class Chunk implements Serializable {
 	private String fileId;
 	private int chunkNo;
 	private byte[] data;
+	private ArrayList<Integer> ownerIds = new ArrayList<Integer>();
+	private int replicationDegree;
 	
-	public Chunk(String fileId,int chunkNo, byte[] data) {
+	public Chunk(String fileId, int chunkNo, int replicationDegree, byte[] data, int ownerId) {
 		this.fileId = fileId;
 		this.chunkNo = chunkNo;
+		this.replicationDegree = replicationDegree;
 		this.data = data;
+		this.ownerIds.add(ownerId);
 	}
 
 	public byte[] getData() {
@@ -23,8 +28,16 @@ public class Chunk implements Serializable {
 		return chunkNo;
 	}
 
+	public int getReplicationDegree() {
+		return replicationDegree;
+	}
+
 	public String getFileId() {
 		return fileId;
+	}
+
+	public ArrayList<Integer> getOwnerIds() {
+		return ownerIds;
 	}
 
 }

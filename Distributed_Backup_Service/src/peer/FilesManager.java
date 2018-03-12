@@ -158,7 +158,7 @@ public class FilesManager {
 		}
 	}
 
-	public ArrayList<Chunk> splitToChunks(File file) {
+	public ArrayList<Chunk> splitToChunks(File file, int replicationDegree) {
 
 		ArrayList<Chunk> chunkList = new ArrayList<Chunk>();
 
@@ -186,7 +186,7 @@ public class FilesManager {
 						byteCounter++;
 					}
 
-					chunkList.add(new Chunk(encryptedId, chunkNo, chunkData));
+					chunkList.add(new Chunk(encryptedId, chunkNo, replicationDegree, chunkData, this.ownerId));
 				}
 
 			} catch (NoSuchAlgorithmException e) {
@@ -256,14 +256,6 @@ public class FilesManager {
 		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk" + "\\Info\\chunksInfo.ser";
 	}
 
-	public ArrayList<FileInfo> getFiles() {
-		return this.peerFiles;
-	}
-
-	public ArrayList<Chunk> getChunks() {
-		return this.peerChunks;
-	}
-
 	public ArrayList<FileInfo> getBackedUpFiles(){
 		ArrayList<FileInfo> backedUpFiles = new ArrayList<FileInfo>();
 		for(FileInfo file : this.peerFiles) {
@@ -272,6 +264,24 @@ public class FilesManager {
 			}
 		}
 		return backedUpFiles;
+	}
+
+	public FileInfo getFileInfo(String fileName) {
+		for(FileInfo file : this.peerFiles) {
+			if(file.getName().equals(fileName)) {
+				return file;
+			}
+		}
+		return null;
+	}
+	
+	public File getExistingFile(String fileName) {
+		for(File file : new File(this.getFilesDir()).listFiles()) {
+			if(file.getName().equals(fileName)) {
+				return file;
+			}
+		}
+		return null;
 	}
 	
 }

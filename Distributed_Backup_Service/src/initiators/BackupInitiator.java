@@ -37,10 +37,11 @@ public class BackupInitiator implements Runnable {
 			System.out.println("Program integrity violation. File doesn't exist. Please restart the program.");
 			return;
 		}
+
+		String ecryptedExistingFileId = null;
 		
 		//file exists
 		if(fileInfo.isBackedUp()) {
-			String ecryptedExistingFileId = null;
 			try {
 				ecryptedExistingFileId = peer.getFilesManager().encryptFileId(existingFile);
 			} catch (NoSuchAlgorithmException e) {
@@ -52,7 +53,7 @@ public class BackupInitiator implements Runnable {
 				return;
 			} else {
 				//file is a modification -> delete protocol
-				
+				System.out.println("Modified file, deleting existing copies and backing up new one.");
 			}
 		}
 		
@@ -75,11 +76,11 @@ public class BackupInitiator implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		
+		System.out.println("Updating backed up files.");
+		peer.getFilesManager().updateBackedUpFiles(new FileInfo(ecryptedExistingFileId, fileName, replicationDegree));
+		peer.getFilesManager().saveInfo();
 		System.out.println("Successfull backup!");
 		return;
-		
-		
 	}
 	
 }

@@ -28,23 +28,6 @@ public class FilesManager {
 	public FilesManager(int ownerId) {
 		this.ownerId = ownerId;
 		loadDirectory();
-
-	}
-
-	public boolean canSaveChunk(Chunk chunk) {
-		if (chunk.getData().length > currentDiskSpace) {
-			System.out.println("Insufficient disk space.");
-			return false;
-		}
-
-		for (Chunk peerChunk : peerChunks) {
-			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
-				System.out.println("Chunk already backed up.");
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	public void loadDirectory() {
@@ -52,107 +35,129 @@ public class FilesManager {
 		readInfoDirectory();
 		readFilesDirectory();
 	}
-	
-	public void readFilesDirectory() {
-		File filesDir = new File(this.getFilesDir());
-		if(filesDir.exists() && filesDir.isDirectory()) {
-			for(File file : filesDir.listFiles()) {
-				peerFiles.add(new FileInfo(file));
-			}
-		}
-	}
 
-	public void readInfoDirectory() {
-		String backedUpFilesPath = this.getFilesInfoFile();
-		File backedUpFiles = new File(backedUpFilesPath);
-		if(backedUpFiles.exists()) {
-			ObjectInputStream objectinputstream = null;
-			try {
-			    FileInputStream streamIn = new FileInputStream(backedUpFilesPath);
-			    objectinputstream = new ObjectInputStream(streamIn);
-			    ArrayList<FileInfo> readCase = (ArrayList<FileInfo>) objectinputstream.readObject();
-			    peerFiles.addAll(readCase);
-			} catch (Exception e) {
-			    e.printStackTrace();
-			} finally {
-			    if(objectinputstream != null){
-			        try {
-						objectinputstream .close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-			    } 
-			}	
-		}
-		
-		String chunksInfoPath = this.getChunksInfoFile();
-		File chunks = new File(chunksInfoPath);
-		if(chunks.exists()) {
-			ObjectInputStream objectinputstream = null;
-			try {
-			    FileInputStream streamIn = new FileInputStream(chunksInfoPath);
-			    objectinputstream = new ObjectInputStream(streamIn);
-			    ArrayList<Chunk> readCase = (ArrayList<Chunk>) objectinputstream.readObject();
-			    peerChunks.addAll(readCase);
-			} catch (Exception e) {
-			    e.printStackTrace();
-			} finally {
-			    if(objectinputstream != null){
-			        try {
-						objectinputstream .close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-			    } 
-			}	
-		}
-		
-	}
-	
-	public void saveInfo() {
-		ObjectOutputStream oosFiles = null;
-		ObjectOutputStream oosChunks = null;
-		FileOutputStream foutFiles = null;
-		FileOutputStream foutChunks = null;
-		try{
-		    foutFiles = new FileOutputStream(this.getFilesInfoFile(), false);
-		    oosFiles = new ObjectOutputStream(foutFiles);
-		    oosFiles.writeObject(this.getBackedUpFiles());
-		    foutChunks = new FileOutputStream(this.getChunksInfoFile(), false);
-		    oosChunks = new ObjectOutputStream(foutChunks);
-		    oosChunks.writeObject(this.peerChunks);
-		} catch (Exception ex) {
-		    ex.printStackTrace();
-		} finally {
-		    if(oosFiles != null){
-		        try {
-					oosFiles.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		    }
-		    if(oosChunks != null){
-		        try {
-					oosChunks.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		    } 
-		}
-	}
-	
-	
 	public void createDirectories() {
-
 		File[] dirs = new File[] { new File(getDiskDir()), new File(getFilesDir()), new File(getChunksDir()),
 				new File(getInfoDir()) };
-
 		for (File dir : dirs) {
 			if (!dir.exists()) {
 				try {
 					dir.mkdir();
 				} catch (SecurityException se) {
 					se.printStackTrace();
+				}
+			} else {
+				currentDiskSpace -= dir.length();
+			}
+		}
+	}
+
+	public void readInfoDirectory() {
+		readBackedUpFilesInfo();
+		readChunksInfo();
+	}
+
+	private void readBackedUpFilesInfo() {
+		String backedUpFilesPath = this.getFilesInfoFile();
+		File backedUpFiles = new File(backedUpFilesPath);
+		if (backedUpFiles.exists()) {
+			ObjectInputStream objectinputstream = null;
+			try {
+				FileInputStream streamIn = new FileInputStream(backedUpFilesPath);
+				objectinputstream = new ObjectInputStream(streamIn);
+				ArrayList<FileInfo> readCase = (ArrayList<FileInfo>) objectinputstream.readObject();
+				peerFiles.addAll(readCase);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (objectinputstream != null) {
+					try {
+						objectinputstream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private void readChunksInfo() {
+		String chunksInfoPath = this.getChunksInfoFile();
+		File chunks = new File(chunksInfoPath);
+		if (chunks.exists()) {
+			ObjectInputStream objectinputstream = null;
+			try {
+				FileInputStream streamIn = new FileInputStream(chunksInfoPath);
+				objectinputstream = new ObjectInputStream(streamIn);
+				ArrayList<Chunk> readCase = (ArrayList<Chunk>) objectinputstream.readObject();
+				peerChunks.addAll(readCase);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (objectinputstream != null) {
+					try {
+						objectinputstream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	public void readFilesDirectory() {
+		File filesDir = new File(this.getFilesDir());
+		if (filesDir.exists() && filesDir.isDirectory()) {
+			for (File file : filesDir.listFiles()) {
+				peerFiles.add(new FileInfo(file));
+			}
+		}
+	}
+
+	public void saveInfo() {
+		saveFilesInfo();
+		saveChunksInfo();
+	}
+
+	public void saveFilesInfo() {
+		ObjectOutputStream oosFiles = null;
+		FileOutputStream foutFiles = null;
+
+		try {
+			foutFiles = new FileOutputStream(this.getFilesInfoFile(), false);
+			oosFiles = new ObjectOutputStream(foutFiles);
+			oosFiles.writeObject(this.getBackedUpFiles());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if (oosFiles != null) {
+				try {
+					oosFiles.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+	}
+
+	public void saveChunksInfo() {
+		ObjectOutputStream oosChunks = null;
+		FileOutputStream foutChunks = null;
+
+		try {
+			foutChunks = new FileOutputStream(this.getChunksInfoFile(), false);
+			oosChunks = new ObjectOutputStream(foutChunks);
+			oosChunks.writeObject(this.peerChunks);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if (oosChunks != null) {
+				try {
+					oosChunks.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -199,6 +204,20 @@ public class FilesManager {
 		return chunkList;
 	}
 
+	public boolean canSaveChunk(Chunk chunk) {
+		if (chunk.getData().length > currentDiskSpace) {
+			System.out.println("Insufficient disk space.");
+			return false;
+		}
+		for (Chunk peerChunk : peerChunks) {
+			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
+				System.out.println("Chunk already backed up.");
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public void saveChunk(Chunk chunk) {
 		byte data[] = chunk.getData();
 		try {
@@ -215,8 +234,8 @@ public class FilesManager {
 	}
 
 	public boolean repeatedChunk(Chunk chunk) {
-		for(Chunk peerChunk : this.peerChunks) {
-			if((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
+		for (Chunk peerChunk : this.peerChunks) {
+			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
 				return true;
 			}
 		}
@@ -256,10 +275,10 @@ public class FilesManager {
 		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk" + "\\Info\\chunksInfo.ser";
 	}
 
-	public ArrayList<FileInfo> getBackedUpFiles(){
+	public ArrayList<FileInfo> getBackedUpFiles() {
 		ArrayList<FileInfo> backedUpFiles = new ArrayList<FileInfo>();
-		for(FileInfo file : this.peerFiles) {
-			if(file.isBackedUp()) {
+		for (FileInfo file : this.peerFiles) {
+			if (file.isBackedUp()) {
 				backedUpFiles.add(file);
 			}
 		}
@@ -267,21 +286,31 @@ public class FilesManager {
 	}
 
 	public FileInfo getFileInfo(String fileName) {
-		for(FileInfo file : this.peerFiles) {
-			if(file.getName().equals(fileName)) {
+		for (FileInfo file : this.peerFiles) {
+			if (file.getName().equals(fileName)) {
 				return file;
 			}
 		}
 		return null;
 	}
-	
+
 	public File getExistingFile(String fileName) {
-		for(File file : new File(this.getFilesDir()).listFiles()) {
-			if(file.getName().equals(fileName)) {
+		for (File file : new File(this.getFilesDir()).listFiles()) {
+			if (file.getName().equals(fileName)) {
 				return file;
 			}
 		}
 		return null;
 	}
-	
+
+	public void updateBackedUpFiles(FileInfo fileInfo) {
+		for (FileInfo file : this.peerFiles) {
+			if (file.getName().equals(fileInfo.getName())) {
+				this.peerFiles.remove(file);
+				this.peerFiles.add(fileInfo);
+				return;
+			}
+		}
+	}
+
 }

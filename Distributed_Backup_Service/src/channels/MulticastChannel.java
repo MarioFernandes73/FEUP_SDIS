@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import utils.Utils;
@@ -48,11 +50,15 @@ public class MulticastChannel extends Thread {
 		socket.send(msgPacket);
 	}
 
-	public byte[] receive() throws IOException {
+	public byte[] receive() throws IOException, SocketTimeoutException {
 		byte[] buffer = new byte[Utils.MAX_PACKET_SIZE];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		socket.receive(packet);
 		return packet.getData();
+	}
+	
+	public void setSocketTimeout(int timeout) throws SocketException {
+		this.socket.setSoTimeout(timeout);
 	}
 
 }

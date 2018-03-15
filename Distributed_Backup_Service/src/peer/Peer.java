@@ -44,6 +44,18 @@ public class Peer implements RMIInterface {
 	public FilesManager getFilesManager() {
 		return filesManager;
 	}
+	
+	public MulticastChannel getMCChannel() {
+		return MCChannel;
+	}
+
+	public MulticastChannel getMDBChannel() {
+		return MDBChannel;
+	}
+
+	public MulticastChannel getMDRChannel() {
+		return MDRChannel;
+	}
 
 	@Override
 	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {

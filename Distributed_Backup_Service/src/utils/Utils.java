@@ -7,4 +7,5 @@ public class Utils {
 	public static int MAX_CHUNK_SIZE = 64000;
 	public static int MAX_DISK_SPACE = 100000000;
 	public static int MAX_TRIES = 5;
+	public static int MAX_RANDOM_DELAY = 400;
 }

@@ -8,6 +8,7 @@ import peer.Peer;
 import protocols.ChunkBackupProtocol;
 import utils.Chunk;
 import utils.FileInfo;
+import utils.Message;
 import utils.Utils;
 
 public class BackupInitiator implements Runnable {
@@ -62,9 +63,11 @@ public class BackupInitiator implements Runnable {
 		
 		for(Chunk chunk : chunks) {
 			//construir mensagem PUTCHUNK
+			Message message = new Message();
+			
 			
 			//mandar mensagem PUTCHUNK usando o protocolo
-			Thread thread = new Thread(new ChunkBackupProtocol());
+			Thread thread = new Thread(new ChunkBackupProtocol(this.peer.getMDBChannel(), message));
 			protocolThreads.add(thread);
 			thread.start();
 		}

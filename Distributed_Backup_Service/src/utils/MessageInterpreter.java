@@ -11,11 +11,15 @@ public class MessageInterpreter {
 		this.text = text;
 	}
 	
-	public getOperationFormat(){
+	public Message getMessage() {
+		return this.message;
+	}
+	
+	public String getOperationFormat(){
 		return "^(PUTCHUNK)|(STORED)|(GETCHUNK)|(CHUNK)|(DELETE)|(REMOVED) ";
 	}
 	
-	public getHeaderFormat(String operation) {
+	public String getHeaderFormat(String operation) {
 		String version = " [0-9]\\.[0-9]";
 		String senderId = " (0)|([0-9]+)";
 		String fileId = " [.]{64}";

@@ -22,21 +22,7 @@ public class Peer implements RMIInterface {
 		this.id = id;
 		this.filesManager = new FilesManager(this.id);
 	}
-/*
-	private void initializeThreads(String args[]) {
-		
-		try {
-			MCChannel = (new MulticastChannel(args[0], Integer.parseInt(args[1])));
-		} catch (NumberFormatException | IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		
-		System.out.println("goodbye");
-		
-	}
-*/
+
 	public int getId() {
 		return id;
 	}

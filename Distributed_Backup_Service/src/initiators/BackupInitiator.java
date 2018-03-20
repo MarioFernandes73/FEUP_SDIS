@@ -67,7 +67,7 @@ public class BackupInitiator implements Runnable {
 			
 			
 			//mandar mensagem PUTCHUNK usando o protocolo
-			Thread thread = new Thread(new ChunkBackupProtocol(this.peer.getMDBChannel(), message));
+			Thread thread = new Thread(new ChunkBackupProtocol(this.peer.getMDBChannel(), message, chunk.getOwnerIds()));
 			protocolThreads.add(thread);
 			thread.start();
 		}

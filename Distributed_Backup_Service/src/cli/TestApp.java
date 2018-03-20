@@ -2,7 +2,12 @@ package cli;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
+import communications.RMIInterface;
 import utils.Utils;
 
 public class TestApp {
@@ -18,6 +23,21 @@ public class TestApp {
 
 		if (!validArguments(args)) {
 			return;
+		}
+		
+
+        String host = (args.length < 1) ? null : args[0];
+        Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(host);
+	        RMIInterface stub = (RMIInterface) registry.lookup("Hello");
+	        String response = stub.backup("test.jpg", 3, false);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return;

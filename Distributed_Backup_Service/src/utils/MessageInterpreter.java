@@ -19,7 +19,7 @@ public class MessageInterpreter implements Runnable {
 	}
 	
 	public Pattern getOperationFormat(){
-		return Pattern.compile("^(PUTCHUNK)|(STORED)|(GETCHUNK)|(CHUNK)|(DELETE)|(REMOVED) ");
+		return Pattern.compile("^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED) ((.|\r|\n)*)$");
 	}
 	
 	public Pattern getHeaderFormat(String operation) {
@@ -58,7 +58,7 @@ public class MessageInterpreter implements Runnable {
 	@Override
 	public void run() {	
 		//Verify operation
-		if(!(getOperationFormat()).matcher(text).find()) {
+		if(!(getOperationFormat()).matcher(text).matches()) {
 			return;
 		}	
 		//Extract operation

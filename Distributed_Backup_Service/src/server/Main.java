@@ -25,6 +25,7 @@ public class Main {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
+			if(task.getMessage() != null)
 			System.out.println(task.getMessage().getBody());			
 		}
 

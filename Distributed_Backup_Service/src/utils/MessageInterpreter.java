@@ -15,11 +15,11 @@ public class MessageInterpreter implements Runnable {
 		return this.message;
 	}
 	
-	public String getOperationFormat(){
+	private String getOperationFormat(){
 		return "^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED) ((.|\r|\n)*)$";
 	}
 	
-	public String getHeaderFormat(String operation) {
+	private String getHeaderFormat(String operation) {
 		String version = " (1\\.0)";
 		String senderId = " ((0)|([0-9]+))";
 		String fileId = " ([A-Za-z0-9]{64})";
@@ -81,7 +81,7 @@ public class MessageInterpreter implements Runnable {
 		rest = rest.substring(rest.indexOf(" ") + 1);
 		//ChunkNo
 		if(!operation.equals("DELETE")) {
-			message.setChunckNo(rest.substring(0, rest.indexOf(" ")));
+			message.setChunkNo(Integer.parseInt(rest.substring(0, rest.indexOf(" "))));
 			rest = rest.substring(rest.indexOf(" ") + 1);
 		}
 		//Replication Degree and body

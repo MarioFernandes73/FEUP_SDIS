@@ -3,14 +3,37 @@ package utils;
 public class Message {
 	private String operation;
 	private String version;
+	private boolean senderIdSetted = false;
 	private int senderId;
 	private String fileId;
-	private String chunckNo;
+	private boolean chunkNoSetted = false;
+	private int chunkNo;
+	private boolean replicationDegSetted = false;
 	private int replicationDeg;
 	private String body;
 	
 	public Message() {}
 
+	public String getHeader() {
+		String header = "";
+		if(operation != null && version != null && senderIdSetted && fileId != null) {
+			header = operation + " " + version + " " + senderId + " " + fileId + " ";
+		} else {
+			return "";
+		}
+		if(!operation.equals("DELETE") && chunkNoSetted) {
+			header += chunkNo + " ";
+		} else {
+			return "";
+		}
+		if(operation.equals("PUTCHUNK") && replicationDegSetted) {
+			header += replicationDeg + " ";
+		} else {
+			return "";
+		}
+		return header + "\r\n\r\n";
+	}
+	
 	public String getOperation() {
 		return operation;
 	}
@@ -27,8 +50,8 @@ public class Message {
 		return fileId;
 	}
 	
-	public String getChunckNo() {
-		return chunckNo;
+	public int getChunkNo() {
+		return chunkNo;
 	}
 	
 	public int getReplicationDeg() {
@@ -48,6 +71,7 @@ public class Message {
 	}
 	
 	public void setSenderId(int senderId) {
+		this.senderIdSetted = true;
 		this.senderId = senderId;
 	}
 	
@@ -55,11 +79,13 @@ public class Message {
 		this.fileId = fileId;
 	}
 	
-	public void setChunckNo(String chunckNo) {
-		this.chunckNo = chunckNo;
+	public void setChunkNo(int chunckNo) {
+		this.chunkNoSetted = true;
+		this.chunkNo = chunckNo;
 	}
 	
 	public void setReplicationDeg(int replicationDeg) {
+		this.replicationDegSetted = true;
 		this.replicationDeg = replicationDeg;
 	}
 	

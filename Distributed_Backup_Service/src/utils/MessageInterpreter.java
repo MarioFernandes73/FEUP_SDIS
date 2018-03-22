@@ -1,8 +1,5 @@
 package utils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import utils.Message;
 
 public class MessageInterpreter implements Runnable {
@@ -18,11 +15,11 @@ public class MessageInterpreter implements Runnable {
 		return this.message;
 	}
 	
-	public Pattern getOperationFormat(){
-		return Pattern.compile("^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED) ((.|\r|\n)*)$");
+	public String getOperationFormat(){
+		return "^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED) ((.|\r|\n)*)$";
 	}
 	
-	public Pattern getHeaderFormat(String operation) {
+	public String getHeaderFormat(String operation) {
 		String version = " (1\\.0)";
 		String senderId = " ((0)|([0-9]+))";
 		String fileId = " ([A-Za-z0-9]{64})";
@@ -52,20 +49,20 @@ public class MessageInterpreter implements Runnable {
 			format = common + " " + crlf + crlf+ "$";
 			break;
 		}
-		return Pattern.compile(format);
+		return format;
 	}
 	
 	@Override
 	public void run() {	
 		//Verify operation
-		if(!(getOperationFormat()).matcher(text).matches()) {
+		if(!text.matches(getOperationFormat())) {
 			return;
 		}	
 		//Extract operation
 		String operation = text.substring(0, text.indexOf(" "));
 		String rest = text.substring(text.indexOf(" ") + 1);
 		//Verify header
-		if(!this.getHeaderFormat(operation).matcher(text).matches()) {
+		if(!text.matches(getHeaderFormat(operation))) {
 			return;
 		}
 		message = new Message();

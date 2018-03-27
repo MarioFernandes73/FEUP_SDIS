@@ -1,6 +1,5 @@
 package peer;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import channels.*;
 import communications.RMIInterface;
 import initiators.BackupInitiator;
-import utils.Chunk;
+import utils.Message;
 
 public class Peer implements RMIInterface {
 	
@@ -18,12 +17,17 @@ public class Peer implements RMIInterface {
 	private MulticastChannel MDRChannel = null;
 	private FilesManager filesManager = null;
 	private int id;
+	private ArrayList<Message> storedMessages = new ArrayList<Message>();
 	
 	public Peer(int id, String MCIP, int MCPort, String MDBIP, int MDBPort, String MDRIP, int MDRPort) throws UnknownHostException, IOException {
 		this.id = id;
 		this.filesManager = new FilesManager(this.id);
-		this.MDBChannel = new MulticastChannel(MDBIP, MDBPort);
+		this.MCChannel = new MulticastChannel(this, MCIP, MCPort);
+		this.MDBChannel = new MulticastChannel(this, MDBIP, MDBPort);
+		this.MDRChannel = new MulticastChannel(this, MDRIP, MDRPort);
+		(new Thread(this.MCChannel)).start();
 		(new Thread(this.MDBChannel)).start();
+		(new Thread(this.MDRChannel)).start();
 	}
 
 	public int getId() {
@@ -57,6 +61,8 @@ public class Peer implements RMIInterface {
 		return null;
 	}
 	
-	
+	public ArrayList<Message> getStoredMessages() {
+		return this.storedMessages;
+	}
 
 }

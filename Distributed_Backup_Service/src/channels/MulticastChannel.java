@@ -7,22 +7,23 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
-import utils.Message;
-import utils.MessageInterpreter;
+import peer.Peer;
+import utils.MessageFeedback;
 import utils.Utils;
 
 public class MulticastChannel implements Runnable {
 
+	private Peer owner;
 	private InetAddress address = null;
 	private int port;
 	private MulticastSocket socket = null;
 	private boolean running = false;
 
-	public MulticastChannel(String address, int port) throws IOException, UnknownHostException {
+	public MulticastChannel(Peer owner, String address, int port) throws IOException, UnknownHostException {
 		this.address = InetAddress.getByName(address);
 		this.port = port;
+		this.owner = owner;
 		this.socket = new MulticastSocket(port);
 		socket.setTimeToLive(1);
 		socket.joinGroup(this.address);
@@ -32,15 +33,9 @@ public class MulticastChannel implements Runnable {
 	public void run() {
 		try {
 			running = true;
-			
 			while (running) {
-				byte[] data = this.receive();
-				String mensagem = new String(data, StandardCharsets.UTF_8);
-				MessageInterpreter message = new MessageInterpreter(mensagem);
-				message.run();
-				//System.out.println("RECEBI ISTO: " + message.getMessage().getHeader());
+				new MessageFeedback(this.owner, this.receive()).run();
 			}
-			
 			socket.leaveGroup(this.address);
 			socket.close();
 
@@ -52,7 +47,6 @@ public class MulticastChannel implements Runnable {
 	public void send(byte[] data) throws IOException {
 		DatagramPacket msgPacket = new DatagramPacket(data, data.length, address, port);
 		socket.send(msgPacket);
-		System.out.println("ENVIEI COISAS!");
 	}
 
 	public byte[] receive() throws IOException, SocketTimeoutException {
@@ -61,7 +55,7 @@ public class MulticastChannel implements Runnable {
 		socket.receive(packet);
 		return packet.getData();
 	}
-	
+
 	public void setSocketTimeout(int timeout) throws SocketException {
 		this.socket.setSoTimeout(timeout);
 	}

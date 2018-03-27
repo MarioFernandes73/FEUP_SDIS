@@ -51,14 +51,14 @@ public class TestApp {
 
 		//Peer access point
 		try {
-			this.peer_ac = Integer.parseInt(args[0]);
+			//this.peer_ac = Integer.parseInt(args[0]);
 		} catch(NumberFormatException e) {
 			System.out.println("Invalid access point error! Access point must be an integer User input: " + args[0]);
 		}
 		
 		//Operation		
 		try {
-			this.operation = Utils.operations.valueOf(args[1].toUpperCase());
+			//this.operation = Utils.operations.valueOf(args[1].toUpperCase());
 		} catch (IllegalArgumentException e) {
 			System.out.println("Invalid operation error! \n \t Usage: BACKUP, RESTORE, DELETE, RECLAIM, BACKUPENH, RESTOREENH, DELETEENH, RECLAIMENH or STATE \n \t User input: " + args[1]);
 			return false;
@@ -73,7 +73,7 @@ public class TestApp {
 		case RECLAIMENH:
 			try {
 				if(args.length != 3) {
-					System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! Full usage: java TestApp <peer_ap> "+this.operation.name()+" <reclaim_space>");
+					//System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! Full usage: java TestApp <peer_ap> "+this.operation.name()+" <reclaim_space>");
 					return false;
 				}
 				diskSpace = Integer.parseInt(args[2]);			
@@ -90,7 +90,7 @@ public class TestApp {
 		case RESTORE:
 		case RESTOREENH:
 			if(args.length != 3) {
-				System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+this.operation.name()+" <file_name>");
+				//System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+this.operation.name()+" <file_name>");
 			}
 			
 		default:
@@ -108,8 +108,8 @@ public class TestApp {
 			return true;
 		}
 		
-		System.out.println(IPAddress);
-		System.out.println(port);
+		//System.out.println(IPAddress);
+		//System.out.println(port);
 		System.out.println(operation);
 
 		return true;

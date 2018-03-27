@@ -8,62 +8,57 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import channels.MulticastChannel;
+import peer.Peer;
+import utils.Chunk;
 import utils.Message;
 import utils.MessageInterpreter;
 import utils.Utils;
 
 public class ChunkBackupProtocol implements Runnable {
 
-	private MulticastChannel channel;
-	private Message message;
-	private ArrayList<Integer> ownerIds;
+	private Peer peer = null;
+	private Chunk chunk = null;
+	private int desiredReplicationDegree;
 	private boolean success = false;
 
-	public ChunkBackupProtocol(MulticastChannel channel, Message message, ArrayList<Integer> ownerIds) {
-		this.channel = channel;
-		this.message = message;
-		this.ownerIds = ownerIds;
+	public ChunkBackupProtocol(Peer peer, Chunk chunk, int desiredReplicationDegree) {
+		this.peer = peer;
+		this.chunk = chunk;
+		this.desiredReplicationDegree = desiredReplicationDegree;
 	}
 
 	@Override
 	public void run() {
 		int tries = 0;
 		int delay = Utils.FIXED_WAITING_TIME;
-		ArrayList<byte[]> receivedBMessagesBytes = new ArrayList<byte[]>();
+		this.peer.getStoredMessages().clear();
 		while (tries < Utils.MAX_TRIES) {
 
+			Message message = new Message();
+			message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunk.getFileId(),
+					chunk.getChunkNo(), this.desiredReplicationDegree, new String(chunk.getData(), StandardCharsets.UTF_8));
+			
 			try {
-				channel.send((message.getHeader() + message.getBody()).getBytes());
-				//channel.setSocketTimeout(delay);
-				while (true) {
-					try {
-						// receive a message and add it to an array
-						receivedBMessagesBytes.add(channel.receive());
-					} catch (SocketTimeoutException e) {
-						break;
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-
+				peer.getMDBChannel().send((message.getHeader() + message.getBody()).getBytes());
+				Thread.sleep(delay);
 			} catch (SocketException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 
-			for (byte[] receivedBytes : receivedBMessagesBytes) {
-				MessageInterpreter interpreter = new MessageInterpreter(
-						new String(receivedBytes, StandardCharsets.UTF_8));
-				//interpreter.run();
-				if (interpreter.getMessage() != null && interpreter.getMessage().getOperation().equals("STORED")
-						&& interpreter.getMessage().getFileId().equals(message.getFileId())) {
-					// stored answer to this specific file - update owners
-					ownerIds.add(interpreter.getMessage().getSenderId());
+			System.out.println();
+			
+			for (Message receivedMessages : this.peer.getStoredMessages()) {
+				if (receivedMessages.getOperation().equals("STORED")
+						&& receivedMessages.getFileId().equals(message.getFileId())) {
+					chunk.getOwnerIds().add(receivedMessages.getSenderId());
 				}
 			}
 
-			if (ownerIds.size() >= message.getReplicationDeg()) {
+			if (chunk.getOwnerIds().size() >= message.getReplicationDeg()) {
 				success = true;
 				break;
 			}
@@ -72,10 +67,6 @@ public class ChunkBackupProtocol implements Runnable {
 			tries++;
 		}
 
-	}
-
-	public ArrayList<Integer> getOwnerIds() {
-		return this.ownerIds;
 	}
 
 	public boolean getSuccess() {

@@ -49,16 +49,14 @@ public class Main {
 */
 		int peerid = Integer.parseInt(args[0]);
 		try {
-			Peer peer = new Peer(peerid,"224.0.0.0",8000,"224.0.0.0",8000,"224.0.0.0",8000);
+			Peer peer = new Peer(peerid,"224.0.0.0",8000,"224.0.0.0",8001,"224.0.0.0",8002);
 			if(peerid == 1) {
 				peer.backup("test.jpg", 1, true);
 			}
 			
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

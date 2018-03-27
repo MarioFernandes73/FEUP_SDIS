@@ -2,21 +2,16 @@ package utils;
 
 import utils.Message;
 
-public class MessageInterpreter implements Runnable {
+public class MessageInterpreter {
 
-	private Message message = null;
 	private String text;
 	
 	public MessageInterpreter(String text) {
 		this.text = text;
 	}
 	
-	public Message getMessage() {
-		return this.message;
-	}
-	
 	private String getOperationFormat(){
-		return "^(PUTCHUNK)|(STORED)|(GETCHUNK)|(CHUNK)|(DELETE)|(REMOVED)$";
+		return "^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED)$";
 	}
 	
 	private String getHeaderFormat(String operation) {
@@ -26,7 +21,7 @@ public class MessageInterpreter implements Runnable {
 		String chunckNo = " ([0-9]{1,6})";
 		String replicationDeg = " ([1-9])";
 		String crlf = "(\r\n)";
-		String body = "(.*)";
+		String body = "((?s).*)";
 		String format = "";
 		String common = "^" + operation + version + senderId + fileId;
 		
@@ -39,7 +34,7 @@ public class MessageInterpreter implements Runnable {
 			case "GETCHUNK":
 			case "REMOVED":
 				//operation <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
-				format = common + chunckNo + " " + crlf + crlf + "$";
+				format = common + chunckNo + "$";
 				break;
 			case "CHUNK":
 				//operation <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
@@ -47,26 +42,38 @@ public class MessageInterpreter implements Runnable {
 				break;
 			case "DELETE":
 				//DELETE <Version> <SenderId> <FileId> <CRLF><CRLF>
-				format = common + " " + crlf + crlf + "$";
+				format = common + "$";
 				break;
 		}
 		return format;
 	}
 	
-	@Override
-	public void run() {	
-		//Verify operation
-		if(!text.matches(getOperationFormat())) {
-			return;
-		}	
+	public Message parseText() {
+		
+		if(text.indexOf(" ") == -1 || text.indexOf(" \r\n\r\n") < 1) {
+			return null;
+		}
 		//Extract operation
 		String operation = text.substring(0, text.indexOf(" "));
-		String rest = text.substring(text.indexOf(" ") + 1);
-		//Verify header
-		if(!text.matches(getHeaderFormat(operation))) {
-			return;
+		if(!operation.matches(getOperationFormat())) {
+			return null;
 		}
-		message = new Message();
+
+		if(operation.equals("PUTCHUNK") || operation.equals("CHUNK")) {
+			if(!text.matches(getHeaderFormat(operation))) {
+				return null;
+			}
+		} else {
+			if(!text.substring(0,text.indexOf(" \r\n\r\n")).matches(getHeaderFormat(operation))) {
+				return null;
+			}
+		}
+		
+		//Verify header
+
+		
+		String rest = text.substring(text.indexOf(" ") + 1);
+		Message message = new Message();
 		
 		//Extract message parameters
 		//Operation
@@ -90,5 +97,6 @@ public class MessageInterpreter implements Runnable {
 			message.setReplicationDeg(Integer.parseInt(rest.substring(0, rest.indexOf(" "))));
 			message.setBody(rest.substring(rest.indexOf(" ") + 5));//+5 to ignore both crlf before body
 		}		
+		return message;
 	}
 }

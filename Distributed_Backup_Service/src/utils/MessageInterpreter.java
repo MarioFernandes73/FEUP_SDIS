@@ -16,7 +16,7 @@ public class MessageInterpreter implements Runnable {
 	}
 	
 	private String getOperationFormat(){
-		return "^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED) ((.|\r|\n)*)$";
+		return "^(PUTCHUNK)|(STORED)|(GETCHUNK)|(CHUNK)|(DELETE)|(REMOVED)$";
 	}
 	
 	private String getHeaderFormat(String operation) {
@@ -26,28 +26,29 @@ public class MessageInterpreter implements Runnable {
 		String chunckNo = " ([0-9]{1,6})";
 		String replicationDeg = " ([1-9])";
 		String crlf = "(\r\n)";
+		String body = "(.*)";
 		String format = "";
 		String common = "^" + operation + version + senderId + fileId;
 		
 		switch(operation) {
-		case "PUTCHUNK":
-			//PUTCHUNK <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
-			format = common + chunckNo + replicationDeg + " " + crlf + crlf + "(.*)$";
-			break;
-		case "STORED":
-		case "GETCHUNK":
-		case "REMOVED":
-			//operation <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
-			format = common + chunckNo + " " + crlf + crlf + "$";
-			break;
-		case "CHUNK":
-			//operation <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
-			format = common + chunckNo + " " + crlf + crlf + "(.*)$";
-			break;
-		case "DELETE":
-			//DELETE <Version> <SenderId> <FileId> <CRLF><CRLF>
-			format = common + " " + crlf + crlf+ "$";
-			break;
+			case "PUTCHUNK":
+				//PUTCHUNK <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
+				format = common + chunckNo + replicationDeg + " " + crlf + crlf + body + "$";
+				break;
+			case "STORED":
+			case "GETCHUNK":
+			case "REMOVED":
+				//operation <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
+				format = common + chunckNo + " " + crlf + crlf + "$";
+				break;
+			case "CHUNK":
+				//operation <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
+				format = common + chunckNo + " " + crlf + crlf + body + "$";
+				break;
+			case "DELETE":
+				//DELETE <Version> <SenderId> <FileId> <CRLF><CRLF>
+				format = common + " " + crlf + crlf + "$";
+				break;
 		}
 		return format;
 	}
@@ -85,7 +86,7 @@ public class MessageInterpreter implements Runnable {
 			rest = rest.substring(rest.indexOf(" ") + 1);
 		}
 		//Replication Degree and body
-		if(operation.equals("PUTCHUNK")) {
+		if(operation.contains("CHUNK")) {
 			message.setReplicationDeg(Integer.parseInt(rest.substring(0, rest.indexOf(" "))));
 			message.setBody(rest.substring(rest.indexOf(" ") + 5));//+5 to ignore both crlf before body
 		}		

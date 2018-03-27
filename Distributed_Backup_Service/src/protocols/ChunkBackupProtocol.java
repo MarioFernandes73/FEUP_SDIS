@@ -34,7 +34,7 @@ public class ChunkBackupProtocol implements Runnable {
 
 			try {
 				channel.send((message.getHeader() + message.getBody()).getBytes());
-				channel.setSocketTimeout(delay);
+				//channel.setSocketTimeout(delay);
 				while (true) {
 					try {
 						// receive a message and add it to an array
@@ -55,8 +55,8 @@ public class ChunkBackupProtocol implements Runnable {
 			for (byte[] receivedBytes : receivedBMessagesBytes) {
 				MessageInterpreter interpreter = new MessageInterpreter(
 						new String(receivedBytes, StandardCharsets.UTF_8));
-				interpreter.run();
-				if (interpreter.getMessage().getOperation().equals("STORED")
+				//interpreter.run();
+				if (interpreter.getMessage() != null && interpreter.getMessage().getOperation().equals("STORED")
 						&& interpreter.getMessage().getFileId().equals(message.getFileId())) {
 					// stored answer to this specific file - update owners
 					ownerIds.add(interpreter.getMessage().getSenderId());

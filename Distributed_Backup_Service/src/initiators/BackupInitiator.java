@@ -1,6 +1,7 @@
 package initiators;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
@@ -27,6 +28,7 @@ public class BackupInitiator implements Runnable {
 	
 	@Override
 	public void run() {
+		System.out.println("STARTED BACKUP");
 		FileInfo fileInfo = peer.getFilesManager().getFileInfo(this.fileName);
 		if(fileInfo == null) {
 			System.out.println("File doesn't exist!");
@@ -38,7 +40,7 @@ public class BackupInitiator implements Runnable {
 			System.out.println("Program integrity violation. File doesn't exist. Please restart the program.");
 			return;
 		}
-
+		
 		String ecryptedExistingFileId = null;
 		
 		//file exists
@@ -64,11 +66,13 @@ public class BackupInitiator implements Runnable {
 		for(Chunk chunk : chunks) {
 			//construir mensagem PUTCHUNK
 			Message message = new Message();
+			message.setOperation("PUTCHUNK");
 			message.setVersion(Utils.DEFAULT_VERSION);
 			message.setSenderId(peer.getId());
 			message.setFileId(fileInfo.getId());
 			message.setChunkNo(chunk.getChunkNo());
 			message.setReplicationDeg(this.replicationDegree);
+			message.setBody(new String(chunk.getData(), StandardCharsets.UTF_8));
 			
 			//mandar mensagem PUTCHUNK usando o protocolo
 			Thread thread = new Thread(new ChunkBackupProtocol(this.peer.getMDBChannel(), message, chunk.getOwnerIds()));
@@ -84,8 +88,8 @@ public class BackupInitiator implements Runnable {
 			}
 		}
 		System.out.println("Updating backed up files.");
-		peer.getFilesManager().updateBackedUpFiles(new FileInfo(ecryptedExistingFileId, fileName, replicationDegree));
-		peer.getFilesManager().saveInfo();
+		//peer.getFilesManager().updateBackedUpFiles(new FileInfo(ecryptedExistingFileId, fileName, true, chunks.size() ,replicationDegree));
+		//peer.getFilesManager().saveInfo();
 		System.out.println("Successfull backup!");
 		return;
 	}

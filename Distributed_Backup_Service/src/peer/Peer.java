@@ -2,6 +2,7 @@ package peer;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -18,9 +19,11 @@ public class Peer implements RMIInterface {
 	private FilesManager filesManager = null;
 	private int id;
 	
-	public Peer(int id) {
+	public Peer(int id, String MCIP, int MCPort, String MDBIP, int MDBPort, String MDRIP, int MDRPort) throws UnknownHostException, IOException {
 		this.id = id;
 		this.filesManager = new FilesManager(this.id);
+		this.MDBChannel = new MulticastChannel(MDBIP, MDBPort);
+		(new Thread(this.MDBChannel)).start();
 	}
 
 	public int getId() {
@@ -45,10 +48,10 @@ public class Peer implements RMIInterface {
 
 	@Override
 	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {
+		System.out.println("Starting to backup " + fileName);
 		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree));
 		thread.start();
 		//handle thread
-		
 		
 		//return thread response
 		return null;

@@ -109,7 +109,24 @@ public class FilesManager {
 		File filesDir = new File(this.getFilesDir());
 		if (filesDir.exists() && filesDir.isDirectory()) {
 			for (File file : filesDir.listFiles()) {
-				peerFiles.add(new FileInfo(file));
+				boolean backedUp = false;
+				try {
+					String encryptedId = encryptFileId(file);
+
+					for (FileInfo fInfo : this.peerFiles) {
+						if (fInfo.getId().equals(encryptedId)) {
+							backedUp = true;
+							break;
+						}
+					}
+					if (!backedUp) {
+						int chunksQuantity = (int) (file.length() / Utils.MAX_CHUNK_SIZE) + 1;
+						peerFiles.add(new FileInfo(encryptedId, file.getName(), false, chunksQuantity, -1));
+					}
+
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -217,7 +234,7 @@ public class FilesManager {
 		}
 		return true;
 	}
-	
+
 	public void saveChunk(Chunk chunk) {
 		byte data[] = chunk.getData();
 		try {

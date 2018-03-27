@@ -7,10 +7,13 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
+import utils.Message;
+import utils.MessageInterpreter;
 import utils.Utils;
 
-public class MulticastChannel extends Thread {
+public class MulticastChannel implements Runnable {
 
 	private InetAddress address = null;
 	private int port;
@@ -27,27 +30,29 @@ public class MulticastChannel extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println("Hello from a thread!");
 		try {
-
 			running = true;
 			
 			while (running) {
 				byte[] data = this.receive();
+				String mensagem = new String(data, StandardCharsets.UTF_8);
+				MessageInterpreter message = new MessageInterpreter(mensagem);
+				message.run();
+				//System.out.println("RECEBI ISTO: " + message.getMessage().getHeader());
 			}
 			
 			socket.leaveGroup(this.address);
 			socket.close();
 
 		} catch (IOException e) {
-			//colocar uma classe qq a tratar das excecoes
-			System.out.println("error");
+			e.printStackTrace();
 		}
 	}
 
 	public void send(byte[] data) throws IOException {
 		DatagramPacket msgPacket = new DatagramPacket(data, data.length, address, port);
 		socket.send(msgPacket);
+		System.out.println("ENVIEI COISAS!");
 	}
 
 	public byte[] receive() throws IOException, SocketTimeoutException {

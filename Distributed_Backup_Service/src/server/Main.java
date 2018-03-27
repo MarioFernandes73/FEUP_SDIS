@@ -1,5 +1,7 @@
 package server;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,7 +17,7 @@ import utils.MessageInterpreter;
 public class Main {
 
 	public static void main(String[] args) {
-	
+/*	
 		String test = "PUTCHUNK 1.0 1 333333333333333333333a333333333333333333333333333333333333333333 1 3 \r\n\r\nola";
 		MessageInterpreter task = new MessageInterpreter(test);
 		Thread t = new Thread(task);
@@ -28,7 +30,7 @@ public class Main {
 			if(task.getMessage() != null)
 			System.out.println(task.getMessage().getBody());			
 		}
-
+*/
 		/*
 		Peer peer = new Peer(1);
 		try {
@@ -45,6 +47,24 @@ public class Main {
 			e.printStackTrace();
 		}
 */
+		int peerid = Integer.parseInt(args[0]);
+		try {
+			Peer peer = new Peer(peerid,"224.0.0.0",8000,"224.0.0.0",8000,"224.0.0.0",8000);
+			if(peerid == 1) {
+				peer.backup("test.jpg", 1, true);
+			}
+			
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("bye bye");
+		peerid-=1;
+		
 	}
 
 }

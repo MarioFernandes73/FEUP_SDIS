@@ -40,11 +40,18 @@ public class MessageFeedback implements Runnable {
 	}
 
 	private void receivedPutchunkMessage() {
+		if(message.getSenderId() == owner.getId()) {
+			//return;
+		}
 		Message response = new Message();
 		response.prepareMessage("STORED", message.getVersion(), owner.getId(), message.getFileId(),
 				message.getChunkNo(), -1, null);
+		Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(), message.getReplicationDeg(), message.getBody().getBytes(), owner.getId());
 		try {
-			owner.getMCChannel().send(response.getHeader().getBytes());
+			if(this.owner.getFilesManager().canSaveChunk(chunk)) {
+				owner.getMCChannel().send(response.getHeader().getBytes());
+				owner.getFilesManager().saveChunk(chunk);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

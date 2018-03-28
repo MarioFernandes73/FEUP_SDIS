@@ -36,8 +36,9 @@ public class ChunkBackupProtocol implements Runnable {
 
 			Message message = new Message();
 			message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunk.getFileId(),
-					chunk.getChunkNo(), this.desiredReplicationDegree, new String(chunk.getData(), StandardCharsets.UTF_8));
-			
+					chunk.getChunkNo(), this.desiredReplicationDegree,
+					new String(chunk.getData(), StandardCharsets.UTF_8));
+
 			try {
 				peer.getMDBChannel().send((message.getHeader() + message.getBody()).getBytes());
 				Thread.sleep(delay);
@@ -49,8 +50,6 @@ public class ChunkBackupProtocol implements Runnable {
 				e.printStackTrace();
 			}
 
-			System.out.println();
-			
 			for (Message receivedMessages : this.peer.getStoredMessages()) {
 				if (receivedMessages.getOperation().equals("STORED")
 						&& receivedMessages.getFileId().equals(message.getFileId())) {

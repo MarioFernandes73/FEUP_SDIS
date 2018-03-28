@@ -59,4 +59,14 @@ public class FileInfo implements Serializable {
 	public boolean isReplicationDegreeSetted() {
 		return this.replicationDegreeSetted;
 	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if(object instanceof FileInfo) {
+			if(((FileInfo)object).getName().equals(this.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -1,7 +1,6 @@
 package initiators;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
@@ -9,8 +8,6 @@ import peer.Peer;
 import protocols.ChunkBackupProtocol;
 import utils.Chunk;
 import utils.FileInfo;
-import utils.Message;
-import utils.Utils;
 
 public class BackupInitiator implements Runnable {
 
@@ -75,10 +72,9 @@ public class BackupInitiator implements Runnable {
 			}
 		}
 		System.out.println("Updating backed up files.");
-		// peer.getFilesManager().updateBackedUpFiles(new
-		// FileInfo(ecryptedExistingFileId, fileName, true, chunks.size()
-		// ,replicationDegree));
-		// peer.getFilesManager().saveInfo();
+		peer.getFilesManager().updateBackedUpFiles(
+				new FileInfo(ecryptedExistingFileId, fileName, true, chunks.size(), replicationDegree));
+		//peer.getFilesManager().saveInfo();
 		System.out.println("Successfull backup!");
 		return;
 	}

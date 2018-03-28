@@ -238,7 +238,7 @@ public class FilesManager {
 	public void saveChunk(Chunk chunk) {
 		byte data[] = chunk.getData();
 		try {
-			FileOutputStream out = new FileOutputStream(getDiskDir() + "\\" + chunk.getFileId() + chunk.getChunkNo());
+			FileOutputStream out = new FileOutputStream(getChunksDir() + "\\" + chunk.getFileId() + chunk.getChunkNo());
 			out.write(data);
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -321,13 +321,9 @@ public class FilesManager {
 	}
 
 	public void updateBackedUpFiles(FileInfo fileInfo) {
-		for (FileInfo file : this.peerFiles) {
-			if (file.getName().equals(fileInfo.getName())) {
-				this.peerFiles.remove(file);
-				this.peerFiles.add(fileInfo);
-				return;
-			}
-		}
+		this.peerFiles.remove(fileInfo);
+		this.peerFiles.add(fileInfo);
+		return;
 	}
 
 }

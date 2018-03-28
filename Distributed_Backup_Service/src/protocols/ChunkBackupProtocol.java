@@ -47,11 +47,11 @@ public class ChunkBackupProtocol implements Runnable {
 				e.printStackTrace();
 			}
 
-			for (Message receivedMessages : this.peer.getStoredMessages()) {
-				if (receivedMessages.getOperation().equals("STORED")
-						&& receivedMessages.getFileId().equals(message.getFileId())
+			for (Message receivedStoredMessages : this.peer.getStoredMessages()) {
+				if (receivedStoredMessages.getFileId().equals(message.getFileId())
+						&& receivedStoredMessages.getChunkNo() == message.getChunkNo()
 						&& !this.chunk.getOwnerIds().contains(message.getSenderId())) {
-					this.chunk.getOwnerIds().add(receivedMessages.getSenderId());
+					this.chunk.getOwnerIds().add(receivedStoredMessages.getSenderId());
 				}
 			}
 

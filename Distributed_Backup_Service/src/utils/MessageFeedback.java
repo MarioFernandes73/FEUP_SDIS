@@ -5,6 +5,7 @@ package utils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import channels.MulticastChannel;
 import peer.Peer;
@@ -49,12 +50,35 @@ public class MessageFeedback implements Runnable {
 		if (message.getSenderId() == owner.getId()) {
 			return;
 		}
+		boolean enhancement = true;
 
 		Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(), message.getReplicationDeg(),
 				message.getBody().getBytes());
 		try {
 			if (this.owner.getFilesManager().canSaveChunk(chunk)
 					&& !this.owner.getFilesManager().hasChunkAlready(chunk)) {
+
+				if (enhancement) {
+					try {
+						Thread.sleep(new Random().nextInt(Utils.MAX_RANDOM_DELAY));
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					for (Message storedMessage : this.owner.getStoredMessages()) {
+						if (storedMessage.getFileId().equals(message.getFileId())
+								&& storedMessage.getChunkNo() == message.getChunkNo()
+								&& !chunk.getOwnerIds().contains(message.getSenderId())) {
+							chunk.getOwnerIds().add(message.getSenderId());
+						}
+					}
+					this.owner.getStoredMessages().clear();
+				}
+
+				if (chunk.getOwnerIds().size() >= message.getReplicationDeg()) {
+					return;
+				}
+
 				Message response = new Message();
 				response.prepareMessage("STORED", message.getVersion(), owner.getId(), message.getFileId(),
 						message.getChunkNo(), -1, null);

@@ -29,7 +29,7 @@ public class TestApp {
 		//print arguments
 		printArguments();
 		
-        Registry registry;
+        /*Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(host);
 	        RMIInterface stub = (RMIInterface) registry.lookup("Hello");
@@ -40,7 +40,7 @@ public class TestApp {
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		return;
 	}
@@ -56,13 +56,13 @@ public class TestApp {
 			peer_ac = Integer.parseInt(args[0]);
 			if(peer_ac <= 0) throw new NumberFormatException();
 		} catch(NumberFormatException e) {
-			System.out.println("Invalid access point error! Access point must be an integer User input: " + args[0]);
+			System.out.println("Invalid access point error!");
 			return false;
 		}
 		
 		//Operation		
 		try {
-			this.operation = Utils.operations.valueOf(args[1].toUpperCase());
+			operation = Utils.operations.valueOf(args[1].toUpperCase());
 		} catch (IllegalArgumentException e) {
 			System.out.println("Invalid operation error! \n \t Usage: BACKUP, RESTORE, DELETE, RECLAIM, BACKUPENH, RESTOREENH, DELETEENH, RECLAIMENH or STATE \n \t User input: " + args[1]);
 			return false;
@@ -72,13 +72,12 @@ public class TestApp {
 		switch(operation) {
 		
 		case STATE:
-			System.out.println("Performing STATE operation...");
 			return true;
 			
 		case RECLAIM:
 		case RECLAIMENH:
 			if(args.length != 3) {
-				System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! Full usage: java TestApp <peer_ap> "+this.operation.name()+" <reclaim_space>");
+				System.out.println("Wrong number of arguments for "+operation.name()+" operation! Full usage: java TestApp <peer_ap> "+operation.name()+" <reclaim_space>");
 				return false;
 			}
 			try {				
@@ -87,16 +86,16 @@ public class TestApp {
 				
 				return true;
 			} catch(NumberFormatException e) {
-				System.out.println("Invalid disk space error for "+this.operation.name()+" operation! \n \t User input: " + args[2]);
+				System.out.println("Invalid disk space error for "+operation.name()+" operation! \n \t User input: " + args[2]);
 				return false;
 			}	
-					
+			
 		case DELETE:
 		case DELETEENH:
 		case RESTORE:
 		case RESTOREENH:
 			if(args.length != 3) {
-				System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+this.operation.name()+" <file_name>");
+				System.out.println("Wrong number of arguments for "+operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+operation.name()+" <file_name>");
 				return false;
 			}
 			fileName = args[2];
@@ -105,7 +104,7 @@ public class TestApp {
 		case BACKUP:
 		case BACKUPENH: 
 			if(args.length != 4) {
-				System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+this.operation.name()+" <file_name> <replication_degree>");
+				System.out.println("Wrong number of arguments for "+operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+operation.name()+" <file_name> <replication_degree>");
 				return false;
 			}
 			
@@ -119,14 +118,12 @@ public class TestApp {
 			} catch(NumberFormatException e) {
 				System.out.println("Invalid replication degree error! \n \t User operand: " + args[3]);
 				return false;
-			} 
+			}
 			
 		default:
 			System.out.println("Invalid operation");
 			return false;
 		}
-
-		return false;
 	}
 	
 	private static void printArguments(){
@@ -138,22 +135,24 @@ public class TestApp {
 			
 		case RECLAIM:
 		case RECLAIMENH:	
-			if(diskSpace == 0 || diskSpace >= MAX_DISK_SPACE)
+			if(diskSpace == 0 || diskSpace >= Utils.MAX_DISK_SPACE)
 				System.out.println("All "+ Utils.MAX_DISK_SPACE+" bytes have been reclaimed from disk (100%)");			
 			else	
-				System.out.println(Utils.MAX_DISK_SPACE+" bytes have been reclaimed from disk"+ diskSpace/Utils.MAX_DISK_SPACE);
+				System.out.println(diskSpace+" bytes have been reclaimed from disk ("+ diskSpace*100/Utils.MAX_DISK_SPACE+"%)");
+			break;
 			
 		case DELETE:
 		case DELETEENH:
 		case RESTORE:
 		case RESTOREENH:
-			System.out.println("File: "+fileName);
+			System.out.println("File name: "+fileName);
+			break;
 			
 		case BACKUP:
 		case BACKUPENH: 
-			System.out.println("File: "+fileName);
+			System.out.println("File name: "+fileName);
 			System.out.println("Replication degree: "+replicationDeg);
-			fileName = args[2];
+			break;
 		}
 	}
 }

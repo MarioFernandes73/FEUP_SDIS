@@ -17,20 +17,7 @@ import utils.MessageInterpreter;
 public class Main {
 
 	public static void main(String[] args) {
-/*	
-		String test = "PUTCHUNK 1.0 1 333333333333333333333a333333333333333333333333333333333333333333 1 3 \r\n\r\nola";
-		MessageInterpreter task = new MessageInterpreter(test);
-		Thread t = new Thread(task);
-		try {
-			t.start();
-			t.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			if(task.getMessage() != null)
-			System.out.println(task.getMessage().getBody());			
-		}
-*/
+
 		/*
 		Peer peer = new Peer(1);
 		try {
@@ -61,7 +48,6 @@ public class Main {
 		}
 		
 		System.out.println("bye bye");
-		peerid-=1;
 		
 	}
 

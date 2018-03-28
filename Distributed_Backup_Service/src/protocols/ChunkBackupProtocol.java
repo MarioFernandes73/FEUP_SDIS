@@ -19,7 +19,6 @@ public class ChunkBackupProtocol implements Runnable {
 	private Peer peer = null;
 	private Chunk chunk = null;
 	private int desiredReplicationDegree;
-	private boolean success = false;
 
 	public ChunkBackupProtocol(Peer peer, Chunk chunk, int desiredReplicationDegree) {
 		this.peer = peer;
@@ -31,14 +30,12 @@ public class ChunkBackupProtocol implements Runnable {
 	public void run() {
 		int tries = 0;
 		int delay = Utils.FIXED_WAITING_TIME;
-		this.peer.getStoredMessages().clear();
 		while (tries < Utils.MAX_TRIES) {
 
 			Message message = new Message();
 			message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunk.getFileId(),
 					chunk.getChunkNo(), this.desiredReplicationDegree,
 					new String(chunk.getData(), StandardCharsets.UTF_8));
-
 			try {
 				peer.getMDBChannel().send((message.getHeader() + message.getBody()).getBytes());
 				Thread.sleep(delay);
@@ -52,24 +49,23 @@ public class ChunkBackupProtocol implements Runnable {
 
 			for (Message receivedMessages : this.peer.getStoredMessages()) {
 				if (receivedMessages.getOperation().equals("STORED")
-						&& receivedMessages.getFileId().equals(message.getFileId())) {
-					chunk.getOwnerIds().add(receivedMessages.getSenderId());
+						&& receivedMessages.getFileId().equals(message.getFileId())
+						&& !this.chunk.getOwnerIds().contains(message.getSenderId())) {
+					this.chunk.getOwnerIds().add(receivedMessages.getSenderId());
 				}
 			}
 
-			if (chunk.getOwnerIds().size() >= message.getReplicationDeg()) {
-				success = true;
+			if (this.chunk.getOwnerIds().size() >= this.desiredReplicationDegree) {
 				break;
 			}
 
-			delay *= 2;
 			tries++;
 		}
 
 	}
 
-	public boolean getSuccess() {
-		return this.success;
+	public Chunk getChunk() {
+		return this.chunk;
 	}
 
 }

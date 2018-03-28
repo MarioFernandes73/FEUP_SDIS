@@ -16,6 +16,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import utils.Chunk;
 import utils.FileInfo;
+import utils.Message;
 import utils.Utils;
 
 public class FilesManager {
@@ -112,7 +113,6 @@ public class FilesManager {
 				boolean backedUp = false;
 				try {
 					String encryptedId = encryptFileId(file);
-
 					for (FileInfo fInfo : this.peerFiles) {
 						if (fInfo.getId().equals(encryptedId)) {
 							backedUp = true;
@@ -120,8 +120,7 @@ public class FilesManager {
 						}
 					}
 					if (!backedUp) {
-						int chunksQuantity = (int) (file.length() / Utils.MAX_CHUNK_SIZE) + 1;
-						peerFiles.add(new FileInfo(encryptedId, file.getName(), false, chunksQuantity, -1));
+						peerFiles.add(new FileInfo(encryptedId, file.getName(), false));
 					}
 
 				} catch (NoSuchAlgorithmException e) {
@@ -208,7 +207,7 @@ public class FilesManager {
 						byteCounter++;
 					}
 
-					chunkList.add(new Chunk(encryptedId, chunkNo, replicationDegree, chunkData, this.ownerId));
+					chunkList.add(new Chunk(encryptedId, chunkNo, replicationDegree, chunkData));
 				}
 
 			} catch (NoSuchAlgorithmException e) {
@@ -226,13 +225,25 @@ public class FilesManager {
 			System.out.println("Insufficient disk space.");
 			return false;
 		}
+		return true;
+	}
+
+	public boolean hasChunkAlready(Chunk chunk) {
 		for (Chunk peerChunk : peerChunks) {
 			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
 				System.out.println("Chunk already backed up.");
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
+	}
+
+	public void updateChunk(Message message) {
+		for (Chunk peerChunk : peerChunks) {
+			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getFileId() + peerChunk.getChunkNo())) {
+				peerChunk.getOwnerIds().add(message.getSenderId());
+			}
+		}
 	}
 
 	public void saveChunk(Chunk chunk) {

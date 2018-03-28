@@ -12,12 +12,11 @@ public class Chunk implements Serializable {
 	private ArrayList<Integer> ownerIds = new ArrayList<Integer>();
 	private int replicationDegree;
 	
-	public Chunk(String fileId, int chunkNo, int replicationDegree, byte[] data, int ownerId) {
+	public Chunk(String fileId, int chunkNo, int replicationDegree, byte[] data) {
 		this.fileId = fileId;
 		this.chunkNo = chunkNo;
 		this.replicationDegree = replicationDegree;
 		this.data = data;
-		this.ownerIds.add(ownerId);
 	}
 
 	public byte[] getData() {

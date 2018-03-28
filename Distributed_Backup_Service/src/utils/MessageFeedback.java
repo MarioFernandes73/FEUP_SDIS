@@ -24,7 +24,7 @@ public class MessageFeedback implements Runnable {
 	public void run() {
 		MessageInterpreter interpreter = new MessageInterpreter(new String(data, StandardCharsets.UTF_8));
 		this.message = interpreter.parseText();
-		if(this.message == null) {
+		if (this.message == null) {
 			System.out.println("Message received in the wrong format!");
 		}
 		switch (message.getOperation()) {
@@ -39,28 +39,46 @@ public class MessageFeedback implements Runnable {
 		}
 	}
 
+	/**
+	 * Processes PUTCHUNK message by either disregarding it if it's the same user
+	 * who sent it or by checking if the current peer can store the chunk and if so,
+	 * saves it to the disk.
+	 */
+
 	private void receivedPutchunkMessage() {
-		if(message.getSenderId() == owner.getId()) {
-			//return;
+		if (message.getSenderId() == owner.getId()) {
+			return;
 		}
-		Message response = new Message();
-		response.prepareMessage("STORED", message.getVersion(), owner.getId(), message.getFileId(),
-				message.getChunkNo(), -1, null);
-		Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(), message.getReplicationDeg(), message.getBody().getBytes(), owner.getId());
+
+		Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(), message.getReplicationDeg(),
+				message.getBody().getBytes());
 		try {
-			if(this.owner.getFilesManager().canSaveChunk(chunk)) {
+			if (this.owner.getFilesManager().canSaveChunk(chunk)
+					&& !this.owner.getFilesManager().hasChunkAlready(chunk)) {
+				Message response = new Message();
+				response.prepareMessage("STORED", message.getVersion(), owner.getId(), message.getFileId(),
+						message.getChunkNo(), -1, null);
 				owner.getMCChannel().send(response.getHeader().getBytes());
 				owner.getFilesManager().saveChunk(chunk);
+				owner.getFilesManager().saveChunksInfo();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Processes STORED message by either disregarding it if it's the same user who
+	 * sent it or by adding it to the designated messages list, as well as checking
+	 * if the current peer has the chunk on disk. If so, its replication degree is
+	 * updated.
+	 */
+
 	private void receivedStoredMessage() {
-		if(this.owner.getId() == this.message.getSenderId()) {
-			//return;
+		if (this.owner.getId() == this.message.getSenderId()) {
+			return;
 		}
 		this.owner.getStoredMessages().add(this.message);
+		this.owner.getFilesManager().updateChunk(message);
 	}
 }

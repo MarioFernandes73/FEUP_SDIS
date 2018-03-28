@@ -15,8 +15,9 @@ public class TestApp {
 	private static int peer_ac;
 	private static Utils.operations operation;
 	private static int diskSpace;
+	private static String fileName;
 	private static String filePath;
-	private static int backupOperand;
+	private static int replicationDeg;
 
 	public static void main(String[] args) {
 	
@@ -25,8 +26,9 @@ public class TestApp {
 			return;
 		}
 		
-
-        String host = (args.length < 1) ? null : args[0];
+		//print arguments
+		printArguments();
+		
         Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(host);
@@ -51,68 +53,107 @@ public class TestApp {
 
 		//Peer access point
 		try {
-			//this.peer_ac = Integer.parseInt(args[0]);
+			peer_ac = Integer.parseInt(args[0]);
+			if(peer_ac <= 0) throw new NumberFormatException();
 		} catch(NumberFormatException e) {
 			System.out.println("Invalid access point error! Access point must be an integer User input: " + args[0]);
+			return false;
 		}
 		
 		//Operation		
 		try {
-			//this.operation = Utils.operations.valueOf(args[1].toUpperCase());
+			this.operation = Utils.operations.valueOf(args[1].toUpperCase());
 		} catch (IllegalArgumentException e) {
 			System.out.println("Invalid operation error! \n \t Usage: BACKUP, RESTORE, DELETE, RECLAIM, BACKUPENH, RESTOREENH, DELETEENH, RECLAIMENH or STATE \n \t User input: " + args[1]);
 			return false;
 		}
 
-		//parse third argument
+		//parse operation arguments
 		switch(operation) {
+		
 		case STATE:
 			System.out.println("Performing STATE operation...");
 			return true;
+			
 		case RECLAIM:
 		case RECLAIMENH:
-			try {
-				if(args.length != 3) {
-					//System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! Full usage: java TestApp <peer_ap> "+this.operation.name()+" <reclaim_space>");
-					return false;
-				}
-				diskSpace = Integer.parseInt(args[2]);			
+			if(args.length != 3) {
+				System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! Full usage: java TestApp <peer_ap> "+this.operation.name()+" <reclaim_space>");
+				return false;
+			}
+			try {				
+				diskSpace = Integer.parseInt(args[2]);	
+				if(diskSpace < 0) throw new NumberFormatException();
+				
 				return true;
 			} catch(NumberFormatException e) {
-				System.out.println("Invalid operand error! \n \t Usage(ex): RECLAIM 0 \n \t User operand: " + args[2]);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				System.out.println("Invalid operand error! \n \t Please specify the maximum amount of disk space (in KBs) that the service can use to store the chunks. \n \t Usage(ex): RECLAIM 0");
-			}
-			return false;
+				System.out.println("Invalid disk space error for "+this.operation.name()+" operation! \n \t User input: " + args[2]);
+				return false;
+			}	
 					
 		case DELETE:
 		case DELETEENH:
 		case RESTORE:
 		case RESTOREENH:
 			if(args.length != 3) {
-				//System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+this.operation.name()+" <file_name>");
+				System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+this.operation.name()+" <file_name>");
+				return false;
+			}
+			fileName = args[2];
+			return true;
+			
+		case BACKUP:
+		case BACKUPENH: 
+			if(args.length != 4) {
+				System.out.println("Wrong number of arguments for "+this.operation.name()+" operation! \n \t Full usage: java TestApp <peer_ap> "+this.operation.name()+" <file_name> <replication_degree>");
+				return false;
 			}
 			
+			fileName = args[2];
+			
+			try {				
+				replicationDeg = Integer.parseInt(args[3]);	
+				if(replicationDeg <= 0) throw new NumberFormatException();
+				
+				return true;
+			} catch(NumberFormatException e) {
+				System.out.println("Invalid replication degree error! \n \t User operand: " + args[3]);
+				return false;
+			} 
+			
 		default:
-				try {
-					filePath = args[2];				
-				} catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println("Invalid operand error! \n \t Please specify the path name of the file to backup/restore/delete \n \t Usage(ex): BACKUP file.txt");
-				}
-				break;
+			System.out.println("Invalid operation");
+			return false;
 		}
-		
-		//parse fourth argument
-		if((!operation.equals(Utils.operations.BACKUP)  && !operation.equals(Utils.operations.BACKUPENH)) && args.length > 3) {
-			System.out.println("Too many arguments for " + operation.toString() + " operation! Performing operation using "+filePath+ " as file path.");
-			return true;
-		}
-		
-		//System.out.println(IPAddress);
-		//System.out.println(port);
-		System.out.println(operation);
 
-		return true;
+		return false;
 	}
-
+	
+	private static void printArguments(){
+		System.out.println("Peer RMI access point: "+ peer_ac);
+		
+		System.out.println("Operation: "+ operation.name());
+		
+		switch(operation) {
+			
+		case RECLAIM:
+		case RECLAIMENH:	
+			if(diskSpace == 0 || diskSpace >= MAX_DISK_SPACE)
+				System.out.println("All "+ Utils.MAX_DISK_SPACE+" bytes have been reclaimed from disk (100%)");			
+			else	
+				System.out.println(Utils.MAX_DISK_SPACE+" bytes have been reclaimed from disk"+ diskSpace/Utils.MAX_DISK_SPACE);
+			
+		case DELETE:
+		case DELETEENH:
+		case RESTORE:
+		case RESTOREENH:
+			System.out.println("File: "+fileName);
+			
+		case BACKUP:
+		case BACKUPENH: 
+			System.out.println("File: "+fileName);
+			System.out.println("Replication degree: "+replicationDeg);
+			fileName = args[2];
+		}
+	}
 }

@@ -126,7 +126,7 @@ public class TestApp {
 		}
 	}
 	
-	private static void printArguments(){
+	private static void printArguments() {
 		System.out.println("Peer RMI access point: "+ peer_ac);
 		
 		System.out.println("Operation: "+ operation.name());

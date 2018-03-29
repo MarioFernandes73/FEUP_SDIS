@@ -64,7 +64,7 @@ public class TestApp {
 		try {
 			operation = Utils.operations.valueOf(args[1].toUpperCase());
 		} catch (IllegalArgumentException e) {
-			System.out.println("Invalid operation error! \n \t Usage: BACKUP, RESTORE, DELETE, RECLAIM, BACKUPENH, RESTOREENH, DELETEENH, RECLAIMENH or STATE \n \t User input: " + args[1]);
+			System.out.println("Invalid operation error! \n \t Allowed operation: BACKUP, RESTORE, DELETE, RECLAIM, BACKUPENH, RESTOREENH, DELETEENH, RECLAIMENH or STATE \n \t User input: " + args[1]);
 			return false;
 		}
 

@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import channels.*;
 import communications.RMIInterface;

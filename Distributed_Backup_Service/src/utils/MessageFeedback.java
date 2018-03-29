@@ -6,8 +6,6 @@ package utils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import peer.Peer;
 
@@ -51,7 +49,6 @@ public class MessageFeedback implements Runnable {
 		if (message.getSenderId() == owner.getId()) {
 			return;
 		}
-		boolean enhancement = true;
 
 		Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(), message.getReplicationDeg(),
 				message.getBody().getBytes());

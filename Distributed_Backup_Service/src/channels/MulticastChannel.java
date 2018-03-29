@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import peer.Peer;
@@ -49,7 +48,7 @@ public class MulticastChannel implements Runnable {
 		socket.send(msgPacket);
 	}
 
-	public byte[] receive() throws IOException, SocketTimeoutException {
+	public byte[] receive() throws IOException {
 		byte[] buffer = new byte[Utils.MAX_PACKET_SIZE];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		socket.receive(packet);

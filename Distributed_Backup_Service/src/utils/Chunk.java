@@ -38,5 +38,4 @@ public class Chunk implements Serializable {
 	public ArrayList<Integer> getOwnerIds() {
 		return ownerIds;
 	}
-
 }

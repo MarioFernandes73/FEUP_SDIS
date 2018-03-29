@@ -66,6 +66,7 @@ public class FilesManager {
 			try {
 				FileInputStream streamIn = new FileInputStream(backedUpFilesPath);
 				objectinputstream = new ObjectInputStream(streamIn);
+				@SuppressWarnings("unchecked")
 				ArrayList<FileInfo> readCase = (ArrayList<FileInfo>) objectinputstream.readObject();
 				peerFiles.addAll(readCase);
 			} catch (Exception e) {
@@ -90,6 +91,7 @@ public class FilesManager {
 			try {
 				FileInputStream streamIn = new FileInputStream(chunksInfoPath);
 				objectinputstream = new ObjectInputStream(streamIn);
+				@SuppressWarnings("unchecked")
 				ArrayList<Chunk> readCase = (ArrayList<Chunk>) objectinputstream.readObject();
 				peerChunks.addAll(readCase);
 			} catch (Exception e) {
@@ -129,12 +131,7 @@ public class FilesManager {
 			}
 		}
 	}
-
-	public void saveInfo() {
-		saveFilesInfo();
-		saveChunksInfo();
-	}
-
+	
 	public void saveFilesInfo() {
 		ObjectOutputStream oosFiles = null;
 		FileOutputStream foutFiles = null;
@@ -142,7 +139,7 @@ public class FilesManager {
 		try {
 			foutFiles = new FileOutputStream(this.getFilesInfoFile(), false);
 			oosFiles = new ObjectOutputStream(foutFiles);
-			oosFiles.writeObject(this.getBackedUpFiles());
+			oosFiles.writeObject(this.peerFiles);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
@@ -231,19 +228,22 @@ public class FilesManager {
 	public boolean hasChunkAlready(Chunk chunk) {
 		for (Chunk peerChunk : peerChunks) {
 			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
-				System.out.println("Chunk already backed up.");
+				//System.out.println("Chunk already backed up.");
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public void updateChunk(Message message) {
+	public void updateChunkOwners(Message message) {
 		for (Chunk peerChunk : peerChunks) {
-			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getFileId() + peerChunk.getChunkNo())) {
+			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getFileId() + peerChunk.getChunkNo())
+					&& !peerChunk.getOwnerIds().contains(message.getSenderId())) {
 				peerChunk.getOwnerIds().add(message.getSenderId());
+				return;
 			}
 		}
+		return;
 	}
 
 	public void saveChunk(Chunk chunk) {
@@ -256,8 +256,6 @@ public class FilesManager {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			this.peerChunks.add(chunk);
 		}
 	}
 
@@ -335,6 +333,10 @@ public class FilesManager {
 		this.peerFiles.remove(fileInfo);
 		this.peerFiles.add(fileInfo);
 		return;
+	}
+
+	public ArrayList<Chunk> getChunks() {
+		return this.peerChunks;
 	}
 
 }

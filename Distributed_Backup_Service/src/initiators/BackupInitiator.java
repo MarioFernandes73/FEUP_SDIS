@@ -11,7 +11,6 @@ import utils.FileInfo;
 
 public class BackupInitiator implements Runnable {
 
-	private ArrayList<Chunk> chunks = new ArrayList<Chunk>();
 	private Peer peer = null;
 	private String fileName = null;
 	private int replicationDegree = 0;
@@ -76,7 +75,7 @@ public class BackupInitiator implements Runnable {
 				FileInfo newBackedUpFile = new FileInfo(encryptedFileId, fileName, true);
 				newBackedUpFile.getBackedUpChunks().addAll(chunks);
 				this.peer.getFilesManager().updateBackedUpFiles(newBackedUpFile);
-				this.peer.getFilesManager().saveInfo();
+				this.peer.getFilesManager().saveFilesInfo();
 				
 				if(chunk.getOwnerIds().size() >= this.replicationDegree) {
 					System.out.println("Successful backup of chunk "+ chunk.getChunkNo());

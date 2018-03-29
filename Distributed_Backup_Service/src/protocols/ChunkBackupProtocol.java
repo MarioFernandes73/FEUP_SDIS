@@ -2,16 +2,11 @@ package protocols;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Random;
 
-import channels.MulticastChannel;
 import peer.Peer;
 import utils.Chunk;
 import utils.Message;
-import utils.MessageInterpreter;
 import utils.Utils;
 
 public class ChunkBackupProtocol implements Runnable {
@@ -46,11 +41,11 @@ public class ChunkBackupProtocol implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
+			
 			for (Message receivedStoredMessages : this.peer.getStoredMessages()) {
 				if (receivedStoredMessages.getFileId().equals(message.getFileId())
 						&& receivedStoredMessages.getChunkNo() == message.getChunkNo()
-						&& !this.chunk.getOwnerIds().contains(message.getSenderId())) {
+						&& !this.chunk.getOwnerIds().contains(receivedStoredMessages.getSenderId())) {
 					this.chunk.getOwnerIds().add(receivedStoredMessages.getSenderId());
 				}
 			}

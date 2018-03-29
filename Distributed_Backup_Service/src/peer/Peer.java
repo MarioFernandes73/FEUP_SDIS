@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import channels.*;
 import communications.RMIInterface;
 import initiators.BackupInitiator;
 import utils.Message;
+import utils.UpdateTask;
 
 public class Peer implements RMIInterface {
 	
@@ -28,6 +31,9 @@ public class Peer implements RMIInterface {
 		(new Thread(this.MCChannel)).start();
 		(new Thread(this.MDBChannel)).start();
 		(new Thread(this.MDRChannel)).start();
+		
+        Timer timer = new Timer();
+        timer.schedule(new UpdateTask(this), 0, 5000);
 	}
 
 	public int getId() {

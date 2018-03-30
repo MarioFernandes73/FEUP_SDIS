@@ -1,7 +1,9 @@
 package cli;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,9 +14,7 @@ import utils.Utils;
 
 public class TestApp {
 
-	private static String RMIHostname;
-	private static int RMIPort;
-	private static String RMIObjectName;
+	private static String accessPoint;
 	private static Utils.operations operation;
 	private static int diskSpace;
 	private static String fileName;
@@ -32,9 +32,8 @@ public class TestApp {
 		printArguments();
 		
 		//Perform operation on RMI object
-		try {
-			Registry registry = LocateRegistry.getRegistry(RMIHostname, RMIPort);
-	        RMIInterface stub = (RMIInterface) registry.lookup(RMIObjectName);
+		/*try {
+	        RMIInterface stub = (RMIInterface) Naming.lookup(accessPoint);
 	        String response = stub.backup("test.jpg", 3, false);
 	        System.out.println(response);
 		} catch (RemoteException e) {
@@ -43,8 +42,62 @@ public class TestApp {
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Wrong access point");
+		}*/
 		
+		//Perform operation on RMI object
+		RMIInterface stub;
+        try {
+			stub = (RMIInterface) Naming.lookup(accessPoint);
+		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+			System.out.println("Error accessing RMI object");
+			return;
+		} catch(MalformedURLException e) {
+			e.printStackTrace();
+			System.out.println("Invalid RMI access point");
+			return;
+		}
+
+        boolean enhance = operation.name().endsWith("ENH");    
+        String response = "";
+        try {
+	        switch(operation) {
+		        case BACKUP:
+		        case BACKUPENH:
+					response = stub.backup(fileName, replicationDeg, enhance);
+				
+		        	break;
+		        	
+		        case RESTORE:
+		        case RESTOREENH:
+		        	response = stub.restore(fileName, enhance);
+		        	break;
+		        	
+		        case DELETE:
+		        case DELETEENH:
+		        	response = stub.delete(fileName, enhance);
+		        	break;
+		        	
+		        case RECLAIM:
+		        case RECLAIMENH:
+		        	response = stub.reclaim(diskSpace, enhance);
+		        	break;
+		        	
+		        case STATE:
+		        	response = stub.state();
+		        	break;
+	        }
+        } catch (RemoteException e) {
+			e.printStackTrace();
+			System.out.println("Error invoking method remotely");
+		}
+        //String response = stub.backup("test.jpg", 3, false);
+        
+        System.out.println(response);
 		return;
 	}
 
@@ -55,13 +108,7 @@ public class TestApp {
 		}
 
 		//Peer access point
-		try {
-			peer_ac = Integer.parseInt(args[0]);
-			if(peer_ac <= 0) throw new NumberFormatException();
-		} catch(NumberFormatException e) {
-			System.out.println("Invalid access point error!");
-			return false;
-		}
+		accessPoint = args[0];
 		
 		//Operation		
 		try {
@@ -130,7 +177,7 @@ public class TestApp {
 	}
 	
 	private static void printArguments() {
-		System.out.println("Peer RMI access point: "+ peer_ac);
+		System.out.println("Peer RMI access point: "+ accessPoint);
 		
 		System.out.println("Operation: "+ operation.name());
 		

@@ -2,8 +2,10 @@ package server;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -18,7 +20,7 @@ import utils.MessageInterpreter;
 public class Main {
 	private static String version;
 	private static int serverId;
-	private static int serverPort;
+	private static String accessPoint;
 	private static String MC_ip;
 	private static int MC_port;
 	private static String MDB_ip;
@@ -28,31 +30,9 @@ public class Main {
 	
 	public static void main(String[] args) {
 
-		/*
-		Peer peer = new Peer(1);
-		try {
-			RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
-            Registry registry = LocateRegistry.getRegistry();
-            registry.bind("Hello", stub);
-		
-			peer.backup("test.jpg", 2, false);
-		}catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-*/
 		if(!validArguments(args))
 			return;
-		try {
-			
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
+	
 		printArguments();
 		
 		//Create peer
@@ -74,30 +54,36 @@ public class Main {
 			peer = new Peer(serverId, MC_ip, MC_port, MDB_ip, MDB_port, MDR_ip, MDR_port);			
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-			System.out.println("Couldn't create peer!");
+			System.out.println("Error creating peer!");
 			return;
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Couldn't create peer!");
+			System.out.println("Error creating peer!");
 			return;
 		}
 		
-		//Enable peer for Remote Method Invoking
-		try {
-			String remoteObjectName = "Peer" + serverId;
-			
-            RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
+		//Enable peer for Remote Method Invoking     
+        try {
+        	RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
+        	// Bind the remote object's stub
+			Naming.rebind(accessPoint, stub);
+			System.out.println("Server ready for RMI communication \n \t IP address: " + InetAddress.getLocalHost().getHostAddress() + "\n \t local access point: " + accessPoint);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			System.out.println("RMI error");
+			return;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			System.out.println("Invalid access point");
+			return;
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			System.out.println("Couldn't resolve this machine IP address");
+		}
 
-            // Bind the remote object's stub in the registry
-            Registry registry = LocateRegistry.getRegistry(serverPort);
-            registry.rebind(remoteObjectName, stub);
-
-            System.out.println("Server ready for RMI communication \n \t IP address: " + InetAddress.getLocalHost().getHostAddress() + "\n \t port: ");
-        } catch (Exception e) {
-            System.err.println("Server exception: " + e.toString());
-            e.printStackTrace();
-        }
-		
+         while(true) {
+        	//fazer qualquer coisa
+         }       
 	}
 	
 	private static boolean validArguments(String[] args) {
@@ -123,14 +109,8 @@ public class Main {
 			return false;
 		}
 		
-		//Server port
-		try {
-			serverPort = Integer.parseInt(args[2]);
-			if(serverPort <= 0) throw new NumberFormatException();
-		} catch(NumberFormatException e) {
-			System.out.println("Invalid server port error! \n \t The server port must be a positive integer");
-			return false;
-		}
+		//RMI access point
+		accessPoint = args[2];
 		
 		String ipPattern = "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
 		
@@ -187,9 +167,9 @@ public class Main {
 	}
 	
 	private static void printArguments() {
-		System.out.println("Protocol version: "+ version);
-		System.out.println("Server id: "+ serverId);
-		System.out.println("Server port for RMI access: "+ serverPort);
+		System.out.println("Protocol version: " + version);
+		System.out.println("Server id: " + serverId);
+		System.out.println("RMI access point: " + accessPoint);
 		System.out.println("Multicast Control (MC) channel \n \t IP address: " + MC_ip + " \n \t port: " + MC_port);
 		System.out.println("Multicast Data Backup (MDB) channel \n \t IP address: " + MDB_ip + " \n \t port: " + MDB_port);
 		System.out.println("Multicast Data Recovery (MDR) channel \n \t IP address: " + MDR_ip + " \n \t port: " + MDR_port);

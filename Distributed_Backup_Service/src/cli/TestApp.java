@@ -12,7 +12,9 @@ import utils.Utils;
 
 public class TestApp {
 
-	private static int peer_ac;
+	private static String RMIHostname;
+	private static int RMIPort;
+	private static String RMIObjectName;
 	private static Utils.operations operation;
 	private static int diskSpace;
 	private static String fileName;
@@ -29,19 +31,20 @@ public class TestApp {
 		//print arguments
 		printArguments();
 		
-        /*Registry registry;
+		//Perform operation on RMI object
 		try {
-			registry = LocateRegistry.getRegistry(host);
-	        RMIInterface stub = (RMIInterface) registry.lookup("Hello");
+			Registry registry = LocateRegistry.getRegistry(RMIHostname, RMIPort);
+	        RMIInterface stub = (RMIInterface) registry.lookup(RMIObjectName);
 	        String response = stub.backup("test.jpg", 3, false);
+	        System.out.println(response);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-
+		}
+		
 		return;
 	}
 

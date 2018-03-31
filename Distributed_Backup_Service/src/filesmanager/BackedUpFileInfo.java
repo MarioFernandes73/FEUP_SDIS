@@ -1,24 +1,30 @@
-package utils;
+package filesmanager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class FileInfo implements Serializable {
+public class BackedUpFileInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String name;
+	private long lastModifiedDate;
 	private boolean isBackedUp = false;
-	private ArrayList<Chunk> backedUpChunks = new ArrayList<Chunk>();
+	private ArrayList<ChunkInfo> backedUpChunks = new ArrayList<ChunkInfo>();
 	
-	public FileInfo(String id, String name, boolean isBackedUp) {
+	public BackedUpFileInfo(String id, String name, long lastModifiedDate, boolean isBackedUp) {
 		this.id = id;
 		this.name = name;
+		this.lastModifiedDate = lastModifiedDate;
 		this.isBackedUp = isBackedUp;
 	}
 
 	public String getName() {
 		return name;
+	}
+	
+	public long getLastModifiedDate() {
+		return this.lastModifiedDate;
 	}
 
 	public boolean isBackedUp() {
@@ -33,14 +39,14 @@ public class FileInfo implements Serializable {
 		return id;
 	}
 	
-	public ArrayList<Chunk> getBackedUpChunks() {
+	public ArrayList<ChunkInfo> getBackedUpChunks() {
 		return this.backedUpChunks;
 	}
 	
 	@Override
 	public boolean equals(Object object) {
-		if(object instanceof FileInfo) {
-			if(((FileInfo)object).getName().equals(this.getName())) {
+		if(object instanceof BackedUpFileInfo) {
+			if(((BackedUpFileInfo)object).getName().equals(this.getName())) {
 				return true;
 			}
 		}

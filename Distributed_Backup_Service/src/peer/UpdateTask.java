@@ -1,8 +1,8 @@
-package utils;
+package peer;
 
 import java.util.TimerTask;
 
-import peer.Peer;
+import communications.Message;
 
 public class UpdateTask extends TimerTask {
 

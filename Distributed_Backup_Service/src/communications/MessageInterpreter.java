@@ -1,6 +1,6 @@
-package utils;
+package communications;
 
-import utils.Message;
+import communications.Message;
 
 public class MessageInterpreter {
 

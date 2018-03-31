@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import filesmanager.BackedUpFileInfo;
+import filesmanager.Chunk;
+import filesmanager.ChunkInfo;
 import peer.Peer;
-import utils.Chunk;
-import utils.FileInfo;
 
 public class Tests {
 
@@ -27,8 +28,8 @@ public class Tests {
 			peers.add(new Peer(peerid, "224.0.0.0", 8000, "224.0.0.0", 8001, "224.0.0.0", 8002));
 			peers.get(0).backup("test.jpg", 2, true);
 
-			for (FileInfo file : peers.get(0).getFilesManager().getBackedUpFiles()) {
-				for (Chunk chunk : file.getBackedUpChunks()) {
+			for (BackedUpFileInfo file : peers.get(0).getFilesManager().getBackedUpFiles()) {
+				for (ChunkInfo chunk : file.getBackedUpChunks()) {
 					System.out.println("CHUNK " + chunk.getChunkNo() + " OWNERS:");
 					for (int owner : chunk.getOwnerIds()) {
 						System.out.println(owner);
@@ -36,7 +37,7 @@ public class Tests {
 				}
 			}
 
-			for (Chunk chunk : peers.get(4).getFilesManager().getChunks()) {
+			for (ChunkInfo chunk : peers.get(4).getFilesManager().getChunksInfo()) {
 				System.out.println("CHUNK " + chunk.getChunkNo() + " WITH " + chunk.getOwnerIds().size() + " OWNERS:");
 				for (int owner : chunk.getOwnerIds()) {
 					System.out.println(owner);

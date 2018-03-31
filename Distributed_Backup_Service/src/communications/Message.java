@@ -1,4 +1,4 @@
-package utils;
+package communications;
 
 public class Message {
 	private String operation;
@@ -106,7 +106,6 @@ public class Message {
 		this.setChunkNo(chunkNo);
 		if (replicationDeg >= 0)
 			this.setReplicationDeg(replicationDeg);
-		if (body != null)
-			this.setBody(body);
+		this.setBody(body);
 	}
 }

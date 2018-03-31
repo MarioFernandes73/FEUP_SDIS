@@ -1,13 +1,16 @@
 /**
  * 
  */
-package utils;
+package communications;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
+import filesmanager.Chunk;
+import filesmanager.ChunkInfo;
 import peer.Peer;
+import utils.Utils;
 
 public class MessageFeedback implements Runnable {
 
@@ -34,6 +37,11 @@ public class MessageFeedback implements Runnable {
 		case "STORED":
 			this.receivedStoredMessage();
 			break;
+		case "GETCHUNK":
+			this.receivedGetchunkMessage();
+			break;
+		case "CHUNK":
+			this.receivedChunkMessage();
 		default:
 			return;
 		}
@@ -50,11 +58,11 @@ public class MessageFeedback implements Runnable {
 			return;
 		}
 
-		Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(), message.getReplicationDeg(),
-				message.getBody().getBytes());
+		ChunkInfo chunkInfo = new ChunkInfo(message.getFileId(), message.getChunkNo(), message.getReplicationDeg());
+
 		try {
-			if (this.owner.getFilesManager().canSaveChunk(chunk)
-					&& !this.owner.getFilesManager().hasChunkAlready(chunk)) {
+			if (this.owner.getFilesManager().canSaveData(message.getBody().length())
+					&& !this.owner.getFilesManager().hasChunk(chunkInfo)) {
 
 				try {
 					Thread.sleep(new Random().nextInt(Utils.MAX_RANDOM_DELAY));
@@ -65,12 +73,12 @@ public class MessageFeedback implements Runnable {
 				for (Message storedMessage : this.owner.getStoredMessages()) {
 					if (storedMessage.getFileId().equals(message.getFileId())
 							&& storedMessage.getChunkNo() == message.getChunkNo()
-							&& !chunk.getOwnerIds().contains(message.getSenderId())) {
-						chunk.getOwnerIds().add(storedMessage.getSenderId());
+							&& !chunkInfo.getOwnerIds().contains(message.getSenderId())) {
+						chunkInfo.getOwnerIds().add(storedMessage.getSenderId());
 					}
 				}
 
-				if (chunk.getOwnerIds().size() >= message.getReplicationDeg()) {
+				if (chunkInfo.getOwnerIds().size() >= message.getReplicationDeg()) {
 					return;
 				}
 
@@ -78,9 +86,11 @@ public class MessageFeedback implements Runnable {
 				response.prepareMessage("STORED", message.getVersion(), owner.getId(), message.getFileId(),
 						message.getChunkNo(), -1, null);
 				System.out.println("MENSAGEM STORED ENVIADA POR " + owner.getId());
-				chunk.getOwnerIds().add(owner.getId());
+				chunkInfo.getOwnerIds().add(owner.getId());
 				owner.getMCChannel().send(response.getHeader().getBytes());
-				owner.getFilesManager().getChunks().add(chunk);
+				owner.getFilesManager().getChunksInfo().add(chunkInfo);
+				owner.getFilesManager().addChunkToSave(new Chunk(chunkInfo.getChunkId() + chunkInfo.getChunkNo(),
+						message.getBody().getBytes("ISO-8859-1")));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -100,6 +110,28 @@ public class MessageFeedback implements Runnable {
 		}
 		this.owner.getStoredMessages().add(this.message);
 		this.owner.getFilesManager().updateChunkOwners(message);
-		System.out.println("OWNER " + this.owner.getId() + " STORED MESSAGES: " + this.owner.getStoredMessages().size());		
+		System.out.println("OWNER " + this.owner.getId() + " STORED MESSAGES: " + this.owner.getStoredMessages().size());
+	}
+
+	private void receivedGetchunkMessage() {
+		if (this.owner.getId() == this.message.getSenderId()) {
+			return;
+		}
+		/*
+		 * Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(),
+		 * message.getReplicationDeg(), message.getBody().getBytes());
+		 * 
+		 * if(this.owner.getFilesManager().hasChunk(chunk)) {
+		 * this.owner.getFilesManager().getExistingChunk(message.getFileId()); }
+		 * 
+		 */
+	}
+
+	private void receivedChunkMessage() {
+		if (this.owner.getId() == this.message.getSenderId()) {
+			return;
+		}
+		this.owner.getChunkMessages().add(this.message);
+
 	}
 }

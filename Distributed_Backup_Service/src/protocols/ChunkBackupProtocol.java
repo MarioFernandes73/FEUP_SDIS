@@ -1,24 +1,27 @@
 package protocols;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import communications.Message;
+import filesmanager.Chunk;
+import filesmanager.ChunkInfo;
 import peer.Peer;
-import utils.Chunk;
-import utils.Message;
 import utils.Utils;
 
 public class ChunkBackupProtocol implements Runnable {
 
 	private Peer peer = null;
 	private Chunk chunk = null;
-	private int desiredReplicationDegree;
+	private ChunkInfo chunkInfo = null;
 
-	public ChunkBackupProtocol(Peer peer, Chunk chunk, int desiredReplicationDegree) {
+	public ChunkBackupProtocol(Peer peer, Chunk chunk, ChunkInfo chunkInfo) {
 		this.peer = peer;
 		this.chunk = chunk;
-		this.desiredReplicationDegree = desiredReplicationDegree;
+		this.chunkInfo = chunkInfo;
 	}
 
 	@Override
@@ -26,11 +29,14 @@ public class ChunkBackupProtocol implements Runnable {
 		int tries = 0;
 		int delay = Utils.FIXED_WAITING_TIME;
 		while (tries < Utils.MAX_TRIES) {
-
 			Message message = new Message();
-			message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunk.getFileId(),
-					chunk.getChunkNo(), this.desiredReplicationDegree,
-					new String(chunk.getData(), StandardCharsets.UTF_8));
+			try {
+				message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunkInfo.getChunkId(),
+						chunkInfo.getChunkNo(), chunkInfo.getDesiredReplicationDeg(),
+						new String(chunk.getData(), "ISO_8859_1"));
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			}
 			try {
 				peer.getMDBChannel().send((message.getHeader() + message.getBody()).getBytes());
 				Thread.sleep(delay);
@@ -42,15 +48,16 @@ public class ChunkBackupProtocol implements Runnable {
 				e.printStackTrace();
 			}
 			
+			
 			for (Message receivedStoredMessages : this.peer.getStoredMessages()) {
 				if (receivedStoredMessages.getFileId().equals(message.getFileId())
 						&& receivedStoredMessages.getChunkNo() == message.getChunkNo()
-						&& !this.chunk.getOwnerIds().contains(receivedStoredMessages.getSenderId())) {
-					this.chunk.getOwnerIds().add(receivedStoredMessages.getSenderId());
+						&& !this.chunkInfo.getOwnerIds().contains(receivedStoredMessages.getSenderId())) {
+					this.chunkInfo.getOwnerIds().add(receivedStoredMessages.getSenderId());
 				}
 			}
 
-			if (this.chunk.getOwnerIds().size() >= this.desiredReplicationDegree) {
+			if (this.chunkInfo.getOwnerIds().size() >= chunkInfo.getDesiredReplicationDeg()) {
 				break;
 			}
 

@@ -1,4 +1,4 @@
-package server;
+package peer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -11,11 +11,10 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import communications.MessageInterpreter;
 import communications.RMIInterface;
+import filesmanager.FilesManager;
 import initiators.BackupInitiator;
-import peer.FilesManager;
-import peer.Peer;
-import utils.MessageInterpreter;
 
 public class Main {
 	private static String version;

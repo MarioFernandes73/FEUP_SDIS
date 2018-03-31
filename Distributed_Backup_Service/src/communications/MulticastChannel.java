@@ -1,4 +1,4 @@
-package channels;
+package communications;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,7 +8,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import peer.Peer;
-import utils.MessageFeedback;
 import utils.Utils;
 
 public class MulticastChannel implements Runnable {

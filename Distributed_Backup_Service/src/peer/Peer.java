@@ -6,12 +6,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Timer;
 
-import channels.*;
+import communications.Message;
+import communications.MulticastChannel;
 import communications.RMIInterface;
+import filesmanager.FilesManager;
 import initiators.BackupInitiator;
 import initiators.RestoreInitiator;
-import utils.Message;
-import utils.UpdateTask;
 
 public class Peer implements RMIInterface {
 	
@@ -21,6 +21,7 @@ public class Peer implements RMIInterface {
 	private FilesManager filesManager = null;
 	private int id;
 	private ArrayList<Message> storedMessages = new ArrayList<Message>();
+	private ArrayList<Message> chunkMessages = new ArrayList<Message>();
 	
 	public Peer(int id, String MCIP, int MCPort, String MDBIP, int MDBPort, String MDRIP, int MDRPort) throws UnknownHostException, IOException {
 		this.id = id;
@@ -73,6 +74,28 @@ public class Peer implements RMIInterface {
 	
 	public ArrayList<Message> getStoredMessages() {
 		return this.storedMessages;
+	}
+	
+	public ArrayList<Message> getChunkMessages() {
+		return this.chunkMessages;
+	}
+	
+	@Override
+	public String delete(String fileName, boolean enhancement) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String reclaim(int space, boolean enhancement) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String state() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -4,10 +4,11 @@ import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import filesmanager.BackedUpFileInfo;
+import filesmanager.Chunk;
+import filesmanager.ChunkInfo;
 import peer.Peer;
 import protocols.ChunkBackupProtocol;
-import utils.Chunk;
-import utils.FileInfo;
 
 public class BackupInitiator implements Runnable {
 
@@ -23,7 +24,7 @@ public class BackupInitiator implements Runnable {
 
 	@Override
 	public void run() {
-		FileInfo fileInfo = peer.getFilesManager().getFileInfo(this.fileName);
+		BackedUpFileInfo fileInfo = peer.getFilesManager().getFileInfo(this.fileName);
 		if (fileInfo == null) {
 			System.out.println("File doesn't exist!");
 			return;
@@ -51,11 +52,14 @@ public class BackupInitiator implements Runnable {
 			}
 		}
 
-		ArrayList<Chunk> chunks = this.peer.getFilesManager().splitToChunks(existingFile, replicationDegree);
+		ArrayList<Chunk> chunks = this.peer.getFilesManager().splitToChunks(existingFile);
+		ArrayList<ChunkInfo> chunksInfo = new ArrayList<ChunkInfo>();
 		ArrayList<Thread> protocolThreads = new ArrayList<Thread>();
 
-		for (Chunk chunk : chunks) {
-			Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunk, replicationDegree));
+		for (int i = 0; i < chunks.size(); i++) {
+			ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree);
+			chunksInfo.add(chunkInfo);
+			Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunks.get(i), chunkInfo ));
 			protocolThreads.add(thread);
 			this.peer.getStoredMessages().clear();
 			thread.start();
@@ -69,23 +73,23 @@ public class BackupInitiator implements Runnable {
 			}
 		}
 		
-		for(Chunk chunk : chunks) {
-			if(chunk.getOwnerIds().size() > 0) {
+		for(ChunkInfo chunkInfo: chunksInfo) {
+			if(chunkInfo.getOwnerIds().size() > 0) {
 				
-				FileInfo newBackedUpFile = new FileInfo(encryptedFileId, fileName, true);
-				newBackedUpFile.getBackedUpChunks().addAll(chunks);
+				BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, fileName, existingFile.lastModified(), true);
+				newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
 				this.peer.getFilesManager().updateBackedUpFiles(newBackedUpFile);
 				this.peer.getFilesManager().saveFilesInfo();
 				
-				if(chunk.getOwnerIds().size() >= this.replicationDegree) {
-					System.out.println("Successful backup of chunk "+ chunk.getChunkNo());
+				if(chunkInfo.getOwnerIds().size() >= this.replicationDegree) {
+					System.out.println("Successful backup of chunk "+ chunkInfo.getChunkNo());
 				} else {
-					System.out.println("Successful backup of chunk " + chunk.getChunkNo() +" but with a replication degree below the threshold");
+					System.out.println("Successful backup of chunk " + chunkInfo.getChunkNo() +" but with a replication degree below the threshold");
 				}
 				System.out.println("Desired replication degree: " + this.replicationDegree);
-				System.out.println("Current replication degree: " + chunk.getOwnerIds().size());
+				System.out.println("Current replication degree: " + chunkInfo.getOwnerIds().size());
 			} else {
-				System.out.println("Unsuccessful backup of chunk " + chunk.getChunkNo());
+				System.out.println("Unsuccessful backup of chunk " + chunkInfo.getChunkNo());
 			}
 		}
 		return;

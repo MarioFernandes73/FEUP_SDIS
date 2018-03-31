@@ -1,4 +1,4 @@
-package peer;
+package filesmanager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,17 +14,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import javax.xml.bind.DatatypeConverter;
 
-import utils.Chunk;
-import utils.FileInfo;
-import utils.Message;
+import communications.Message;
 import utils.Utils;
 
 public class FilesManager {
 
 	private int ownerId;
 	private int currentDiskSpace = Utils.MAX_DISK_SPACE;
-	private ArrayList<FileInfo> peerFiles = new ArrayList<FileInfo>();
-	private ArrayList<Chunk> peerChunks = new ArrayList<Chunk>();
+	private ArrayList<BackedUpFileInfo> peerFiles = new ArrayList<BackedUpFileInfo>();
+	private ArrayList<ChunkInfo> peerChunks = new ArrayList<ChunkInfo>();
+	private ArrayList<Chunk> chunksToSave = new ArrayList<Chunk>();
 
 	public FilesManager(int ownerId) {
 		this.ownerId = ownerId;
@@ -67,7 +66,7 @@ public class FilesManager {
 				FileInputStream streamIn = new FileInputStream(backedUpFilesPath);
 				objectinputstream = new ObjectInputStream(streamIn);
 				@SuppressWarnings("unchecked")
-				ArrayList<FileInfo> readCase = (ArrayList<FileInfo>) objectinputstream.readObject();
+				ArrayList<BackedUpFileInfo> readCase = (ArrayList<BackedUpFileInfo>) objectinputstream.readObject();
 				peerFiles.addAll(readCase);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -92,7 +91,7 @@ public class FilesManager {
 				FileInputStream streamIn = new FileInputStream(chunksInfoPath);
 				objectinputstream = new ObjectInputStream(streamIn);
 				@SuppressWarnings("unchecked")
-				ArrayList<Chunk> readCase = (ArrayList<Chunk>) objectinputstream.readObject();
+				ArrayList<ChunkInfo> readCase = (ArrayList<ChunkInfo>) objectinputstream.readObject();
 				peerChunks.addAll(readCase);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -115,14 +114,14 @@ public class FilesManager {
 				boolean backedUp = false;
 				try {
 					String encryptedId = encryptFileId(file);
-					for (FileInfo fInfo : this.peerFiles) {
+					for (BackedUpFileInfo fInfo : this.peerFiles) {
 						if (fInfo.getId().equals(encryptedId)) {
 							backedUp = true;
 							break;
 						}
 					}
 					if (!backedUp) {
-						peerFiles.add(new FileInfo(encryptedId, file.getName(), false));
+						peerFiles.add(new BackedUpFileInfo(encryptedId, file.getName(), file.lastModified(), false));
 					}
 
 				} catch (NoSuchAlgorithmException e) {
@@ -176,7 +175,7 @@ public class FilesManager {
 		}
 	}
 
-	public ArrayList<Chunk> splitToChunks(File file, int replicationDegree) {
+	public ArrayList<Chunk> splitToChunks(File file) {
 
 		ArrayList<Chunk> chunkList = new ArrayList<Chunk>();
 
@@ -204,7 +203,7 @@ public class FilesManager {
 						byteCounter++;
 					}
 
-					chunkList.add(new Chunk(encryptedId, chunkNo, replicationDegree, chunkData));
+					chunkList.add(new Chunk(encryptedId + chunkNo, chunkData));
 				}
 
 			} catch (NoSuchAlgorithmException e) {
@@ -217,18 +216,17 @@ public class FilesManager {
 		return chunkList;
 	}
 
-	public boolean canSaveChunk(Chunk chunk) {
-		if (chunk.getData().length > currentDiskSpace) {
+	public boolean canSaveData(int dataLength) {
+		if (dataLength > currentDiskSpace) {
 			System.out.println("Insufficient disk space.");
 			return false;
 		}
 		return true;
 	}
 
-	public boolean hasChunkAlready(Chunk chunk) {
-		for (Chunk peerChunk : peerChunks) {
-			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
-				//System.out.println("Chunk already backed up.");
+	public boolean hasChunk(ChunkInfo chunk) {
+		for (ChunkInfo peerChunk : peerChunks) {
+			if ((peerChunk.getChunkId() + peerChunk.getChunkNo()).equals(chunk.getChunkId() + chunk.getChunkNo())) {
 				return true;
 			}
 		}
@@ -236,8 +234,8 @@ public class FilesManager {
 	}
 
 	public void updateChunkOwners(Message message) {
-		for (Chunk peerChunk : peerChunks) {
-			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getFileId() + peerChunk.getChunkNo())
+		for (ChunkInfo peerChunk : peerChunks) {
+			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getChunkId() + peerChunk.getChunkNo())
 					&& !peerChunk.getOwnerIds().contains(message.getSenderId())) {
 				peerChunk.getOwnerIds().add(message.getSenderId());
 				return;
@@ -247,15 +245,19 @@ public class FilesManager {
 	}
 
 	public void saveAllChunks() {
-		for(Chunk chunk : this.peerChunks) {
+		for(Chunk chunk : this.chunksToSave) {
 			this.saveChunk(chunk);
 		}
+	}
+	
+	public void addChunkToSave(Chunk chunk) {
+		this.chunksToSave.add(chunk);
 	}
 	
 	public void saveChunk(Chunk chunk) {
 		byte data[] = chunk.getData();
 		try {
-			FileOutputStream out = new FileOutputStream(getChunksDir() + "\\" + chunk.getFileId() + chunk.getChunkNo());
+			FileOutputStream out = new FileOutputStream(getChunksDir() + "\\" + chunk.getChunkId());
 			out.write(data);
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -278,9 +280,9 @@ public class FilesManager {
 		}
 	}
 
-	public boolean repeatedChunk(Chunk chunk) {
-		for (Chunk peerChunk : this.peerChunks) {
-			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
+	public boolean repeatedChunk(ChunkInfo chunkInfo) {
+		for (ChunkInfo peerChunkInfo : this.peerChunks) {
+			if ((peerChunkInfo.getChunkId() + peerChunkInfo.getChunkNo()).equals(chunkInfo.getChunkId() + chunkInfo.getChunkNo())) {
 				return true;
 			}
 		}
@@ -325,9 +327,9 @@ public class FilesManager {
 		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Info\\chunksInfo.ser";
 	}
 
-	public ArrayList<FileInfo> getBackedUpFiles() {
-		ArrayList<FileInfo> backedUpFiles = new ArrayList<FileInfo>();
-		for (FileInfo file : this.peerFiles) {
+	public ArrayList<BackedUpFileInfo> getBackedUpFiles() {
+		ArrayList<BackedUpFileInfo> backedUpFiles = new ArrayList<BackedUpFileInfo>();
+		for (BackedUpFileInfo file : this.peerFiles) {
 			if (file.isBackedUp()) {
 				backedUpFiles.add(file);
 			}
@@ -335,8 +337,8 @@ public class FilesManager {
 		return backedUpFiles;
 	}
 
-	public FileInfo getFileInfo(String fileName) {
-		for (FileInfo file : this.peerFiles) {
+	public BackedUpFileInfo getFileInfo(String fileName) {
+		for (BackedUpFileInfo file : this.peerFiles) {
 			if (file.getName().equals(fileName)) {
 				return file;
 			}
@@ -352,14 +354,23 @@ public class FilesManager {
 		}
 		return null;
 	}
+	
+	public File getExistingChunk(String fileName) {
+		for (File file : new File(this.getChunksDir()).listFiles()) {
+			if (file.getName().equals(fileName)) {
+				return file;
+			}
+		}
+		return null;
+	}
 
-	public void updateBackedUpFiles(FileInfo fileInfo) {
+	public void updateBackedUpFiles(BackedUpFileInfo fileInfo) {
 		this.peerFiles.remove(fileInfo);
 		this.peerFiles.add(fileInfo);
 		return;
 	}
 
-	public ArrayList<Chunk> getChunks() {
+	public ArrayList<ChunkInfo> getChunksInfo() {
 		return this.peerChunks;
 	}
 

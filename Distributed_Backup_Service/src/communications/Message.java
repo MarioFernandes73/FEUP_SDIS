@@ -103,7 +103,8 @@ public class Message {
 		this.setVersion(version);
 		this.setSenderId(senderId);
 		this.setFileId(fileId);
-		this.setChunkNo(chunkNo);
+		if(chunkNo >= 0)
+			this.setChunkNo(chunkNo);
 		if (replicationDeg >= 0)
 			this.setReplicationDeg(replicationDeg);
 		this.setBody(body);

@@ -25,7 +25,7 @@ public class Tests {
 			peers.add(new Peer(peerid, "224.0.0.0", 8000, "224.0.0.0", 8001, "224.0.0.0", 8002));
 			peerid++;
 			peers.add(new Peer(peerid, "224.0.0.0", 8000, "224.0.0.0", 8001, "224.0.0.0", 8002));
-			//peers.get(0).backup("test.jpg", 2, true);
+			peers.get(0).backup("test.jpg", 2, true);
 
 			for (BackedUpFileInfo file : peers.get(0).getFilesManager().getBackedUpFiles()) {
 				for (ChunkInfo chunk : file.getBackedUpChunks()) {

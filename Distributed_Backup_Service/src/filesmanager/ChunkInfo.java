@@ -7,19 +7,19 @@ public class ChunkInfo implements Serializable {
 	
 
 	private static final long serialVersionUID = 1L;
-	private String chunkId;
+	private String fileId;
 	private int chunkNo;
 	private ArrayList<Integer> ownerIds = new ArrayList<Integer>();
 	private int desiredReplicationDeg;
 	
-	public ChunkInfo(String chunkId, int chunkNo, int desiredReplicationDeg) {
-		this.chunkId = chunkId;
+	public ChunkInfo(String fileId, int chunkNo, int desiredReplicationDeg) {
+		this.fileId = fileId;
 		this.chunkNo = chunkNo;
 		this.desiredReplicationDeg = desiredReplicationDeg;
 	}
 
-	public String getChunkId() {
-		return chunkId;
+	public String getFileId() {
+		return fileId;
 	}
 
 	public int getChunkNo() {

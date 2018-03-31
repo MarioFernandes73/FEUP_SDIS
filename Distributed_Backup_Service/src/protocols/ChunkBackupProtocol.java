@@ -31,7 +31,7 @@ public class ChunkBackupProtocol implements Runnable {
 		while (tries < Utils.MAX_TRIES) {
 			Message message = new Message();
 			try {
-				message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunkInfo.getChunkId(),
+				message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunkInfo.getFileId(),
 						chunkInfo.getChunkNo(), chunkInfo.getDesiredReplicationDeg(),
 						new String(chunkData, "ISO_8859_1"));
 			} catch (UnsupportedEncodingException e1) {

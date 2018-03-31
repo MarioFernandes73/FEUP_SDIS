@@ -43,6 +43,9 @@ public class MessageFeedback implements Runnable {
 			break;
 		case "CHUNK":
 			this.receivedChunkMessage();
+		case "DELETE":
+			this.receivedDeleteMessage();
+			break;
 		default:
 			return;
 		}
@@ -71,6 +74,7 @@ public class MessageFeedback implements Runnable {
 					e.printStackTrace();
 				}
 
+				
 				for (Message storedMessage : this.owner.getStoredMessages()) {
 					if (storedMessage.getFileId().equals(message.getFileId())
 							&& storedMessage.getChunkNo() == message.getChunkNo()
@@ -90,7 +94,7 @@ public class MessageFeedback implements Runnable {
 				chunkInfo.getOwnerIds().add(owner.getId());
 				owner.getMCChannel().send(response.getHeader().getBytes("ISO-8859-1"));
 				owner.getFilesManager().getChunksInfo().add(chunkInfo);
-				owner.getFilesManager().addChunkToSave(new Chunk(chunkInfo.getChunkId() + chunkInfo.getChunkNo(),
+				owner.getFilesManager().addChunkToSave(new Chunk(chunkInfo.getFileId() + chunkInfo.getChunkNo(),
 						message.getBody().getBytes("ISO-8859-1")));
 			}
 		} catch (IOException e) {
@@ -135,4 +139,12 @@ public class MessageFeedback implements Runnable {
 		this.owner.getChunkMessages().add(this.message);
 
 	}
+	
+
+
+	private void receivedDeleteMessage() {
+		//delete de todos os chunks do disco -> funcao no filemanager
+		//this.owner.getFilesManager().deleteAllChunks(this.message.getFileId());
+	}
+	
 }

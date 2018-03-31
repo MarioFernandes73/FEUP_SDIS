@@ -237,7 +237,7 @@ public class FilesManager {
 
 	public boolean hasChunk(ChunkInfo chunk) {
 		for (ChunkInfo peerChunk : peerChunksInfo) {
-			if ((peerChunk.getChunkId() + peerChunk.getChunkNo()).equals(chunk.getChunkId() + chunk.getChunkNo())) {
+			if ((peerChunk.getFileId() + peerChunk.getChunkNo()).equals(chunk.getFileId() + chunk.getChunkNo())) {
 				return true;
 			}
 		}
@@ -246,7 +246,7 @@ public class FilesManager {
 
 	public void updateChunkOwners(Message message) {
 		for (ChunkInfo peerChunk : peerChunksInfo) {
-			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getChunkId() + peerChunk.getChunkNo())
+			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getFileId() + peerChunk.getChunkNo())
 					&& !peerChunk.getOwnerIds().contains(message.getSenderId())) {
 				peerChunk.getOwnerIds().add(message.getSenderId());
 				return;
@@ -293,7 +293,7 @@ public class FilesManager {
 
 	public boolean repeatedChunk(ChunkInfo chunkInfo) {
 		for (ChunkInfo peerChunkInfo : this.peerChunksInfo) {
-			if ((peerChunkInfo.getChunkId() + peerChunkInfo.getChunkNo()).equals(chunkInfo.getChunkId() + chunkInfo.getChunkNo())) {
+			if ((peerChunkInfo.getFileId() + peerChunkInfo.getChunkNo()).equals(chunkInfo.getFileId() + chunkInfo.getChunkNo())) {
 				return true;
 			}
 		}

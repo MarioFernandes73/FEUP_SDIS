@@ -1,14 +1,9 @@
 package cli;
 
-import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
 import communications.RMIInterface;
 import utils.Utils;
 
@@ -51,6 +46,7 @@ public class TestApp {
 		//Perform operation on RMI object
 		RMIInterface stub;
         try {
+        	System.setSecurityManager(new SecurityManager());
 			stub = (RMIInterface) Naming.lookup(accessPoint);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
@@ -68,8 +64,7 @@ public class TestApp {
 	        switch(operation) {
 		        case BACKUP:
 		        case BACKUPENH:
-					response = stub.backup(fileName, replicationDeg, enhance);
-				
+					response = stub.backup(fileName, replicationDeg, enhance);			
 		        	break;
 		        	
 		        case RESTORE:

@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import communications.RMIInterface;
@@ -64,6 +61,8 @@ public class Main {
 		
 		//Enable peer for Remote Method Invoking     
         try {
+        	System.setSecurityManager(new SecurityManager());
+        	
         	RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
         	// Bind the remote object's stub
 			Naming.rebind(accessPoint, stub);

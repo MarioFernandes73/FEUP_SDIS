@@ -4,6 +4,7 @@
 package communications;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
@@ -25,7 +26,7 @@ public class MessageFeedback implements Runnable {
 
 	@Override
 	public void run() {
-		MessageInterpreter interpreter = new MessageInterpreter(new String(data, StandardCharsets.UTF_8));
+		MessageInterpreter interpreter = new MessageInterpreter(new String(data, Charset.forName("ISO_8859_1")));
 		this.message = interpreter.parseText();
 		if (this.message == null) {
 			System.out.println("Message received in the wrong format!");

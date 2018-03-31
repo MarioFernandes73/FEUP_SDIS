@@ -31,11 +31,11 @@ public class BackupInitiator implements Runnable {
 		}
 
 		File existingFile = peer.getFilesManager().getExistingFile(fileName);
+		String encryptedFileId = null;
 		if (existingFile == null) {
 			System.out.println("Program integrity violation. File doesn't exist. Please restart the program.");
 			return;
 		}
-		String encryptedFileId = null;
 		try {
 			encryptedFileId = peer.getFilesManager().encryptFileId(existingFile);
 		} catch (NoSuchAlgorithmException e) {
@@ -59,7 +59,7 @@ public class BackupInitiator implements Runnable {
 		for (int i = 0; i < chunks.size(); i++) {
 			ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree);
 			chunksInfo.add(chunkInfo);
-			Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunks.get(i), chunkInfo ));
+			Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData() ));
 			protocolThreads.add(thread);
 			this.peer.getStoredMessages().clear();
 			thread.start();

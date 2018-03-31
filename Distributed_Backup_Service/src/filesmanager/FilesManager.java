@@ -31,12 +31,22 @@ public class FilesManager {
 	}
 
 	public void loadDirectory() {
-		createDirectories();
+		checkSharedDirectories();
+		createPeerDirectories();
 		readInfoDirectory();
 		readFilesDirectory();
 	}
 
-	public void createDirectories() {
+	private void checkSharedDirectories() {
+		File[] sharedDirs = new File[] {new File("Peers"), new File("SharedFiles")};
+		for(File dir : sharedDirs) {
+			if(!dir.exists()) {
+				dir.mkdir();
+			}
+		}
+	}
+
+	private void createPeerDirectories() {
 		File[] dirs = new File[] { new File(getDiskDir()), new File(getFilesDir()), new File(getChunksDir()),
 				new File(getInfoDir()) };
 		for (File dir : dirs) {
@@ -52,7 +62,7 @@ public class FilesManager {
 		}
 	}
 
-	public void readInfoDirectory() {
+	private void readInfoDirectory() {
 		readBackedUpFilesInfo();
 		readChunksInfo();
 	}
@@ -107,7 +117,7 @@ public class FilesManager {
 		}
 	}
 
-	public void readFilesDirectory() {
+	private void readFilesDirectory() {
 		File filesDir = new File(this.getFilesDir());
 		if (filesDir.exists() && filesDir.isDirectory()) {
 			for (File file : filesDir.listFiles()) {
@@ -182,7 +192,7 @@ public class FilesManager {
 		if (file.exists()) {
 			try {
 				String encryptedId = encryptFileId(file);
-				int chunksQuantity = (int) (file.length() / Utils.MAX_CHUNK_SIZE) + 1;
+				int chunksQuantity = Utils.calcChunksQuantity(file);
 				byte[] fileBytes = Files.readAllBytes(file.toPath());
 
 				for (int chunkNo = 0; chunkNo < chunksQuantity; chunkNo++) {
@@ -257,7 +267,7 @@ public class FilesManager {
 	public void saveChunk(Chunk chunk) {
 		byte data[] = chunk.getData();
 		try {
-			FileOutputStream out = new FileOutputStream(getChunksDir() + "\\" + chunk.getChunkId());
+			FileOutputStream out = new FileOutputStream(getChunksDir() + Utils.getSeparator() + chunk.getChunkId());
 			out.write(data);
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -268,9 +278,9 @@ public class FilesManager {
 	}
 	
 	public void saveFile(String fileName, byte[] data) {
-		new File(this.getPrivateFilesDir() + "\\" + fileName);
+		new File(this.getPrivateFilesDir() + Utils.getSeparator() + fileName);
 		try {
-			FileOutputStream out = new FileOutputStream(this.getPrivateFilesDir() + "\\" + fileName);
+			FileOutputStream out = new FileOutputStream(this.getPrivateFilesDir() + Utils.getSeparator() + fileName);
 			out.write(data);
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -299,32 +309,32 @@ public class FilesManager {
 	}
 
 	public String getDiskDir() {
-		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk";
+		return System.getProperty("user.dir") + Utils.getSeparator() + "Peers"+ Utils.getSeparator() +"Peer" + this.ownerId + "disk";
 	}
 	
 	public String getPrivateFilesDir() {
-		return System.getProperty("user.dir") + "\\SharedFiles";
+		return System.getProperty("user.dir") + Utils.getSeparator() + "SharedFiles";
 	}
 
 
 	public String getFilesDir() {
-		return System.getProperty("user.dir") + "\\SharedFiles";
+		return System.getProperty("user.dir") + Utils.getSeparator() + "SharedFiles";
 	}
 
 	public String getChunksDir() {
-		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Chunks";
+		return System.getProperty("user.dir") + Utils.getSeparator() + "Peers" + Utils.getSeparator() + "Peer" + this.ownerId + "disk" + Utils.getSeparator() + "Chunks";
 	}
 
 	public String getInfoDir() {
-		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Info";
+		return System.getProperty("user.dir") + Utils.getSeparator() + "Peers" + Utils.getSeparator() + "Peer" + this.ownerId + "disk" + Utils.getSeparator() + "Info";
 	}
 
 	public String getFilesInfoFile() {
-		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Info\\backedUpFiles.ser";
+		return System.getProperty("user.dir") + Utils.getSeparator() + "Peers" + Utils.getSeparator() + "Peer" + this.ownerId + "disk" + Utils.getSeparator() + "Info"+ Utils.getSeparator() + "backedUpFiles.ser";
 	}
 
 	public String getChunksInfoFile() {
-		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Info\\chunksInfo.ser";
+		return System.getProperty("user.dir") + Utils.getSeparator() + "Peers" + Utils.getSeparator() + "Peer" + this.ownerId + "disk" + Utils.getSeparator() + "Info"+ Utils.getSeparator() + "chunksInfo.ser";
 	}
 
 	public ArrayList<BackedUpFileInfo> getBackedUpFiles() {
@@ -396,6 +406,20 @@ public class FilesManager {
 			}
 		}
 		return 0;
+	}
+
+	public void restoreFile(String fileName, ArrayList<Chunk> fileChunks) {
+
+		/*
+		FileOutputStream out = new FileOutputStream();
+
+		for (int i = 0; i < fileChunks.size(); i++) 
+		{
+				byte data[] = .get();
+				out.write(data);
+		}
+		out.close();
+		*/
 	}
 
 }

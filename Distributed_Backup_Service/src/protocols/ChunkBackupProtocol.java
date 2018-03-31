@@ -15,12 +15,12 @@ import utils.Utils;
 public class ChunkBackupProtocol implements Runnable {
 
 	private Peer peer = null;
-	private Chunk chunk = null;
 	private ChunkInfo chunkInfo = null;
+	private byte[] chunkData = null;
 
-	public ChunkBackupProtocol(Peer peer, Chunk chunk, ChunkInfo chunkInfo) {
+	public ChunkBackupProtocol(Peer peer, ChunkInfo chunkInfo, byte[] chunkData) {
 		this.peer = peer;
-		this.chunk = chunk;
+		this.chunkData = chunkData;
 		this.chunkInfo = chunkInfo;
 	}
 
@@ -33,7 +33,7 @@ public class ChunkBackupProtocol implements Runnable {
 			try {
 				message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunkInfo.getChunkId(),
 						chunkInfo.getChunkNo(), chunkInfo.getDesiredReplicationDeg(),
-						new String(chunk.getData(), "ISO_8859_1"));
+						new String(chunkData, "ISO_8859_1"));
 			} catch (UnsupportedEncodingException e1) {
 				e1.printStackTrace();
 			}
@@ -64,10 +64,6 @@ public class ChunkBackupProtocol implements Runnable {
 			tries++;
 		}
 
-	}
-
-	public Chunk getChunk() {
-		return this.chunk;
 	}
 
 }

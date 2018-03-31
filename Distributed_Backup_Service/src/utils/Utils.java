@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class Utils {
@@ -13,4 +14,15 @@ public class Utils {
 	public static int FIXED_WAITING_TIME = 700;
 	
 	public static String DEFAULT_VERSION = "1.0";
+	
+	public static String getSeparator() {
+		if(System.getProperty("os.name").split(" ")[0] == "Windows")
+			return "\\";
+		
+		return "/";
+	}
+	
+	public static int calcChunksQuantity(File file) {
+		return (int) (file.length() / Utils.MAX_CHUNK_SIZE) + 1;
+	}
 }

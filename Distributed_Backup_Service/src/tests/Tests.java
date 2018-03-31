@@ -12,7 +12,6 @@ import peer.Peer;
 public class Tests {
 
 	public static void main(String[] args) {
-
 		ArrayList<Peer> peers = new ArrayList<Peer>();
 
 		int peerid = 1;
@@ -49,7 +48,6 @@ public class Tests {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 }

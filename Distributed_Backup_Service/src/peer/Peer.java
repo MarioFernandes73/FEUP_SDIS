@@ -9,6 +9,7 @@ import java.util.Timer;
 import channels.*;
 import communications.RMIInterface;
 import initiators.BackupInitiator;
+import initiators.RestoreInitiator;
 import utils.Message;
 import utils.UpdateTask;
 
@@ -60,9 +61,13 @@ public class Peer implements RMIInterface {
 		System.out.println("Starting to backup " + fileName);
 		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree));
 		thread.start();
-		//handle thread
-		
-		//return thread response
+		return null;
+	}
+	
+	public String restore(String fileName, boolean enhancement) throws RemoteException {
+		System.out.println("Starting to restore " + fileName);
+		Thread thread = new Thread(new RestoreInitiator(this, fileName));
+		thread.start();
 		return null;
 	}
 	

@@ -246,10 +246,29 @@ public class FilesManager {
 		return;
 	}
 
+	public void saveAllChunks() {
+		for(Chunk chunk : this.peerChunks) {
+			this.saveChunk(chunk);
+		}
+	}
+	
 	public void saveChunk(Chunk chunk) {
 		byte data[] = chunk.getData();
 		try {
 			FileOutputStream out = new FileOutputStream(getChunksDir() + "\\" + chunk.getFileId() + chunk.getChunkNo());
+			out.write(data);
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveFile(String fileName, byte[] data) {
+		new File(this.getPrivateFilesDir() + "\\" + fileName);
+		try {
+			FileOutputStream out = new FileOutputStream(this.getPrivateFilesDir() + "\\" + fileName);
 			out.write(data);
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -278,27 +297,32 @@ public class FilesManager {
 	}
 
 	public String getDiskDir() {
-		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk";
+		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk";
+	}
+	
+	public String getPrivateFilesDir() {
+		return System.getProperty("user.dir") + "\\SharedFiles";
 	}
 
+
 	public String getFilesDir() {
-		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk" + "\\Files";
+		return System.getProperty("user.dir") + "\\SharedFiles";
 	}
 
 	public String getChunksDir() {
-		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk" + "\\Chunks";
+		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Chunks";
 	}
 
 	public String getInfoDir() {
-		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk" + "\\Info";
+		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Info";
 	}
 
 	public String getFilesInfoFile() {
-		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk" + "\\Info\\backedUpFiles.ser";
+		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Info\\backedUpFiles.ser";
 	}
 
 	public String getChunksInfoFile() {
-		return System.getProperty("user.dir") + "\\Peer" + this.ownerId + "disk" + "\\Info\\chunksInfo.ser";
+		return System.getProperty("user.dir") + "\\Peers\\Peer" + this.ownerId + "disk" + "\\Info\\chunksInfo.ser";
 	}
 
 	public ArrayList<FileInfo> getBackedUpFiles() {
@@ -337,6 +361,30 @@ public class FilesManager {
 
 	public ArrayList<Chunk> getChunks() {
 		return this.peerChunks;
+	}
+
+	public boolean checkIfFileExists(String fileName) {
+		File restoredFiles = new File(this.getPrivateFilesDir());
+		if (restoredFiles.exists() && restoredFiles.isDirectory()) {
+			for(File file : restoredFiles.listFiles()) {
+				if(file.getName().equals(fileName))
+					return true;
+			}
+		} else {
+			restoredFiles.mkdir();
+		}
+		return false;
+	}
+	
+	public long getPrivateFileSize(String fileName) {
+		File restoredFiles = new File(this.getPrivateFilesDir());
+		if (restoredFiles.exists() && restoredFiles.isDirectory()) {
+			for(File file : restoredFiles.listFiles()) {
+				if(file.getName().equals(fileName))
+					return file.length();
+			}
+		}
+		return 0;
 	}
 
 }

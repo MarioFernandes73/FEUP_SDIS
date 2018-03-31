@@ -23,6 +23,7 @@ public class UpdateTask extends TimerTask {
 			
 		} finally {
 			this.peer.getFilesManager().saveChunksInfo();
+			this.peer.getFilesManager().saveAllChunks();
 		}
 		
 	}

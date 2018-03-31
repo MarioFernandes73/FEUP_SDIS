@@ -1,4 +1,4 @@
-package peer;
+package server;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -12,6 +12,7 @@ import communications.MessageInterpreter;
 import communications.RMIInterface;
 import filesmanager.FilesManager;
 import initiators.BackupInitiator;
+import peer.Peer;
 
 public class Main {
 	private static String version;

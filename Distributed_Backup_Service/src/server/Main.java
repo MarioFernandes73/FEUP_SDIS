@@ -61,7 +61,6 @@ public class Main {
 		
 		//Enable peer for Remote Method Invoking     
         try {
-        	System.setSecurityManager(new SecurityManager());
         	
         	RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
         	// Bind the remote object's stub

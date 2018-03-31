@@ -38,7 +38,7 @@ public class ChunkBackupProtocol implements Runnable {
 				e1.printStackTrace();
 			}
 			try {
-				peer.getMDBChannel().send((message.getHeader() + message.getBody()).getBytes());
+				peer.getMDBChannel().send((message.getHeader() + message.getBody()).getBytes("ISO-8859-1"));
 				Thread.sleep(delay);
 			} catch (SocketException e) {
 				e.printStackTrace();

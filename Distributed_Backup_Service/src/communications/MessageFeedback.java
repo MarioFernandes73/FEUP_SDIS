@@ -88,7 +88,7 @@ public class MessageFeedback implements Runnable {
 						message.getChunkNo(), -1, null);
 				System.out.println("MENSAGEM STORED ENVIADA POR " + owner.getId());
 				chunkInfo.getOwnerIds().add(owner.getId());
-				owner.getMCChannel().send(response.getHeader().getBytes());
+				owner.getMCChannel().send(response.getHeader().getBytes("ISO-8859-1"));
 				owner.getFilesManager().getChunksInfo().add(chunkInfo);
 				owner.getFilesManager().addChunkToSave(new Chunk(chunkInfo.getChunkId() + chunkInfo.getChunkNo(),
 						message.getBody().getBytes("ISO-8859-1")));

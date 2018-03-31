@@ -46,7 +46,6 @@ public class TestApp {
 		//Perform operation on RMI object
 		RMIInterface stub;
         try {
-        	System.setSecurityManager(new SecurityManager());
 			stub = (RMIInterface) Naming.lookup(accessPoint);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();

@@ -22,7 +22,7 @@ public class FilesManager {
 	private int ownerId;
 	private int currentDiskSpace = Utils.MAX_DISK_SPACE;
 	private ArrayList<BackedUpFileInfo> peerFiles = new ArrayList<BackedUpFileInfo>();
-	private ArrayList<ChunkInfo> peerChunks = new ArrayList<ChunkInfo>();
+	private ArrayList<ChunkInfo> peerChunksInfo = new ArrayList<ChunkInfo>();
 	private ArrayList<Chunk> chunksToSave = new ArrayList<Chunk>();
 
 	public FilesManager(int ownerId) {
@@ -102,7 +102,8 @@ public class FilesManager {
 				objectinputstream = new ObjectInputStream(streamIn);
 				@SuppressWarnings("unchecked")
 				ArrayList<ChunkInfo> readCase = (ArrayList<ChunkInfo>) objectinputstream.readObject();
-				peerChunks.addAll(readCase);
+				peerChunksInfo.addAll(readCase);
+				System.out.println("PEER CHUNKS INFO " + peerChunksInfo.size());
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -171,7 +172,7 @@ public class FilesManager {
 		try {
 			foutChunks = new FileOutputStream(this.getChunksInfoFile(), false);
 			oosChunks = new ObjectOutputStream(foutChunks);
-			oosChunks.writeObject(this.peerChunks);
+			oosChunks.writeObject(this.peerChunksInfo);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
@@ -235,7 +236,7 @@ public class FilesManager {
 	}
 
 	public boolean hasChunk(ChunkInfo chunk) {
-		for (ChunkInfo peerChunk : peerChunks) {
+		for (ChunkInfo peerChunk : peerChunksInfo) {
 			if ((peerChunk.getChunkId() + peerChunk.getChunkNo()).equals(chunk.getChunkId() + chunk.getChunkNo())) {
 				return true;
 			}
@@ -244,7 +245,7 @@ public class FilesManager {
 	}
 
 	public void updateChunkOwners(Message message) {
-		for (ChunkInfo peerChunk : peerChunks) {
+		for (ChunkInfo peerChunk : peerChunksInfo) {
 			if ((message.getFileId() + message.getChunkNo()).equals(peerChunk.getChunkId() + peerChunk.getChunkNo())
 					&& !peerChunk.getOwnerIds().contains(message.getSenderId())) {
 				peerChunk.getOwnerIds().add(message.getSenderId());
@@ -291,7 +292,7 @@ public class FilesManager {
 	}
 
 	public boolean repeatedChunk(ChunkInfo chunkInfo) {
-		for (ChunkInfo peerChunkInfo : this.peerChunks) {
+		for (ChunkInfo peerChunkInfo : this.peerChunksInfo) {
 			if ((peerChunkInfo.getChunkId() + peerChunkInfo.getChunkNo()).equals(chunkInfo.getChunkId() + chunkInfo.getChunkNo())) {
 				return true;
 			}
@@ -381,7 +382,7 @@ public class FilesManager {
 	}
 
 	public ArrayList<ChunkInfo> getChunksInfo() {
-		return this.peerChunks;
+		return this.peerChunksInfo;
 	}
 
 	public boolean checkIfFileExists(String fileName) {

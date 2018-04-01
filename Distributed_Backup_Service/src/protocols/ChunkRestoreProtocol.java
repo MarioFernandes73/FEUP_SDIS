@@ -56,13 +56,10 @@ public class ChunkRestoreProtocol implements Runnable {
 				for (Message receivedChunkMessages : this.peer.getChunkMessages()) {
 					if (receivedChunkMessages.getFileId().equals(message.getFileId())
 							&& receivedChunkMessages.getChunkNo() == message.getChunkNo()) {
-						try {
+
 							this.chunk = new Chunk(this.fileId + this.chunkNo,
-									receivedChunkMessages.getBody().getBytes("ISO-8859-1"));
+									receivedChunkMessages.getBody());
 							return;
-						} catch (UnsupportedEncodingException e) {
-							e.printStackTrace();
-						}
 
 					}
 				}

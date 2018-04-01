@@ -3,6 +3,7 @@
  */
 package communications;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -28,7 +29,7 @@ public class MessageFeedback implements Runnable {
 
 	@Override
 	public void run() {
-		MessageInterpreter interpreter = new MessageInterpreter(new String(data, Charset.forName("ISO_8859_1")));
+		MessageInterpreter interpreter = new MessageInterpreter(data);
 		this.message = interpreter.parseText();
 		if (this.message == null) {
 			System.out.println("Message received in the wrong format!");
@@ -66,7 +67,7 @@ public class MessageFeedback implements Runnable {
 		ChunkInfo chunkInfo = new ChunkInfo(message.getFileId(), message.getChunkNo(), message.getReplicationDeg());
 
 		try {
-			if (this.owner.getFilesManager().canSaveData(message.getBody().length())
+			if (this.owner.getFilesManager().canSaveData(message.getBody().length)
 					&& !this.owner.getFilesManager().hasChunk(chunkInfo.getFileId() + chunkInfo.getChunkNo())) {
 
 				try {
@@ -94,8 +95,8 @@ public class MessageFeedback implements Runnable {
 				chunkInfo.getOwnerIds().add(owner.getId());
 				owner.getMCChannel().send(response.getHeader().getBytes("ISO-8859-1"));
 				owner.getFilesManager().getChunksInfo().add(chunkInfo);
-				owner.getFilesManager().addChunkToSave(new Chunk(chunkInfo.getFileId() + chunkInfo.getChunkNo(),
-						message.getBody().getBytes("ISO-8859-1")));
+				owner.getFilesManager()
+						.addChunkToSave(new Chunk(chunkInfo.getFileId() + chunkInfo.getChunkNo(), message.getBody()));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -124,7 +125,7 @@ public class MessageFeedback implements Runnable {
 			return;
 		}
 		if (this.owner.getFilesManager().hasChunk(this.message.getFileId() + this.message.getChunkNo())) {
-			
+
 			try {
 				Thread.sleep(new Random().nextInt(Utils.MAX_RANDOM_DELAY));
 			} catch (InterruptedException e) {
@@ -136,15 +137,28 @@ public class MessageFeedback implements Runnable {
 					return;
 				}
 			}
-			
+
 			File existingChunk = this.owner.getFilesManager()
 					.getExistingChunk(message.getFileId() + this.message.getChunkNo());
 			Message response = new Message();
 			try {
 				response.prepareMessage("CHUNK", "1.0", this.owner.getId(), this.message.getFileId(),
-						this.message.getChunkNo(), -1,
-						new String(Files.readAllBytes(existingChunk.toPath()), "ISO_8859_1"));
-				this.owner.getMDRChannel().send((response.getHeader() + response.getBody()).getBytes("ISO-8859-1"));
+						this.message.getChunkNo(), -1, Files.readAllBytes(existingChunk.toPath()));
+				
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				try 
+				{
+					baos.write(response.getHeader().getBytes());
+					baos.write(response.getBody());
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+				
+				byte[] payload = baos.toByteArray();
+				
+				this.owner.getMDRChannel().send(payload);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

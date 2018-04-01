@@ -1,5 +1,6 @@
 package protocols;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
@@ -30,15 +31,24 @@ public class ChunkBackupProtocol implements Runnable {
 		int delay = Utils.FIXED_WAITING_TIME;
 		while (tries < Utils.MAX_TRIES) {
 			Message message = new Message();
-			try {
 				message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunkInfo.getFileId(),
 						chunkInfo.getChunkNo(), chunkInfo.getDesiredReplicationDeg(),
-						new String(chunkData, "ISO_8859_1"));
-			} catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
-			}
+						chunkData);
 			try {
-				peer.getMDBChannel().send((message.getHeader() + message.getBody()).getBytes("ISO-8859-1"));
+				
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				try 
+				{
+					baos.write(message.getHeader().getBytes());
+					baos.write(message.getBody());
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+				
+				byte[] payload = baos.toByteArray();
+				peer.getMDBChannel().send(payload);
 				Thread.sleep(delay);
 			} catch (SocketException e) {
 				e.printStackTrace();

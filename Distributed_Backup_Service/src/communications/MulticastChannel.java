@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import peer.Peer;
 import utils.Utils;
@@ -51,11 +52,8 @@ public class MulticastChannel implements Runnable {
 		byte[] buffer = new byte[Utils.MAX_PACKET_SIZE];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		socket.receive(packet);
-		return packet.getData();
-	}
-
-	public void setSocketTimeout(int timeout) throws SocketException {
-		this.socket.setSoTimeout(timeout);
+		byte[] temp = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
+		return temp;
 	}
 
 }

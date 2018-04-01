@@ -1,13 +1,15 @@
 package communications;
 
+import java.nio.charset.Charset;
+
 import communications.Message;
 
 public class MessageInterpreter {
 
-	private String text;
+	private byte[] data;
 	
-	public MessageInterpreter(String text) {
-		this.text = text;
+	public MessageInterpreter(byte[] data) {
+		this.data = data;
 	}
 	
 	private String getOperationFormat(){
@@ -49,6 +51,7 @@ public class MessageInterpreter {
 	}
 	
 	public Message parseText() {
+		String text = new String(data, Charset.forName("ISO_8859_1"));
 		if(text.indexOf(" ") == -1 || text.indexOf(" \r\n\r\n") < 1) {
 			return null;
 		}
@@ -96,7 +99,11 @@ public class MessageInterpreter {
 			message.setReplicationDeg(Integer.parseInt(rest.substring(0, rest.indexOf(" "))));
 		}
 		if(operation.equals("PUTCHUNK") || operation.equals("CHUNK")) {
-			message.setBody(rest.substring(rest.indexOf(" ") + 5));//+5 to ignore both crlf before body
+			
+			byte[] temp = new byte[this.data.length - message.getHeader().length()];
+			System.arraycopy(this.data, message.getHeader().length(), temp, 0, this.data.length - message.getHeader().length());
+			message.setBody(temp);
+			//message.setBody(rest.substring(rest.indexOf(" ") + 5));//+5 to ignore both crlf before body
 		}
 		return message;
 	}

@@ -10,7 +10,7 @@ public class Message {
 	private int chunkNo;
 	private boolean replicationDegSetted = false;
 	private int replicationDeg;
-	private String body;
+	private byte[] body;
 
 	public Message() {
 	}
@@ -62,7 +62,7 @@ public class Message {
 		return replicationDeg;
 	}
 
-	public String getBody() {
+	public byte[] getBody() {
 		return body;
 	}
 
@@ -93,12 +93,12 @@ public class Message {
 		this.replicationDeg = replicationDeg;
 	}
 
-	public void setBody(String body) {
+	public void setBody(byte[] body) {
 		this.body = body;
 	}
 
 	public void prepareMessage(String operation, String version, int senderId, String fileId, int chunkNo,
-			int replicationDeg, String body) {
+			int replicationDeg, byte[] body) {
 		this.setOperation(operation);
 		this.setVersion(version);
 		this.setSenderId(senderId);

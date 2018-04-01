@@ -34,7 +34,7 @@ public class Peer implements RMIInterface {
 		(new Thread(this.MDRChannel)).start();
 		
         Timer timer = new Timer();
-        timer.schedule(new UpdateTask(this), 0, 5000);
+        timer.schedule(new UpdateTask(this), 5000, 5000);
 	}
 
 	public int getId() {

@@ -23,7 +23,7 @@ public class RestoreInitiator implements Runnable {
 	@Override
 	public void run() {
 		if (peer.getFilesManager().checkIfFileExists(this.fileName)) {
-			System.out.println("File already backed up!");
+			System.out.println("File already restored!");
 			return;
 		}
 		
@@ -45,10 +45,11 @@ public class RestoreInitiator implements Runnable {
 		int chunksQuantity = Utils.calcChunksQuantity(existingFile);
 		
 		for(int i = 0; i < chunksQuantity; i++) {
-			ChunkRestoreProtocol task = new ChunkRestoreProtocol(this.peer);
+			ChunkRestoreProtocol task = new ChunkRestoreProtocol(this.peer, encryptedFileId, i);
 			threadTasks.add(task);
 			Thread thread = new Thread(task);
 			protocolThreads.add(thread);
+			thread.start();
 		}
 		
 		for (int i = 0; i < protocolThreads.size(); i++) {
@@ -68,6 +69,7 @@ public class RestoreInitiator implements Runnable {
 		}
 		
 		this.peer.getFilesManager().restoreFile(this.fileName, fileChunks);
+		System.out.println("File succesfully restored");
 		
 	}
 

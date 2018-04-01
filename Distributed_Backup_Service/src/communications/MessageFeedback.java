@@ -3,9 +3,11 @@
  */
 package communications;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Random;
 
 import filesmanager.Chunk;
@@ -61,12 +63,11 @@ public class MessageFeedback implements Runnable {
 		if (message.getSenderId() == owner.getId()) {
 			return;
 		}
-
 		ChunkInfo chunkInfo = new ChunkInfo(message.getFileId(), message.getChunkNo(), message.getReplicationDeg());
 
 		try {
 			if (this.owner.getFilesManager().canSaveData(message.getBody().length())
-					&& !this.owner.getFilesManager().hasChunk(chunkInfo)) {
+					&& !this.owner.getFilesManager().hasChunk(chunkInfo.getFileId() + chunkInfo.getChunkNo())) {
 
 				try {
 					Thread.sleep(new Random().nextInt(Utils.MAX_RANDOM_DELAY));
@@ -74,7 +75,6 @@ public class MessageFeedback implements Runnable {
 					e.printStackTrace();
 				}
 
-				
 				for (Message storedMessage : this.owner.getStoredMessages()) {
 					if (storedMessage.getFileId().equals(message.getFileId())
 							&& storedMessage.getChunkNo() == message.getChunkNo()
@@ -115,21 +115,40 @@ public class MessageFeedback implements Runnable {
 		}
 		this.owner.getStoredMessages().add(this.message);
 		this.owner.getFilesManager().updateChunkOwners(message);
-		System.out.println("OWNER " + this.owner.getId() + " STORED MESSAGES: " + this.owner.getStoredMessages().size());
+		System.out
+				.println("OWNER " + this.owner.getId() + " STORED MESSAGES: " + this.owner.getStoredMessages().size());
 	}
 
 	private void receivedGetchunkMessage() {
 		if (this.owner.getId() == this.message.getSenderId()) {
 			return;
 		}
-		/*
-		 * Chunk chunk = new Chunk(message.getFileId(), message.getChunkNo(),
-		 * message.getReplicationDeg(), message.getBody().getBytes());
-		 * 
-		 * if(this.owner.getFilesManager().hasChunk(chunk)) {
-		 * this.owner.getFilesManager().getExistingChunk(message.getFileId()); }
-		 * 
-		 */
+		if (this.owner.getFilesManager().hasChunk(this.message.getFileId() + this.message.getChunkNo())) {
+			
+			try {
+				Thread.sleep(new Random().nextInt(Utils.MAX_RANDOM_DELAY));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			for (Message chunkMessage : this.owner.getChunkMessages()) {
+				if (chunkMessage.getFileId().equals(message.getFileId())
+						&& chunkMessage.getChunkNo() == message.getChunkNo()) {
+					return;
+				}
+			}
+			
+			File existingChunk = this.owner.getFilesManager()
+					.getExistingChunk(message.getFileId() + this.message.getChunkNo());
+			Message response = new Message();
+			try {
+				response.prepareMessage("CHUNK", "1.0", this.owner.getId(), this.message.getFileId(),
+						this.message.getChunkNo(), -1,
+						new String(Files.readAllBytes(existingChunk.toPath()), "ISO_8859_1"));
+				this.owner.getMDRChannel().send((response.getHeader() + response.getBody()).getBytes("ISO-8859-1"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void receivedChunkMessage() {
@@ -137,14 +156,11 @@ public class MessageFeedback implements Runnable {
 			return;
 		}
 		this.owner.getChunkMessages().add(this.message);
-
 	}
-	
-
 
 	private void receivedDeleteMessage() {
-		//delete de todos os chunks do disco -> funcao no filemanager
-		//this.owner.getFilesManager().deleteAllChunks(this.message.getFileId());
+		// delete de todos os chunks do disco -> funcao no filemanager
+		// this.owner.getFilesManager().deleteAllChunks(this.message.getFileId());
 	}
-	
+
 }

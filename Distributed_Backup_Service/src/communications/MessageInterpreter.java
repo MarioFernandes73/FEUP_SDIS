@@ -49,7 +49,6 @@ public class MessageInterpreter {
 	}
 	
 	public Message parseText() {
-		
 		if(text.indexOf(" ") == -1 || text.indexOf(" \r\n\r\n") < 1) {
 			return null;
 		}
@@ -93,10 +92,12 @@ public class MessageInterpreter {
 			rest = rest.substring(rest.indexOf(" ") + 1);
 		}
 		//Replication Degree and body
-		if(operation.contains("CHUNK")) {
+		if(operation.equals("PUTCHUNK")) {
 			message.setReplicationDeg(Integer.parseInt(rest.substring(0, rest.indexOf(" "))));
+		}
+		if(operation.equals("PUTCHUNK") || operation.equals("CHUNK")) {
 			message.setBody(rest.substring(rest.indexOf(" ") + 5));//+5 to ignore both crlf before body
-		}		
+		}
 		return message;
 	}
 }

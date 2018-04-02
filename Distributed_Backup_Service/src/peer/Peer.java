@@ -12,6 +12,7 @@ import communications.RMIInterface;
 import filesmanager.FilesManager;
 import initiators.BackupInitiator;
 import initiators.RestoreInitiator;
+import protocols.SpaceReclaimProtocol;
 
 public class Peer implements RMIInterface {
 	
@@ -22,6 +23,7 @@ public class Peer implements RMIInterface {
 	private int id;
 	private ArrayList<Message> storedMessages = new ArrayList<Message>();
 	private ArrayList<Message> chunkMessages = new ArrayList<Message>();
+	private ArrayList<Message> putChunkMessages = new ArrayList<Message>();
 	
 	public Peer(int id, String MCIP, int MCPort, String MDBIP, int MDBPort, String MDRIP, int MDRPort) throws UnknownHostException, IOException {
 		this.id = id;
@@ -88,7 +90,9 @@ public class Peer implements RMIInterface {
 
 	@Override
 	public String reclaim(int space, boolean enhancement) throws RemoteException {
-		// TODO Auto-generated method stub
+		System.out.println("Starting to reclaim " + space + " KBs");
+		Thread thread = new Thread(new SpaceReclaimProtocol(this, space));
+		thread.start();
 		return null;
 	}
 
@@ -96,6 +100,10 @@ public class Peer implements RMIInterface {
 	public String state() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public ArrayList<Message> getPutChunkMessages() {
+		return this.putChunkMessages;
 	}
 
 }

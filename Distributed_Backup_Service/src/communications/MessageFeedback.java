@@ -6,14 +6,13 @@ package communications;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Random;
 
 import filesmanager.Chunk;
 import filesmanager.ChunkInfo;
 import peer.Peer;
+import protocols.ChunkBackupProtocol;
 import utils.Utils;
 
 public class MessageFeedback implements Runnable {
@@ -49,6 +48,9 @@ public class MessageFeedback implements Runnable {
 		case "DELETE":
 			this.receivedDeleteMessage();
 			break;
+		case "REMOVED":
+			this.receivedRemovedMessage();
+			break;
 		default:
 			return;
 		}
@@ -64,7 +66,11 @@ public class MessageFeedback implements Runnable {
 		if (message.getSenderId() == owner.getId()) {
 			return;
 		}
-		ChunkInfo chunkInfo = new ChunkInfo(message.getFileId(), message.getChunkNo(), message.getReplicationDeg());
+
+		this.owner.getPutChunkMessages().add(message);
+
+		ChunkInfo chunkInfo = new ChunkInfo(message.getFileId(), message.getChunkNo(), message.getReplicationDeg(),
+				message.getBody().length);
 
 		try {
 			if (this.owner.getFilesManager().canSaveData(message.getBody().length)
@@ -144,20 +150,17 @@ public class MessageFeedback implements Runnable {
 			try {
 				response.prepareMessage("CHUNK", "1.0", this.owner.getId(), this.message.getFileId(),
 						this.message.getChunkNo(), -1, Files.readAllBytes(existingChunk.toPath()));
-				
+
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				try 
-				{
+				try {
 					baos.write(response.getHeader().getBytes());
 					baos.write(response.getBody());
-				} 
-				catch (IOException e) 
-				{
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+
 				byte[] payload = baos.toByteArray();
-				
+
 				this.owner.getMDRChannel().send(payload);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -175,6 +178,50 @@ public class MessageFeedback implements Runnable {
 	private void receivedDeleteMessage() {
 		// delete de todos os chunks do disco -> funcao no filemanager
 		// this.owner.getFilesManager().deleteAllChunks(this.message.getFileId());
+	}
+
+	private void receivedRemovedMessage() {
+		if (this.owner.getId() == this.message.getSenderId()) {
+			return;
+		}
+		this.owner.getPutChunkMessages().clear();
+		for (ChunkInfo chunkInfo : this.owner.getFilesManager().getChunksInfo()) {
+			if ((chunkInfo.getFileId() + chunkInfo.getChunkNo()).equals(message.getFileId() + message.getChunkNo())) {
+				for (int i = 0; i < chunkInfo.getOwnerIds().size(); i++) {
+					if (chunkInfo.getOwnerIds().get(i) == message.getSenderId()) {
+						chunkInfo.getOwnerIds().remove(i);
+						System.out.println("PEER " + this.owner.getId() + " REMOVED AN OWNER");
+						if (chunkInfo.getDesiredReplicationDeg() > chunkInfo.getOwnerIds().size()) {
+							System.out.println(
+									"Chunk with not acceptable replication degree, starting to rebackup the chunk");
+							try {
+								Thread.sleep(new Random().nextInt(Utils.MAX_RANDOM_DELAY));
+								for (Message putChunkMessage : this.owner.getPutChunkMessages()) {
+									if ((putChunkMessage.getFileId() + putChunkMessage.getChunkNo())
+											.equals(chunkInfo.getFileId() + chunkInfo.getChunkNo())) {
+										System.out.println("Backup already started on another peer!");
+										return;
+									}
+								}
+								File existingChunk = this.owner.getFilesManager()
+										.getExistingChunk(chunkInfo.getFileId() + chunkInfo.getChunkNo());
+								byte[] existingChunkData = Files.readAllBytes(existingChunk.toPath());
+								ChunkBackupProtocol reBackup = new ChunkBackupProtocol(this.owner, chunkInfo,
+										existingChunkData);
+								new Thread(reBackup).start();
+								System.out.println("ReBackup started!");
+								
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
+
 	}
 
 }

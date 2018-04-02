@@ -12,6 +12,8 @@ import communications.RMIInterface;
 import filesmanager.FilesManager;
 import initiators.BackupInitiator;
 import initiators.RestoreInitiator;
+import protocols.FileDeleteProtocol;
+import utils.Utils;
 
 public class Peer implements RMIInterface {
 	
@@ -82,7 +84,9 @@ public class Peer implements RMIInterface {
 	
 	@Override
 	public String delete(String fileName, boolean enhancement) throws RemoteException {
-		// TODO Auto-generated method stub
+		System.out.println("Starting to delete " + fileName);
+		Thread thread = new Thread(new FileDeleteProtocol(this, fileName));
+		thread.start();
 		return null;
 	}
 
@@ -94,8 +98,13 @@ public class Peer implements RMIInterface {
 
 	@Override
 	public String state() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		String state = filesManager.getState();
+		state += "\nStorage information: ";
+		state += "Max disc space: " + Utils.MAX_DISK_SPACE/1000 + " KBytes\n";
+		state += "Free disc space: " + filesManager.getCurrentDiskSpace()/1000 + " KBytes (" + filesManager.getCurrentDiskSpace()*100/Utils.MAX_DISK_SPACE + "%)";
+		int chunkSpace = Utils.MAX_DISK_SPACE - filesManager.getCurrentDiskSpace();
+		state += "Chunk occupation space: " + chunkSpace/1000 + " KBytes (" + chunkSpace*100/Utils.MAX_DISK_SPACE + "%)";
+		return state;
 	}
 
 }

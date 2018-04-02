@@ -173,8 +173,7 @@ public class MessageFeedback implements Runnable {
 	}
 
 	private void receivedDeleteMessage() {
-		// delete de todos os chunks do disco -> funcao no filemanager
-		// this.owner.getFilesManager().deleteAllChunks(this.message.getFileId());
+		this.owner.getFilesManager().deleteFileChunks(this.message.getFileId());
 	}
 
 }

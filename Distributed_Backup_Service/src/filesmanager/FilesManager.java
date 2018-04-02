@@ -345,6 +345,10 @@ public class FilesManager {
 				+ this.ownerId + "disk" + Utils.getSeparator() + "Info" + Utils.getSeparator() + "chunksInfo.ser";
 	}
 
+	public int getCurrentDiskSpace() {
+		return currentDiskSpace;
+	}
+	
 	public ArrayList<BackedUpFileInfo> getBackedUpFiles() {
 		ArrayList<BackedUpFileInfo> backedUpFiles = new ArrayList<BackedUpFileInfo>();
 		for (BackedUpFileInfo file : this.peerFiles) {
@@ -432,7 +436,37 @@ public class FilesManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
+	public void deleteFileChunks(String fileId) {
+		String chunksDir = getChunksDir() + "/";
+		for(ChunkInfo chunk: peerChunksInfo) {
+			
+			if (chunk.belongsToFile(fileId)) {			
+				int chunkNo = chunk.getChunkNo();
+				
+				File chunkToDelete = new File(chunksDir + chunk.getChunkId());
+				if(chunkToDelete.delete()){
+	    			System.out.println("Chunk no. " + chunkNo + " has been deleted!");
+	    			peerChunksInfo.remove(chunk);
+	    		} else {
+	    			System.out.println("Failed to delete chunk no. " + chunkNo);
+	    		}
+			}
+			
+		}
+	}
+	
+	public String getState() {
+		String state = "boas";
+		state += "Backedup files: ";
+		
+		state += "Stored chunks: ";
+		for(ChunkInfo chunk: peerChunksInfo) {
+			state += "\nId: " + chunk.getChunkId();
+			state += "\n \tSize: " + chunk.getChunkId() + " KBytes";
+			state += "\n \tPerceived replication degree: " + chunk.getPerceivedReplicationDeg();
+		}
+		return state;
+	}
 }

@@ -89,7 +89,8 @@ public class TestApp {
 			e.printStackTrace();
 			System.out.println("Error invoking method remotely");
 		}
-        //String response = stub.backup("test.jpg", 3, false);
+        if(response != null)
+        	System.out.println("Server response:\n" + response);
         
         System.out.println(response);
 		return;

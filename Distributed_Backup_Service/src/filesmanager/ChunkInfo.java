@@ -34,4 +34,15 @@ public class ChunkInfo implements Serializable {
 		return desiredReplicationDeg;
 	}
 
+	public int getPerceivedReplicationDeg() {
+		return ownerIds.size();
+	}
+	
+	public String getChunkId() {
+		return fileId + chunkNo;
+	}
+	
+	public boolean belongsToFile(String fileId) {
+		return this.fileId == fileId;
+	}
 }

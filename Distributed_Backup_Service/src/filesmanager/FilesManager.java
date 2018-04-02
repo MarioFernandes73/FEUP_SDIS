@@ -303,7 +303,7 @@ public class FilesManager {
 	}
 
 	public String encryptFileId(File file) throws NoSuchAlgorithmException {
-		String temp = file.getName() + file.lastModified() + ownerId;
+		String temp = file.getName() + file.lastModified();
 
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		byte[] hash = digest.digest(temp.getBytes(StandardCharsets.UTF_8));
@@ -438,6 +438,7 @@ public class FilesManager {
 		}
 	}
 
+<<<<<<< HEAD
 	public void deleteFileChunks(String fileId) {
 		String chunksDir = getChunksDir() + "/";
 		for(ChunkInfo chunk: peerChunksInfo) {
@@ -469,4 +470,36 @@ public class FilesManager {
 		}
 		return state;
 	}
+=======
+	public ArrayList<ChunkInfo> calcChunksToClear(int spaceToReclaim) {
+		if(spaceToReclaim == 0) {
+			return this.peerChunksInfo;
+		}
+		
+		if(this.currentDiskSpace >= spaceToReclaim) {
+			return new ArrayList<ChunkInfo>();
+		}
+		
+		ArrayList<ChunkInfo> chunks = new ArrayList<ChunkInfo>();
+		
+		for(ChunkInfo chunkInfo : this.peerChunksInfo) {
+			chunks.add(chunkInfo);
+			this.currentDiskSpace -= chunkInfo.getChunkSize();
+			
+			if(this.currentDiskSpace >= spaceToReclaim)
+				break;
+		}
+		
+		return chunks;
+	}
+
+	public void deleteChunk(String fileName) {
+		for (File file : new File(this.getChunksDir()).listFiles()) {
+			if (file.getName().equals(fileName)) {
+				file.delete();
+			}
+		}
+	}
+
+>>>>>>> 89406b3179823db573b4d9c578329dc02bc1c849
 }

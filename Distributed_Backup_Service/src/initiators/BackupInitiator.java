@@ -57,7 +57,7 @@ public class BackupInitiator implements Runnable {
 		ArrayList<Thread> protocolThreads = new ArrayList<Thread>();
 
 		for (int i = 0; i < chunks.size(); i++) {
-			ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree);
+			ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunks.get(i).getData().length);
 			chunksInfo.add(chunkInfo);
 			Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData() ));
 			protocolThreads.add(thread);

@@ -11,11 +11,13 @@ public class ChunkInfo implements Serializable {
 	private int chunkNo;
 	private ArrayList<Integer> ownerIds = new ArrayList<Integer>();
 	private int desiredReplicationDeg;
+	private int chunkSize;
 	
-	public ChunkInfo(String fileId, int chunkNo, int desiredReplicationDeg) {
+	public ChunkInfo(String fileId, int chunkNo, int desiredReplicationDeg, int chunkSize) {
 		this.fileId = fileId;
 		this.chunkNo = chunkNo;
 		this.desiredReplicationDeg = desiredReplicationDeg;
+		this.chunkSize = chunkSize;
 	}
 
 	public String getFileId() {
@@ -32,6 +34,10 @@ public class ChunkInfo implements Serializable {
 
 	public int getDesiredReplicationDeg() {
 		return desiredReplicationDeg;
+	}
+	
+	public int getChunkSize() {
+		return this.chunkSize;
 	}
 
 	public int getPerceivedReplicationDeg() {

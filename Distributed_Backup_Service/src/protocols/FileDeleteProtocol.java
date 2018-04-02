@@ -18,10 +18,12 @@ public class FileDeleteProtocol implements Runnable {
 
 	private Peer peer = null;
 	private String fileName;
+	private boolean enhancement;
 
-	public FileDeleteProtocol(Peer peer, String fileName) {
+	public FileDeleteProtocol(Peer peer, String fileName, boolean enhancement) {
 		this.peer = peer;
 		this.fileName = fileName;
+		this.enhancement = enhancement;
 	}
 
 	@Override
@@ -41,7 +43,11 @@ public class FileDeleteProtocol implements Runnable {
 		}
 		
 		Message message = new Message();
-		message.prepareMessage("DELETE", Utils.DEFAULT_VERSION, peer.getId(), encryptedFileId, -1, -1, null);
+		String version = Utils.DEFAULT_VERSION;
+		if(enhancement) {
+			version = "2.0";
+		}
+		message.prepareMessage("DELETE", version, peer.getId(), encryptedFileId, -1, -1, null);
 		try {
 			peer.getMCChannel().send(message.getHeader().getBytes("ISO-8859-1"));
 		} catch (SocketException e) {

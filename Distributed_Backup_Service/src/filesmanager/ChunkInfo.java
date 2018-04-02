@@ -51,4 +51,12 @@ public class ChunkInfo implements Serializable {
 	public boolean belongsToFile(String fileId) {
 		return this.fileId.equals(fileId);
 	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if(object instanceof ChunkInfo) {
+			return (((ChunkInfo) object)).getChunkId().equals(this.getChunkId());
+		}
+		return false;
+	}
 }

@@ -52,8 +52,7 @@ public class MulticastChannel implements Runnable {
 		byte[] buffer = new byte[Utils.MAX_PACKET_SIZE];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		socket.receive(packet);
-		byte[] temp = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
-		return temp;
+		return Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 	}
 
 }

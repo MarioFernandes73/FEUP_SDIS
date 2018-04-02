@@ -6,12 +6,15 @@ package communications;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Random;
 
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.ChunkInfo;
+import filesmanager.DeletedChunk;
 import peer.Peer;
 import protocols.ChunkBackupProtocol;
 import utils.Utils;
@@ -53,6 +56,12 @@ public class MessageFeedback implements Runnable {
 		case "REMOVED":
 			this.receivedRemovedMessage();
 			break;
+		case "CHUNKDELETED":
+			this.receivedChunkDeletedMessage();
+			break;
+		case "INITDELETE":
+			this.receivedInitDeleted();
+			break;
 		default:
 			return;
 		}
@@ -84,11 +93,13 @@ public class MessageFeedback implements Runnable {
 					e.printStackTrace();
 				}
 
-				for (Message storedMessage : this.owner.getStoredMessages()) {
-					if (storedMessage.getFileId().equals(message.getFileId())
-							&& storedMessage.getChunkNo() == message.getChunkNo()
-							&& !chunkInfo.getOwnerIds().contains(message.getSenderId())) {
-						chunkInfo.getOwnerIds().add(storedMessage.getSenderId());
+				if (message.getVersion().equals("2.0")) {
+					for (Message storedMessage : this.owner.getStoredMessages()) {
+						if (storedMessage.getFileId().equals(message.getFileId())
+								&& storedMessage.getChunkNo() == message.getChunkNo()
+								&& !chunkInfo.getOwnerIds().contains(message.getSenderId())) {
+							chunkInfo.getOwnerIds().add(storedMessage.getSenderId());
+						}
 					}
 				}
 
@@ -178,17 +189,43 @@ public class MessageFeedback implements Runnable {
 	}
 
 	private void receivedDeleteMessage() {
-		this.owner.getFilesManager().setChunksToDelete(this.message.getFileId());
+		ArrayList<ChunkInfo> deletedChunks = this.owner.getFilesManager().setChunksToDelete(this.message.getFileId());
+
+		for (BackedUpFileInfo backedUpFiles : this.owner.getFilesManager().getBackedUpFiles()) {
+			if (backedUpFiles.getId().equals(message.getFileId())) {
+				if (this.message.getVersion().equals("1.0")) {
+					backedUpFiles.clearChunks();
+				} else if (this.message.getVersion().equals("2.0")) {
+					backedUpFiles.setToDelete(true);
+				}
+			}
+		}
+
+		if (this.message.getVersion().equals("2.0")) {
+			for (ChunkInfo chunkInfo : deletedChunks) {
+				Message message = new Message();
+				message.prepareMessage("CHUNKDELETED", "1.0", this.owner.getId(), chunkInfo.getFileId(),
+						chunkInfo.getChunkNo(), -1, null);
+				try {
+					this.owner.getMCChannel().send(message.getHeader().getBytes("ISO-8859-1"));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private void receivedRemovedMessage() {
 		if (this.owner.getId() == this.message.getSenderId()) {
 			return;
 		}
-		for(BackedUpFileInfo fileInfo : this.owner.getFilesManager().getBackedUpFiles()) {
-			if(fileInfo.getId().equals(message.getFileId())) {
-				for(ChunkInfo chunkInfo : fileInfo.getBackedUpChunks()) {
-					if((chunkInfo.getChunkId() + chunkInfo.getChunkNo()).equals(message.getFileId() + message.getChunkNo())) {
+		for (BackedUpFileInfo fileInfo : this.owner.getFilesManager().getBackedUpFiles()) {
+			if (fileInfo.getId().equals(message.getFileId())) {
+				for (ChunkInfo chunkInfo : fileInfo.getBackedUpChunks()) {
+					if ((chunkInfo.getChunkId() + chunkInfo.getChunkNo())
+							.equals(message.getFileId() + message.getChunkNo())) {
 						for (int i = 0; i < chunkInfo.getOwnerIds().size(); i++) {
 							if (chunkInfo.getOwnerIds().get(i) == message.getSenderId()) {
 								chunkInfo.getOwnerIds().remove(i);
@@ -198,7 +235,7 @@ public class MessageFeedback implements Runnable {
 				}
 			}
 		}
-		
+
 		this.owner.getPutChunkMessages().clear();
 		for (ChunkInfo chunkInfo : this.owner.getFilesManager().getChunksInfo()) {
 			if ((chunkInfo.getFileId() + chunkInfo.getChunkNo()).equals(message.getFileId() + message.getChunkNo())) {
@@ -222,10 +259,10 @@ public class MessageFeedback implements Runnable {
 										.getExistingChunk(chunkInfo.getFileId() + chunkInfo.getChunkNo());
 								byte[] existingChunkData = Files.readAllBytes(existingChunk.toPath());
 								ChunkBackupProtocol reBackup = new ChunkBackupProtocol(this.owner, chunkInfo,
-										existingChunkData);
+										existingChunkData, true);
 								new Thread(reBackup).start();
 								System.out.println("ReBackup started!");
-								
+
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							} catch (IOException e) {
@@ -236,7 +273,32 @@ public class MessageFeedback implements Runnable {
 				}
 			}
 		}
+	}
 
+	private void receivedChunkDeletedMessage() {
+		if (this.owner.getId() == this.message.getSenderId()) {
+			return;
+		}
+
+		for (BackedUpFileInfo fileInfo : this.owner.getFilesManager().getBackedUpFiles()) {
+			if (fileInfo.getId().equals(message.getFileId())) {
+				for (ChunkInfo chunkInfo : fileInfo.getBackedUpChunks()) {
+					if (chunkInfo.getChunkId().equals(message.getFileId() + message.getChunkNo())) {
+						message.getSenderId();
+						this.owner.getChunksToDelete().add(new DeletedChunk(message.getSenderId(), chunkInfo));
+					}
+				}
+			}
+		}
+
+	}
+
+	private void receivedInitDeleted() {
+		ArrayList<ChunkInfo> deletedChunks = this.owner.getFilesManager().setChunksToDelete(this.message.getFileId());
+
+		if (deletedChunks.size() > 0) {
+			System.out.println("OFFLINE Peer with chunks to be deleted has come online!");
+		}
 	}
 
 }

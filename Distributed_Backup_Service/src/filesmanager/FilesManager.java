@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import javax.xml.bind.DatatypeConverter;
 
 import communications.Message;
@@ -497,17 +499,25 @@ public class FilesManager {
 		return this.chunksToDelete;
 	}
 
-	public void setChunksToDelete(String fileId) {
-		for (ChunkInfo chunkInfo : this.peerChunksInfo) {
+	public ArrayList<ChunkInfo> setChunksToDelete(String fileId) {
+		ArrayList<ChunkInfo> chunks = new ArrayList<ChunkInfo>();
+		
+		Iterator<ChunkInfo> iter = this.peerChunksInfo.iterator();
+
+		while (iter.hasNext()) {
+			ChunkInfo chunkInfo = iter.next();		
+			
 			if (chunkInfo.getFileId().equals(fileId)) {
+				chunks.add(new ChunkInfo(chunkInfo.getFileId(), chunkInfo.getChunkNo(), this.ownerId, chunkInfo.getChunkSize()));
 				this.chunksToDelete.add(chunkInfo);
+				iter.remove();
 			}
 		}
-
+		
+		return chunks;
 	}
 
 	public void deleteFileChunks() {
-		System.out.println("DELETING CHUNKS");
 		ArrayList<ChunkInfo> buffer = new ArrayList<ChunkInfo>();
 		for (ChunkInfo chunk : this.chunksToDelete) {
 			File chunkToDelete = new File(this.getChunksDir() + Utils.getSeparator() + chunk.getChunkId());

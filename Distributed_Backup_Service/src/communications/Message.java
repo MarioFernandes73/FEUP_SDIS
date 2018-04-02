@@ -22,7 +22,7 @@ public class Message {
 		} else {
 			return "";
 		}
-		if (!operation.equals("DELETE")) {
+		if (!operation.equals("DELETE") && !operation.equals("INITDELETE")) {
 			if (chunkNoSetted) {
 				header += chunkNo + " ";
 			} else {

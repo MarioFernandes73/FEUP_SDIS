@@ -27,23 +27,6 @@ public class TestApp {
 		printArguments();
 		
 		//Perform operation on RMI object
-		/*try {
-	        RMIInterface stub = (RMIInterface) Naming.lookup(accessPoint);
-	        String response = stub.backup("test.jpg", 3, false);
-	        System.out.println(response);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Wrong access point");
-		}*/
-		
-		//Perform operation on RMI object
 		RMIInterface stub;
         try {
 			stub = (RMIInterface) Naming.lookup(accessPoint);

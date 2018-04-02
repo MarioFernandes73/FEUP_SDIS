@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 
 import communications.Message;
 import communications.MulticastChannel;
 import communications.RMIInterface;
+import filesmanager.ChunkInfo;
+import filesmanager.DeletedChunk;
 import filesmanager.FilesManager;
 import initiators.BackupInitiator;
 import initiators.RestoreInitiator;
@@ -26,6 +29,7 @@ public class Peer implements RMIInterface {
 	private ArrayList<Message> storedMessages = new ArrayList<Message>();
 	private ArrayList<Message> chunkMessages = new ArrayList<Message>();
 	private ArrayList<Message> putChunkMessages = new ArrayList<Message>();
+	private ArrayList<DeletedChunk> chunksToDelete = new ArrayList<DeletedChunk>();
 	
 	public Peer(int id, String MCIP, int MCPort, String MDBIP, int MDBPort, String MDRIP, int MDRPort) throws UnknownHostException, IOException {
 		this.id = id;
@@ -64,7 +68,7 @@ public class Peer implements RMIInterface {
 	@Override
 	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {
 		System.out.println("Starting to backup " + fileName);
-		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree));
+		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
 		thread.start();
 		return null;
 	}
@@ -87,7 +91,7 @@ public class Peer implements RMIInterface {
 	@Override
 	public String delete(String fileName, boolean enhancement) throws RemoteException {
 		System.out.println("Starting to delete " + fileName);
-		Thread thread = new Thread(new FileDeleteProtocol(this, fileName));
+		Thread thread = new Thread(new FileDeleteProtocol(this, fileName, enhancement));
 		thread.start();
 		return null;
 	}
@@ -113,6 +117,10 @@ public class Peer implements RMIInterface {
 
 	public ArrayList<Message> getPutChunkMessages() {
 		return this.putChunkMessages;
+	}
+
+	public ArrayList<DeletedChunk> getChunksToDelete() {
+		return this.chunksToDelete;
 	}
 
 }

@@ -18,11 +18,13 @@ public class ChunkBackupProtocol implements Runnable {
 	private Peer peer = null;
 	private ChunkInfo chunkInfo = null;
 	private byte[] chunkData = null;
+	private boolean enhancement = false;
 
-	public ChunkBackupProtocol(Peer peer, ChunkInfo chunkInfo, byte[] chunkData) {
+	public ChunkBackupProtocol(Peer peer, ChunkInfo chunkInfo, byte[] chunkData, boolean enhancement) {
 		this.peer = peer;
 		this.chunkData = chunkData;
 		this.chunkInfo = chunkInfo;
+		this.enhancement = enhancement;
 	}
 
 	@Override
@@ -31,7 +33,11 @@ public class ChunkBackupProtocol implements Runnable {
 		int delay = Utils.FIXED_WAITING_TIME;
 		while (tries < Utils.MAX_TRIES) {
 			Message message = new Message();
-				message.prepareMessage("PUTCHUNK", Utils.DEFAULT_VERSION, peer.getId(), chunkInfo.getFileId(),
+			String version = Utils.DEFAULT_VERSION;
+			if(enhancement) {
+				version = "2.0";
+			}
+				message.prepareMessage("PUTCHUNK", version, peer.getId(), chunkInfo.getFileId(),
 						chunkInfo.getChunkNo(), chunkInfo.getDesiredReplicationDeg(),
 						chunkData);
 			try {

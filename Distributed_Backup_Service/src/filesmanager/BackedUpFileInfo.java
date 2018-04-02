@@ -10,6 +10,7 @@ public class BackedUpFileInfo implements Serializable {
 	private String name;
 	private long lastModifiedDate;
 	private boolean isBackedUp = false;
+	private boolean toDelete = false;
 	private ArrayList<ChunkInfo> backedUpChunks = new ArrayList<ChunkInfo>();
 	
 	public BackedUpFileInfo(String id, String name, long lastModifiedDate, boolean isBackedUp) {
@@ -67,5 +68,17 @@ public class BackedUpFileInfo implements Serializable {
 			}
 		}
 		return false;
+	}
+
+	public void clearChunks() {
+		this.backedUpChunks = new ArrayList<ChunkInfo>();
+	}
+	
+	public boolean getToDelete() {
+		return this.toDelete;
+	}
+	
+	public void setToDelete(boolean toDelete) {
+		this.toDelete = toDelete;
 	}
 }

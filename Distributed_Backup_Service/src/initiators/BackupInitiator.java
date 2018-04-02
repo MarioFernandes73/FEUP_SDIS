@@ -15,11 +15,13 @@ public class BackupInitiator implements Runnable {
 	private Peer peer = null;
 	private String fileName = null;
 	private int replicationDegree = 0;
+	private boolean enhancement = false;
 
-	public BackupInitiator(Peer peer, String fileName, int replicationDegree) {
+	public BackupInitiator(Peer peer, String fileName, int replicationDegree, boolean enhancement) {
 		this.peer = peer;
 		this.fileName = fileName;
 		this.replicationDegree = replicationDegree;
+		this.enhancement = enhancement;
 	}
 
 	@Override
@@ -59,7 +61,7 @@ public class BackupInitiator implements Runnable {
 		for (int i = 0; i < chunks.size(); i++) {
 			ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunks.get(i).getData().length);
 			chunksInfo.add(chunkInfo);
-			Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData() ));
+			Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData(), this.enhancement));
 			protocolThreads.add(thread);
 			this.peer.getStoredMessages().clear();
 			thread.start();

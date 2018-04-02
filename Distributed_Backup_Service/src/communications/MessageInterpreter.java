@@ -13,11 +13,11 @@ public class MessageInterpreter {
 	}
 	
 	private String getOperationFormat(){
-		return "^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED)$";
+		return "^(PUTCHUNK|STORED|GETCHUNK|CHUNK|DELETE|REMOVED|CHUNKDELETED|INITDELETE)$";
 	}
 	
 	private String getHeaderFormat(String operation) {
-		String version = " (1\\.0)";
+		String version = " ((1\\.0)|(2\\.0))";
 		String senderId = " ((0)|([0-9]+))";
 		String fileId = " ([A-Za-z0-9]{64})";
 		String chunckNo = " ([0-9]{1,6})";
@@ -35,6 +35,7 @@ public class MessageInterpreter {
 			case "STORED":
 			case "GETCHUNK":
 			case "REMOVED":
+			case "CHUNKDELETED":
 				//operation <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
 				format = common + chunckNo + "$";
 				break;
@@ -43,6 +44,7 @@ public class MessageInterpreter {
 				format = common + chunckNo + " " + crlf + crlf + body + "$";
 				break;
 			case "DELETE":
+			case "INITDELETE":
 				//DELETE <Version> <SenderId> <FileId> <CRLF><CRLF>
 				format = common + "$";
 				break;
@@ -60,6 +62,7 @@ public class MessageInterpreter {
 		if(!operation.matches(getOperationFormat())) {
 			return null;
 		}
+		System.out.println("OPERATION   " + operation);
 
 		if(operation.equals("PUTCHUNK") || operation.equals("CHUNK")) {
 			if(!text.matches(getHeaderFormat(operation))) {
@@ -90,7 +93,7 @@ public class MessageInterpreter {
 		message.setFileId(rest.substring(0, rest.indexOf(" ")));
 		rest = rest.substring(rest.indexOf(" ") + 1);
 		//ChunkNo
-		if(!operation.equals("DELETE")) {
+		if(!operation.equals("DELETE") && !operation.equals("INITDELETE")) {
 			message.setChunkNo(Integer.parseInt(rest.substring(0, rest.indexOf(" "))));
 			rest = rest.substring(rest.indexOf(" ") + 1);
 		}
@@ -103,7 +106,6 @@ public class MessageInterpreter {
 			byte[] temp = new byte[this.data.length - message.getHeader().length()];
 			System.arraycopy(this.data, message.getHeader().length(), temp, 0, this.data.length - message.getHeader().length());
 			message.setBody(temp);
-			//message.setBody(rest.substring(rest.indexOf(" ") + 5));//+5 to ignore both crlf before body
 		}
 		return message;
 	}

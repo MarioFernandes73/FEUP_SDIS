@@ -33,6 +33,7 @@ public class MessageFeedback implements Runnable {
 		this.message = interpreter.parseText();
 		if (this.message == null) {
 			System.out.println("Message received in the wrong format!");
+			return;
 		}
 		switch (message.getOperation()) {
 		case "PUTCHUNK":
@@ -177,7 +178,7 @@ public class MessageFeedback implements Runnable {
 	}
 
 	private void receivedDeleteMessage() {
-		this.owner.getFilesManager().deleteFileChunks(this.message.getFileId());
+		this.owner.getFilesManager().setChunksToDelete(this.message.getFileId());
 	}
 
 	private void receivedRemovedMessage() {

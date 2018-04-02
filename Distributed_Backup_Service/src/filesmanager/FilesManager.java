@@ -24,6 +24,7 @@ public class FilesManager {
 	private ArrayList<BackedUpFileInfo> peerFiles = new ArrayList<BackedUpFileInfo>();
 	private ArrayList<ChunkInfo> peerChunksInfo = new ArrayList<ChunkInfo>();
 	private ArrayList<Chunk> chunksToSave = new ArrayList<Chunk>();
+	private ArrayList<ChunkInfo> chunksToDelete = new ArrayList<ChunkInfo>();
 
 	public FilesManager(int ownerId) {
 		this.ownerId = ownerId;
@@ -348,7 +349,7 @@ public class FilesManager {
 	public int getCurrentDiskSpace() {
 		return currentDiskSpace;
 	}
-	
+
 	public ArrayList<BackedUpFileInfo> getBackedUpFiles() {
 		ArrayList<BackedUpFileInfo> backedUpFiles = new ArrayList<BackedUpFileInfo>();
 		for (BackedUpFileInfo file : this.peerFiles) {
@@ -438,32 +439,12 @@ public class FilesManager {
 		}
 	}
 
-
-	public void deleteFileChunks(String fileId) {
-		String chunksDir = getChunksDir() + "/";
-		for(ChunkInfo chunk: peerChunksInfo) {
-			
-			if (chunk.belongsToFile(fileId)) {			
-				int chunkNo = chunk.getChunkNo();
-				
-				File chunkToDelete = new File(chunksDir + chunk.getChunkId());
-				if(chunkToDelete.delete()){
-	    			System.out.println("Chunk no. " + chunkNo + " has been deleted!");
-	    			peerChunksInfo.remove(chunk);
-	    		} else {
-	    			System.out.println("Failed to delete chunk no. " + chunkNo);
-	    		}
-			}
-			
-		}
-	}
-	
 	public String getState() {
 		String state = "";
 		state += "Backedup files: ";
-		
+
 		state += "Stored chunks: ";
-		for(ChunkInfo chunk: peerChunksInfo) {
+		for (ChunkInfo chunk : peerChunksInfo) {
 			state += "\nId: " + chunk.getChunkId();
 			state += "\n \tSize: " + chunk.getChunkId() + " KBytes";
 			state += "\n \tPerceived replication degree: " + chunk.getPerceivedReplicationDeg();
@@ -472,24 +453,24 @@ public class FilesManager {
 	}
 
 	public ArrayList<ChunkInfo> calcChunksToClear(int spaceToReclaim) {
-		if(spaceToReclaim == 0) {
+		if (spaceToReclaim == 0) {
 			return this.peerChunksInfo;
 		}
-		
-		if(this.currentDiskSpace >= spaceToReclaim) {
+
+		if (this.currentDiskSpace >= spaceToReclaim) {
 			return new ArrayList<ChunkInfo>();
 		}
-		
+
 		ArrayList<ChunkInfo> chunks = new ArrayList<ChunkInfo>();
-		
-		for(ChunkInfo chunkInfo : this.peerChunksInfo) {
+
+		for (ChunkInfo chunkInfo : this.peerChunksInfo) {
 			chunks.add(chunkInfo);
 			this.currentDiskSpace -= chunkInfo.getChunkSize();
-			
-			if(this.currentDiskSpace >= spaceToReclaim)
+
+			if (this.currentDiskSpace >= spaceToReclaim)
 				break;
 		}
-		
+
 		return chunks;
 	}
 
@@ -499,5 +480,35 @@ public class FilesManager {
 				file.delete();
 			}
 		}
+	}
+
+	public ArrayList<ChunkInfo> getChunksToDelete() {
+		return this.chunksToDelete;
+	}
+
+	public void setChunksToDelete(String fileId) {
+		for (ChunkInfo chunkInfo : this.peerChunksInfo) {
+			if (chunkInfo.getFileId().equals(fileId)) {
+				this.chunksToDelete.add(chunkInfo);
+			}
+		}
+
+	}
+
+	public void deleteFileChunks() {
+		System.out.println("DELETING CHUNKS");
+		ArrayList<ChunkInfo> buffer = new ArrayList<ChunkInfo>();
+		for (ChunkInfo chunk : this.chunksToDelete) {
+			File chunkToDelete = new File(this.getChunksDir() + Utils.getSeparator() + chunk.getChunkId());
+			if (chunkToDelete.delete()) {
+				System.out.println("Chunk no. " + chunk.getChunkNo() + " has been deleted!");
+				peerChunksInfo.remove(chunk);
+			} else {
+				buffer.add(chunk);
+				System.out.println("Failed to delete chunk no. " + chunk.getChunkNo());
+			}
+		}
+		this.chunksToDelete.clear();
+		this.chunksToDelete.addAll(buffer);
 	}
 }

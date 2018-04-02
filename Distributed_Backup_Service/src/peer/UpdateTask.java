@@ -25,6 +25,7 @@ public class UpdateTask extends TimerTask {
 			this.peer.getFilesManager().saveChunksInfo();
 			this.peer.getFilesManager().saveAllChunks();
 			this.peer.getFilesManager().saveFilesInfo();
+			this.peer.getFilesManager().deleteFileChunks();
 		}
 		
 	}

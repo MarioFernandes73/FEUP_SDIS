@@ -27,7 +27,8 @@ public class Tests {
 			peers.add(new Peer(peerid, "224.0.0.0", 8000, "224.0.0.0", 8001, "224.0.0.0", 8002));
 			//peers.get(0).backup("test.jpg", 2, true);
 			//peers.get(1).restore("test.jpg", true);
-			peers.get(1).reclaim(0, false);
+			//peers.get(1).reclaim(0, false);
+			//peers.get(0).delete("test.jpg", true);
 
 //			System.out.println(peers.get(1).getFilesManager().getChunksInfo().size());
 /*

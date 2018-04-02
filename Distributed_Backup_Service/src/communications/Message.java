@@ -22,10 +22,12 @@ public class Message {
 		} else {
 			return "";
 		}
-		if (!operation.equals("DELETE") && chunkNoSetted) {
-			header += chunkNo + " ";
-		} else {
-			return "";
+		if (!operation.equals("DELETE")) {
+			if (chunkNoSetted) {
+				header += chunkNo + " ";
+			} else {
+				return "";
+			}
 		}
 		if (operation.equals("PUTCHUNK")) {
 			if (replicationDegSetted) {
@@ -103,7 +105,7 @@ public class Message {
 		this.setVersion(version);
 		this.setSenderId(senderId);
 		this.setFileId(fileId);
-		if(chunkNo >= 0)
+		if (chunkNo >= 0)
 			this.setChunkNo(chunkNo);
 		if (replicationDeg >= 0)
 			this.setReplicationDeg(replicationDeg);

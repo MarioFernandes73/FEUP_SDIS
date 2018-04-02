@@ -39,8 +39,24 @@ public class BackedUpFileInfo implements Serializable {
 		return id;
 	}
 	
+	public int getDesiredReplicationDeg() {
+		if(backedUpChunks.size() <= 0)
+			return -1;
+		else
+			return backedUpChunks.get(0).getDesiredReplicationDeg();
+	}
+	
 	public ArrayList<ChunkInfo> getBackedUpChunks() {
 		return this.backedUpChunks;
+	}
+	
+	public String getChunksInfo() {
+		String info = "";
+		for(ChunkInfo chunk: backedUpChunks) {
+			info += "\n \tId: " + chunk.getChunkId();
+			info += "\n \tPerceived replication degree: " + chunk.getPerceivedReplicationDeg() + "\n";
+		}
+		return info;
 	}
 	
 	@Override

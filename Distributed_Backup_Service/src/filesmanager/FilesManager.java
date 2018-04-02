@@ -460,12 +460,23 @@ public class FilesManager {
 	
 	public String getState() {
 		String state = "";
-		state += "Backedup files: ";
+		
+		String filesDirectory = getFilesDir() + "/";
+		state += "Files with backup initiated by this peer:";
+		for(BackedUpFileInfo file: peerFiles) {
+			if(file.getDesiredReplicationDeg() >= 0) {
+				state += "\nPath: " + filesDirectory + file.getName();
+				state += "\n \tBackup service id: " + file.getId();
+				state += "\n \tDesired replication degree: " + file.getDesiredReplicationDeg();
+				state += "\n \tFile chunks:";
+				state += file.getChunksInfo();
+			}
+		}
 		
 		state += "Stored chunks: ";
 		for(ChunkInfo chunk: peerChunksInfo) {
 			state += "\nId: " + chunk.getChunkId();
-			state += "\n \tSize: " + chunk.getChunkId() + " KBytes";
+			state += "\n \tSize: " + chunk.getChunkSize()/1000 + " KBytes";
 			state += "\n \tPerceived replication degree: " + chunk.getPerceivedReplicationDeg();
 		}
 		return state;

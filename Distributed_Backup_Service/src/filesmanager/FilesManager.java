@@ -20,7 +20,7 @@ import utils.Utils;
 public class FilesManager {
 
 	private int ownerId;
-	private int currentDiskSpace = Utils.MAX_DISK_SPACE;
+	private long currentDiskSpace = Utils.MAX_DISK_SPACE;
 	private ArrayList<BackedUpFileInfo> peerFiles = new ArrayList<BackedUpFileInfo>();
 	private ArrayList<ChunkInfo> peerChunksInfo = new ArrayList<ChunkInfo>();
 	private ArrayList<Chunk> chunksToSave = new ArrayList<Chunk>();
@@ -346,7 +346,7 @@ public class FilesManager {
 				+ this.ownerId + "disk" + Utils.getSeparator() + "Info" + Utils.getSeparator() + "chunksInfo.ser";
 	}
 
-	public int getCurrentDiskSpace() {
+	public long getCurrentDiskSpace() {
 		return currentDiskSpace;
 	}
 
@@ -442,7 +442,7 @@ public class FilesManager {
 	public String getState() {
 		String state = "";
 		state += "Backedup files: ";
-		String filesDirectory = getFilesDir() + "/";
+		String filesDirectory = getFilesDir() + Utils.getSeparator();
 		state += "Files with backup initiated by this peer:";
 		for(BackedUpFileInfo file: peerFiles) {
 			if(file.getDesiredReplicationDeg() >= 0) {
@@ -454,7 +454,7 @@ public class FilesManager {
 			}
 		}
 		
-		state += "Stored chunks: ";
+		state += "\nStored chunks: ";
 		for (ChunkInfo chunk : peerChunksInfo) {
 			state += "\nId: " + chunk.getChunkId();
 			state += "\n \tSize: " + chunk.getChunkSize()/1000 + " KBytes";

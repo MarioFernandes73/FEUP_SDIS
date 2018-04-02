@@ -29,6 +29,7 @@ public class Tests {
 			//peers.get(1).restore("test.jpg", true);
 			//peers.get(1).reclaim(0, false);
 			//peers.get(0).delete("test.jpg", true);
+			System.out.println(peers.get(2).state());
 
 //			System.out.println(peers.get(1).getFilesManager().getChunksInfo().size());
 /*

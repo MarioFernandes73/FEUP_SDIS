@@ -12,12 +12,9 @@ import communications.RMIInterface;
 import filesmanager.FilesManager;
 import initiators.BackupInitiator;
 import initiators.RestoreInitiator;
-<<<<<<< HEAD
 import protocols.FileDeleteProtocol;
 import utils.Utils;
-=======
 import protocols.SpaceReclaimProtocol;
->>>>>>> 89406b3179823db573b4d9c578329dc02bc1c849
 
 public class Peer implements RMIInterface {
 	

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Random;
 
+import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.ChunkInfo;
 import peer.Peer;
@@ -183,6 +184,20 @@ public class MessageFeedback implements Runnable {
 		if (this.owner.getId() == this.message.getSenderId()) {
 			return;
 		}
+		for(BackedUpFileInfo fileInfo : this.owner.getFilesManager().getBackedUpFiles()) {
+			if(fileInfo.getId().equals(message.getFileId())) {
+				for(ChunkInfo chunkInfo : fileInfo.getBackedUpChunks()) {
+					if((chunkInfo.getChunkId() + chunkInfo.getChunkNo()).equals(message.getFileId() + message.getChunkNo())) {
+						for (int i = 0; i < chunkInfo.getOwnerIds().size(); i++) {
+							if (chunkInfo.getOwnerIds().get(i) == message.getSenderId()) {
+								chunkInfo.getOwnerIds().remove(i);
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		this.owner.getPutChunkMessages().clear();
 		for (ChunkInfo chunkInfo : this.owner.getFilesManager().getChunksInfo()) {
 			if ((chunkInfo.getFileId() + chunkInfo.getChunkNo()).equals(message.getFileId() + message.getChunkNo())) {

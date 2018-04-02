@@ -438,7 +438,7 @@ public class FilesManager {
 		}
 	}
 
-<<<<<<< HEAD
+
 	public void deleteFileChunks(String fileId) {
 		String chunksDir = getChunksDir() + "/";
 		for(ChunkInfo chunk: peerChunksInfo) {
@@ -459,7 +459,7 @@ public class FilesManager {
 	}
 	
 	public String getState() {
-		String state = "boas";
+		String state = "";
 		state += "Backedup files: ";
 		
 		state += "Stored chunks: ";
@@ -470,7 +470,7 @@ public class FilesManager {
 		}
 		return state;
 	}
-=======
+
 	public ArrayList<ChunkInfo> calcChunksToClear(int spaceToReclaim) {
 		if(spaceToReclaim == 0) {
 			return this.peerChunksInfo;
@@ -500,6 +500,4 @@ public class FilesManager {
 			}
 		}
 	}
-
->>>>>>> 89406b3179823db573b4d9c578329dc02bc1c849
 }

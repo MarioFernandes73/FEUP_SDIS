@@ -49,6 +49,6 @@ public class ChunkInfo implements Serializable {
 	}
 	
 	public boolean belongsToFile(String fileId) {
-		return this.fileId == fileId;
+		return this.fileId.equals(fileId);
 	}
 }

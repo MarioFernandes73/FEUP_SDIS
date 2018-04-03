@@ -112,7 +112,7 @@ public class Peer implements RMIInterface {
 		state += "Free disc space: " + filesManager.getCurrentDiskSpace()/1000 + " KBytes (" + filesManager.getCurrentDiskSpace()*100/Utils.MAX_DISK_SPACE + "%)";
 		long chunkSpace = Utils.MAX_DISK_SPACE - filesManager.getCurrentDiskSpace();
 		state += "\nChunk occupation space: " + chunkSpace/1000 + " KBytes (" + chunkSpace*100/Utils.MAX_DISK_SPACE + "%)";
-		System.out.println("Peer state: " + state);
+		System.out.println("Peer state: \n" + state);
 		return state;
 	}
 

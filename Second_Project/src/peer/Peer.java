@@ -2,6 +2,7 @@ package peer;
 
 import messages.PacketHandler;
 import utils.Constants;
+import rmi.RMIInterface;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -10,7 +11,7 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Peer {
+public class Peer implements RMIInterface{
 
     private Integer id;
     private boolean bootPeer;
@@ -49,4 +50,29 @@ public class Peer {
         new PacketHandler(packet).run();
     }
 
+    //RMI Funtions
+    @Override
+    public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {
+
+    }
+
+    @Override
+    public String restore(String fileName, boolean enhancement) throws RemoteException {
+
+    }
+
+    @Override
+    public String delete(String fileName, boolean enhancement) throws RemoteException {
+
+    }
+
+    @Override
+    public String reclaim(int space, boolean enhancement) throws RemoteException {
+
+    }
+
+    @Override
+    public String state() throws RemoteException {
+
+    }
 }

@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Peer {
@@ -119,8 +120,9 @@ public class Peer {
     	DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
     	receiveSocket.receive(receivePacket);
     	
-    	String msg = new String(receivePacket.getData(), 0, receivePacket.getLength());  	
-    	System.out.println(msg);
+    	String tableInfo = new String(receivePacket.getData(), 0, receivePacket.getLength());  
+    	if(!tableInfo.equals(""))
+        	fillForwardingTable(tableInfo);
     }
     
     public static void bootPeer() throws IOException
@@ -139,7 +141,7 @@ public class Peer {
     	
     	sendSocket = new DatagramSocket();
     	
-    	String table = "Table\n";
+    	String table = "";
     	for(Address add : forwardingTable)
     		table += add.getIp() + ":" + add.getPort() + "\n";
     	 
@@ -151,9 +153,21 @@ public class Peer {
     	forwardingTable.add(peerAddress);
     	showForwardingTable();
     }
+    
+    public static void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException
+    {
+    	String[] rows = tableInfo.split("\n");
+    	for(String row : rows)
+    	{
+    		String addressParts[] = row.split(":");
+    		Address address = new Address(addressParts[0], Integer.parseInt(addressParts[1]));
+    		forwardingTable.add(address);
+    		System.out.println("Added " + addressParts[0] + ":" + addressParts[1] + " to the the Forwarding Table.");
+    	}
+    }
 
     public static void showForwardingTable() {
-    	System.out.println("\nForwarding Table");
+    	System.out.println("\nForwarding Table:");
     	for(Address address : forwardingTable) {
             System.out.println(address.getIp() + ":" + address.getPort());
         }

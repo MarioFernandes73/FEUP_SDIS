@@ -1,7 +1,10 @@
 package rmi;
 
 import rmi.RMIInterface;
+
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 
 public class RMICreator {
 
@@ -14,7 +17,7 @@ public class RMICreator {
 
         } catch (RemoteException e) {
             e.printStackTrace();
-            System.out.println("RMI error");
+            System.out.println("RMI stub creation error");
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

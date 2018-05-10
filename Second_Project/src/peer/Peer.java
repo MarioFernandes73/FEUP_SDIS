@@ -1,6 +1,11 @@
 package peer;
 
+import client.Client;
+import filesmanager.BackedUpFileInfo;
+import filesmanager.Chunk;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
@@ -177,4 +182,25 @@ public class Peer {
         return in.readLine();
     }
 
+
+    public String getEncryptedFileName(Client client, File file) {
+        return "";
+    }
+
+    public boolean checkIfFileExists(String encryptedFileId) {
+        return false;
+    }
+
+    public ArrayList<Chunk> splitToChunks(File file) {
+        return new ArrayList<>();
+    }
+
+    public void clearStoredMessagesOfFile(String encryptedFileId) {
+    }
+
+    public void updateBackedUpFiles(BackedUpFileInfo newBackedUpFile) {
+    }
+
+    public void saveFilesInfo() {
+    }
 }

@@ -12,41 +12,39 @@ import java.util.ArrayList;
 
 public class Peer {
 
-    private static String id;
-    private static boolean isBootPeer;
-    private static String ip;
-    private static int port;
-    private static String bootPeerIP;
-    private static int bootPeerPort;
-    private static ArrayList<Address> forwardingTable = new ArrayList<Address>();
-    private static int peerLimit;
-    private static int networkSize;
+    private String id;
+    private boolean isBootPeer;
+    private String ip;
+    private int port;
+    private String bootPeerIP;
+    private int bootPeerPort;
+    private ArrayList<Address> forwardingTable = new ArrayList<Address>();
+    private int peerLimit;
+    private int networkSize;
     
-    private static DatagramSocket sendSocket;
-    private static DatagramSocket receiveSocket;
+    private DatagramSocket sendSocket;
+    private DatagramSocket receiveSocket;
 
-    public static void main(String[] args) throws IOException {
+    public Peer(String args[]) throws IOException{
+        if(!verifyArgs(args))
+            return;
 
-    	if(!verifyArgs(args))
-    		return;
-    	
         ip = InetAddress.getLocalHost().getHostAddress();
         //getPublicIP();
-        
+
         id = ip + ":" + port;
 
         if(isBootPeer)
         {
-        	bootPeer();
+            bootPeer();
         }
         else
         {
-        	normalPeer();
+            normalPeer();
         }
-       
     }
 
-    public static boolean verifyArgs(String args[])
+    public boolean verifyArgs(String args[])
     {
     	if(args.length != 3)
     	{
@@ -57,7 +55,7 @@ public class Peer {
     	if(args[0].equals("boot"))
     	{
     		isBootPeer = true;
-    		
+
     		int lim = Integer.parseInt(args[2]);
     		if(lim >= 1 && lim <= 1000)
     		{
@@ -89,7 +87,7 @@ public class Peer {
     		System.out.println("Error. First argument should be 'boot' or 'normal'.");
     		return false;
     	}
-    	
+
 		if(args[1].matches("[0-9]{1,5}"))
 		{
 			port = Integer.parseInt(args[1]);
@@ -104,7 +102,7 @@ public class Peer {
 		return true;
     }
     
-    public static void normalPeer() throws IOException
+    public void normalPeer() throws IOException
     {
     	sendSocket = new DatagramSocket();
     	
@@ -125,7 +123,7 @@ public class Peer {
         	fillForwardingTable(tableInfo);
     }
     
-    public static void bootPeer() throws IOException
+    public void bootPeer() throws IOException
     {
     	receiveSocket = new DatagramSocket(port);
 		
@@ -154,7 +152,7 @@ public class Peer {
     	showForwardingTable();
     }
     
-    public static void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException
+    public void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException
     {
     	String[] rows = tableInfo.split("\n");
     	for(String row : rows)
@@ -166,14 +164,14 @@ public class Peer {
     	}
     }
 
-    public static void showForwardingTable() {
+    public void showForwardingTable() {
     	System.out.println("\nForwarding Table:");
     	for(Address address : forwardingTable) {
             System.out.println(address.getIp() + ":" + address.getPort());
         }
     }
     
-    public static String getPublicIP() throws IOException {
+    public String getPublicIP() throws IOException {
         URL whatismyip = new URL("http://checkip.amazonaws.com");
         BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
         return in.readLine();

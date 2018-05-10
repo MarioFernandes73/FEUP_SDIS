@@ -1,26 +1,27 @@
 package initiators;
 
+import client.Client;
 import peer.Peer;
 
 import java.io.File;
 
 public class BackupInitiator implements Runnable {
 
+    private Client client;
     private Peer peer;
     private File file;
     private int replicationDegree;
-    private boolean enhancement;
 
-    public BackupInitiator(Peer peer, File file, int replicationDegree, boolean enhancement) {
+    public BackupInitiator(Client client, Peer peer, File file, int replicationDegree) {
+        this.client = client;
         this.peer = peer;
         this.file = file;
         this.replicationDegree = replicationDegree;
-        this.enhancement = enhancement;
     }
 
     @Override
     public void run() {
-        //check if file exist
+       // String peer.getEncrypted(client, file);
 
 
 

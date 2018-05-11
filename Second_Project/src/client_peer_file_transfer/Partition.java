@@ -9,4 +9,13 @@ public class Partition {
 		this.data = data;
 		this.partitionNo = partitionNo;
 	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public int getPartitionNo() {
+		return partitionNo;
+	}
+
 }

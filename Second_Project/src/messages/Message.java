@@ -2,7 +2,7 @@ package messages;
 
 import peer.Peer;
 
-class Message {
+public class Message {
 
     private byte[] body;
 

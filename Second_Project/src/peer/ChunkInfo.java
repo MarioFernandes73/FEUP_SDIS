@@ -9,7 +9,7 @@ public class ChunkInfo implements Serializable {
     private static final long serialVersionUID = 1L;
     private String fileId;
     private int chunkNo;
-    private ArrayList<Integer> ownerIds = new ArrayList<Integer>();
+    private ArrayList<String> ownerIds = new ArrayList<String>();
     private int desiredReplicationDeg;
     private int chunkSize;
 
@@ -28,7 +28,7 @@ public class ChunkInfo implements Serializable {
         return chunkNo;
     }
 
-    public ArrayList<Integer> getOwnerIds() {
+    public ArrayList<String> getOwnerIds() {
         return ownerIds;
     }
 

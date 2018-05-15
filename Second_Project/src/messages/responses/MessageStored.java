@@ -1,4 +1,4 @@
-package messages;
+package messages.responses;
 
 public class MessageStored {
 }

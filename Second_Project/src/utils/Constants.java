@@ -7,6 +7,8 @@ public class Constants {
     public static final int MAX_CHUNK_SIZE = 64000;
     
     public static final int MAX_CHUNK_TRANSFER_TRIES = 3;
+
+    public static final int RESPONSE_AWAITING_TIME = 300;
     
     //Peer RMI operation responses
     public static final int SUCCESS = 0;

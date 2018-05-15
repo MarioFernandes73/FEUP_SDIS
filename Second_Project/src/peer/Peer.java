@@ -4,6 +4,7 @@ import client.Client;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.FilesManager;
+import messages.MessagesRecords;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,6 +31,8 @@ public class Peer {
 
     private FilesManager filesManager;
 
+    private MessagesRecords records;
+
     private DatagramSocket sendSocket;
     private DatagramSocket receiveSocket;
 
@@ -38,6 +41,7 @@ public class Peer {
             return;
 
         this.filesManager = new FilesManager(this.id);
+        this.records = new MessagesRecords(this.id);
 
         ip = InetAddress.getLocalHost().getHostAddress();
         //getPublicIP();
@@ -189,4 +193,9 @@ public class Peer {
     public void saveAllInfo() {
         this.filesManager.saveFiles();
     }
+
+    public MessagesRecords getRecords(){
+        return this.records;
+    }
+
 }

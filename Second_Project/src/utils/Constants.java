@@ -19,4 +19,16 @@ public class Constants {
     public static enum Operation {BACKUP, RESTORE, DELETE, STATE};
 
     public static enum FileType {BACKEDUP, RESTORED};
+
+    public static String getMainDir(String peerId){return "PeerFiles/"+peerId; }
+
+    public static String getBackedUpChunksDir(String peerId){return getMainDir(peerId) + "/Chunks"; }
+
+    public static String getInfoDir(String peerId){return getMainDir(peerId) + "/Info"; }
+
+    public static String getLogsFile(String peerId){return getMainDir(peerId) + "/Logs.ser"; }
+
+    public static String getChunksInfoFile(String peerId){return getMainDir(peerId) + "/ChunksInfo.ser"; }
+
+    public static String getBackedUpFilesInfo(String peerId){return getMainDir(peerId) + "/BackedUpFilesInfo.ser"; }
 }

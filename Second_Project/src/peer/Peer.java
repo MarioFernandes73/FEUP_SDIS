@@ -3,6 +3,7 @@ package peer;
 import client.Client;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
+import filesmanager.FilesManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,156 +27,140 @@ public class Peer {
     private ArrayList<Address> forwardingTable = new ArrayList<Address>();
     private int peerLimit;
     private int networkSize;
-    
+
+    private FilesManager filesManager;
+
     private DatagramSocket sendSocket;
     private DatagramSocket receiveSocket;
 
-    public Peer(String args[]) throws IOException{
-        if(!verifyArgs(args))
+    Peer(String args[]) throws IOException {
+        if (!verifyArgs(args))
             return;
+
+        this.filesManager = new FilesManager(this.id);
 
         ip = InetAddress.getLocalHost().getHostAddress();
         //getPublicIP();
 
         id = ip + ":" + port;
 
-        if(isBootPeer)
-        {
+        if (isBootPeer) {
             bootPeer();
-        }
-        else
-        {
+        } else {
             normalPeer();
         }
     }
 
-    public boolean verifyArgs(String args[])
-    {
-    	if(args.length != 3)
-    	{
-    		System.out.println("Incorrect number of arguments.");
-    		return false;
-    	}
+    private boolean verifyArgs(String args[]) {
+        if (args.length != 3) {
+            System.out.println("Incorrect number of arguments.");
+            return false;
+        }
 
-    	if(args[0].equals("boot"))
-    	{
-    		isBootPeer = true;
+        switch (args[0]) {
+            case "boot":
+                isBootPeer = true;
 
-    		int lim = Integer.parseInt(args[2]);
-    		if(lim >= 1 && lim <= 1000)
-    		{
-    			peerLimit = lim;
-    		}
-    		else
-    		{
-    			System.out.println("Error. Invalid peer limit. Should be 1-1000.");
-    			return false;
-    		}
-    	}
-    	else if(args[0].equals("normal"))
-    	{
-    		isBootPeer = false;
-    		if(args[2].matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}:[0-9]{1,5}"))
-    		{
-    			String[] bootPeerAddress = args[2].split(":");
-    			bootPeerIP = bootPeerAddress[0];
-    			bootPeerPort = Integer.parseInt(bootPeerAddress[1]);
-    		}
-    		else
-    		{
-    			System.out.println("Error. Invalid IP:PORT format.");
-    			return false;
-    		}
-    	}
-    	else
-    	{
-    		System.out.println("Error. First argument should be 'boot' or 'normal'.");
-    		return false;
-    	}
+                int lim = Integer.parseInt(args[2]);
+                if (lim >= 1 && lim <= 1000) {
+                    peerLimit = lim;
+                } else {
+                    System.out.println("Error. Invalid peer limit. Should be 1-1000.");
+                    return false;
+                }
+                break;
+            case "normal":
+                isBootPeer = false;
+                if (args[2].matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}:[0-9]{1,5}")) {
+                    String[] bootPeerAddress = args[2].split(":");
+                    bootPeerIP = bootPeerAddress[0];
+                    bootPeerPort = Integer.parseInt(bootPeerAddress[1]);
+                } else {
+                    System.out.println("Error. Invalid IP:PORT format.");
+                    return false;
+                }
+                break;
+            default:
+                System.out.println("Error. First argument should be 'boot' or 'normal'.");
+                return false;
+        }
 
-		if(args[1].matches("[0-9]{1,5}"))
-		{
-			port = Integer.parseInt(args[1]);
-		}
-		else
-		{
-			System.out.println("Error. Invalid port.");
-			return false;
-		}
+        if (args[1].matches("[0-9]{1,5}")) {
+            port = Integer.parseInt(args[1]);
+        } else {
+            System.out.println("Error. Invalid port.");
+            return false;
+        }
 
-		System.out.println("Setup successuful.");
-		return true;
+        System.out.println("Setup successuful.");
+        return true;
     }
-    
-    public void normalPeer() throws IOException
-    {
-    	sendSocket = new DatagramSocket();
-    	
-       	byte[] data = id.getBytes();
-       	
-    	InetAddress bootPeerAddress = InetAddress.getByName(bootPeerIP);
+
+    private void normalPeer() throws IOException {
+        sendSocket = new DatagramSocket();
+
+        byte[] data = id.getBytes();
+
+        InetAddress bootPeerAddress = InetAddress.getByName(bootPeerIP);
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, bootPeerAddress, bootPeerPort);
         sendSocket.send(sendPacket);
-        
-    	receiveSocket = new DatagramSocket(port);
-    	
-    	byte[] buffer = new byte[256];
-    	DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
-    	receiveSocket.receive(receivePacket);
-    	
-    	String tableInfo = new String(receivePacket.getData(), 0, receivePacket.getLength());  
-    	if(!tableInfo.equals(""))
-        	fillForwardingTable(tableInfo);
-    }
-    
-    public void bootPeer() throws IOException
-    {
-    	receiveSocket = new DatagramSocket(port);
-		
-    	byte[] buffer = new byte[256];
-    	DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
-    	receiveSocket.receive(receivePacket);
-    	 
-    	String msg = new String(receivePacket.getData(), 0, receivePacket.getLength());  	
-    	String[] addressParts = msg.split(":");
-    	String peerIP = addressParts[0];
-    	String peerPort = addressParts[1];
-    	Address peerAddress = new Address(peerIP, Integer.parseInt(peerPort));
-    	
-    	sendSocket = new DatagramSocket();
-    	
-    	String table = "";
-    	for(Address add : forwardingTable)
-    		table += add.getIp() + ":" + add.getPort() + "\n";
-    	 
-    	byte[] data = table.getBytes();
-    	 
-    	DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getByName(peerIP), Integer.parseInt(peerPort));
-    	sendSocket.send(sendPacket);
-    	    	
-    	forwardingTable.add(peerAddress);
-    	showForwardingTable();
-    }
-    
-    public void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException
-    {
-    	String[] rows = tableInfo.split("\n");
-    	for(String row : rows)
-    	{
-    		String addressParts[] = row.split(":");
-    		Address address = new Address(addressParts[0], Integer.parseInt(addressParts[1]));
-    		forwardingTable.add(address);
-    		System.out.println("Added " + addressParts[0] + ":" + addressParts[1] + " to the the Forwarding Table.");
-    	}
+
+        receiveSocket = new DatagramSocket(port);
+
+        byte[] buffer = new byte[256];
+        DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+        receiveSocket.receive(receivePacket);
+
+        String tableInfo = new String(receivePacket.getData(), 0, receivePacket.getLength());
+        if (!tableInfo.equals(""))
+            fillForwardingTable(tableInfo);
     }
 
-    public void showForwardingTable() {
-    	System.out.println("\nForwarding Table:");
-    	for(Address address : forwardingTable) {
+    private void bootPeer() throws IOException {
+        receiveSocket = new DatagramSocket(port);
+
+        byte[] buffer = new byte[256];
+        DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+        receiveSocket.receive(receivePacket);
+
+        String msg = new String(receivePacket.getData(), 0, receivePacket.getLength());
+        String[] addressParts = msg.split(":");
+        String peerIP = addressParts[0];
+        String peerPort = addressParts[1];
+        Address peerAddress = new Address(peerIP, Integer.parseInt(peerPort));
+
+        sendSocket = new DatagramSocket();
+
+        StringBuilder table = new StringBuilder();
+        for (Address add : forwardingTable)
+            table.append(add.getIp()).append(":").append(add.getPort()).append("\n");
+
+        byte[] data = table.toString().getBytes();
+
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getByName(peerIP), Integer.parseInt(peerPort));
+        sendSocket.send(sendPacket);
+
+        forwardingTable.add(peerAddress);
+        showForwardingTable();
+    }
+
+    private void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException {
+        String[] rows = tableInfo.split("\n");
+        for (String row : rows) {
+            String addressParts[] = row.split(":");
+            Address address = new Address(addressParts[0], Integer.parseInt(addressParts[1]));
+            forwardingTable.add(address);
+            System.out.println("Added " + addressParts[0] + ":" + addressParts[1] + " to the the Forwarding Table.");
+        }
+    }
+
+    private void showForwardingTable() {
+        System.out.println("\nForwarding Table:");
+        for (Address address : forwardingTable) {
             System.out.println(address.getIp() + ":" + address.getPort());
         }
     }
-    
+
     public String getPublicIP() throws IOException {
         URL whatismyip = new URL("http://checkip.amazonaws.com");
         BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
@@ -201,6 +186,7 @@ public class Peer {
     public void updateBackedUpFiles(BackedUpFileInfo newBackedUpFile) {
     }
 
-    public void saveFilesInfo() {
+    public void saveAllInfo() {
+        this.filesManager.saveFiles();
     }
 }

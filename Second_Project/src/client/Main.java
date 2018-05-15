@@ -27,8 +27,11 @@ public class Main {
 		
 		if(!getPeerRMIStub())
     		return;
-		
-		performStubOperation();
+		try{
+			performStubOperation();
+		} catch(Exception e){
+		    e.printStackTrace();
+        }
 	}
 	
 	private static boolean verifyArgs(String args[]) {
@@ -54,7 +57,7 @@ public class Main {
 	}
 	
 	private static void performStubOperation() throws IOException {
-		int response;
+		int response = 0;
 		switch (operation) {
 		case BACKUP:
 			PartitionedFile backupFile;

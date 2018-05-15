@@ -58,7 +58,6 @@ public class BackupInitiator implements Runnable {
                 BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, file.getName(), file.lastModified(), true);
                 newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
                 this.peer.updateBackedUpFiles(newBackedUpFile);
-                this.peer.saveFilesInfo();
 
                 if(chunkInfo.getOwnerIds().size() >= this.replicationDegree) {
                     System.out.println("Successful backup of chunk "+ chunkInfo.getChunkNo());
@@ -71,9 +70,6 @@ public class BackupInitiator implements Runnable {
                 System.out.println("Unsuccessful backup of chunk " + chunkInfo.getChunkNo());
             }
         }
-        return;
-
-
     }
 
 

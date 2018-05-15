@@ -118,7 +118,7 @@ public class PartitionedFile {
 	}
 	
 	public boolean downloadFromEndpoint(RMIInterface endpoint) { //TO DO
-		int partitionTransfTries = 0;
+		/*int partitionTransfTries = 0;
 		boolean reachedFinalPartition = false;
 		
 		for (int partitionNo = 0; !reachedFinalPartition; i++) {
@@ -146,7 +146,7 @@ public class PartitionedFile {
 				System.out.println("ERROR! Couldn't invoke chunk transfer function");
 				return false;
 			}
-		}
+		}*/
 		
 		return true;
 	}

@@ -12,7 +12,7 @@ public abstract class Message {
     }
 
     public byte[] getBytes() {
-        return new byte[0];
+        return this.getHeader().getBytes();
     }
 
 }

@@ -17,12 +17,14 @@ public class MessageAcceptConnection extends Message implements IMessage {
 
     @Override
     public String getHeader() {
-        return
+        return super.getHeader() + " " + address.toString();
     }
 
     @Override
     public byte[] getBytes() {
-        return new byte[0];
+        byte[] res = super.getBytes();
+        System.arraycopy(this.getHeader().getBytes(), 0, res, 0, this.getHeader().length());
+        return res;
     }
 
     @Override

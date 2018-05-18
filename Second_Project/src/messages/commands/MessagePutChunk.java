@@ -1,10 +1,10 @@
 package messages.commands;
 
+import messages.IMessage;
 import messages.Message;
 
-public class MessagePutChunk extends Message {
+public class MessagePutChunk extends Message implements IMessage {
 
-    private String senderId;
     private String fileId;
     private int chunkNo;
     private int replicationDegree;
@@ -17,4 +17,18 @@ public class MessagePutChunk extends Message {
 
     }
 
+    @Override
+    public String getHeader() {
+        return null;
+    }
+
+    @Override
+    public byte[] getBytes() {
+        return new byte[0];
+    }
+
+    @Override
+    public void handleMessage(Object... args) {
+
+    }
 }

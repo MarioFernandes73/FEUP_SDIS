@@ -2,23 +2,17 @@ package messages;
 
 import utils.Constants;
 
-public class Message implements IMessage {
+public abstract class Message {
 
-    protected String senderId;
-    protected Constants.Operation operation;
+    private Constants.Operation operation;
+    private String senderId;
 
-    @Override
     public String getHeader() {
-        return null;
+        return operation.toString() + " " + senderId;
     }
 
-    @Override
     public byte[] getBytes() {
         return new byte[0];
     }
 
-    @Override
-    public void handleMessage(Object... args) {
-
-    }
 }

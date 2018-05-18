@@ -1,11 +1,12 @@
 package messages.peerscomunications;
 
+import messages.IMessage;
 import messages.Message;
 import peer.Address;
 
 import java.net.UnknownHostException;
 
-public class MessageAcceptConnection extends Message {
+public class MessageAcceptConnection extends Message implements IMessage {
 
     private Address address;
 
@@ -14,4 +15,18 @@ public class MessageAcceptConnection extends Message {
     }
 
 
+    @Override
+    public String getHeader() {
+        return
+    }
+
+    @Override
+    public byte[] getBytes() {
+        return new byte[0];
+    }
+
+    @Override
+    public void handleMessage(Object... args) {
+
+    }
 }

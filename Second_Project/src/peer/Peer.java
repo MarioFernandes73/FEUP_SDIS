@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Peer {
 
@@ -25,7 +26,7 @@ public class Peer {
     private int port;
     private String bootPeerIP;
     private int bootPeerPort;
-    private ArrayList<Address> forwardingTable = new ArrayList<Address>();
+    private ConcurrentHashMap<String,Address> forwardingTable = new ConcurrentHashMap<>();
     private int peerLimit;
     private int networkSize;
 

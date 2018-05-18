@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Peer {
@@ -137,15 +138,17 @@ public class Peer {
         sendSocket = new DatagramSocket();
 
         StringBuilder table = new StringBuilder();
-        for (Address add : forwardingTable)
-            table.append(add.getIp()).append(":").append(add.getPort()).append("\n");
+        for(Entry<String, Address> entry : forwardingTable.entrySet()) 
+        {
+        	table.append(entry.getKey()).append("\n");
+        }
 
         byte[] data = table.toString().getBytes();
 
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getByName(peerIP), Integer.parseInt(peerPort));
         sendSocket.send(sendPacket);
 
-        forwardingTable.add(peerAddress);
+        forwardingTable.put(peerIP+":"+peerPort, peerAddress);
         showForwardingTable();
     }
 
@@ -154,16 +157,15 @@ public class Peer {
         for (String row : rows) {
             String addressParts[] = row.split(":");
             Address address = new Address(addressParts[0], Integer.parseInt(addressParts[1]));
-            forwardingTable.add(address);
+            forwardingTable.put(addressParts[0]+":"+addressParts[1],address);
             System.out.println("Added " + addressParts[0] + ":" + addressParts[1] + " to the the Forwarding Table.");
         }
     }
 
     private void showForwardingTable() {
         System.out.println("\nForwarding Table:");
-        for (Address address : forwardingTable) {
-            System.out.println(address.getIp() + ":" + address.getPort());
-        }
+        for(Entry<String, Address> entry : forwardingTable.entrySet()) 
+            System.out.println(entry.getKey());
     }
 
     public String getPublicIP() throws IOException {

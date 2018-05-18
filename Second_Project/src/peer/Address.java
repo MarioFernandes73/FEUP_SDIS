@@ -26,4 +26,13 @@ public class Address {
     public InetAddress getInetAddress() {
         return inetAddress;
     }
+    
+    @Override
+    public String toString()
+    {
+    	String ret = "";    	
+    	ret += ip + " " + Integer.toString(port);
+
+    	return ret;
+    }
 }

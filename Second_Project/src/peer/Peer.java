@@ -201,4 +201,26 @@ public class Peer {
         return this.records;
     }
 
+    /* RMI methods */
+
+	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {
+		System.out.println("Starting to backup " + fileName);
+		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
+		thread.start();
+		return null;
+	}
+    
+    public String restore(String fileName, boolean enhancement) throws RemoteException {
+		System.out.println("Starting to restore " + fileName);
+		Thread thread = new Thread(new RestoreInitiator(this, fileName));
+		thread.start();
+		return null;
+	}
+
+    public String delete(String fileName, boolean enhancement) throws RemoteException {
+		System.out.println("Starting to delete " + fileName);
+		Thread thread = new Thread(new FileDeleteProtocol(this, fileName, enhancement));
+		thread.start();
+		return null;
+	}
 }

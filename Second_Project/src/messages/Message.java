@@ -1,21 +1,24 @@
 package messages;
 
-import peer.Peer;
 import utils.Constants;
 
-public class Message {
+public class Message implements IMessage {
 
-    private String senderId;
-    private Constants.Operation operation;
-    private byte[] body;
+    protected String senderId;
+    protected Constants.Operation operation;
 
-    String getHeader(){
-        return "";
+    @Override
+    public String getHeader() {
+        return null;
     }
 
-    void setBody(byte[] body){
-        this.body = body;
+    @Override
+    public byte[] getBytes() {
+        return new byte[0];
     }
 
-    void receivedOperation(Peer peer) {}
+    @Override
+    public void handleMessage(Object... args) {
+
+    }
 }

@@ -1,6 +1,10 @@
 package protocols.protocols;
 
+import java.util.ArrayList;
+
+import messages.MessageBuilder;
 import messages.MessagesRecords;
+import messages.Message;
 import messages.responses.MessageStored;
 import peer.ChunkInfo;
 import peer.Peer;
@@ -17,13 +21,21 @@ public class ChunkBackupProtocol implements Runnable {
         this.chunkInfo = chunkInfo;
         this.data = data;
     }
-
+    
+    private Message createMessage() {
+    	ArrayList<String> msgArgs = new ArrayList<String>();
+    	msgArgs.add("PUTCHUNK");
+    	//ADD OTHER ARGUMENTS
+    	
+    	return new MessageBuilder().build(msgArgs);
+    }
+    
     @Override
     public void run() {
         int tries = 0;
         while(tries < Constants.MAX_CHUNK_TRANSFER_TRIES){
             //construir mensagem
-
+        	Message message = createMessage();
             //mandar
 
             //esperar

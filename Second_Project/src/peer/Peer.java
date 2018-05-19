@@ -167,6 +167,51 @@ public class Peer {
         for(Entry<String, Address> entry : forwardingTable.entrySet()) 
             System.out.println(entry.getKey());
     }
+    
+    
+    /**
+     * Returns address of the peer with the id peerID if it exists in the forwardingTable and null otherwise
+     * @param peerID String with the id of the peer
+     * @return address of the peer if it exists in forwardingTable and null otherwise
+     */
+    public Address getConnectionAddress(String peerID) {
+        return forwardingTable.get(peerID);
+    }
+    
+    /**
+     * Adds a peer to the forwardingTable storing its' address using its' id as key
+     * Doesn't check if connection limit is exceeded
+     * @param peerId String with the new peer's Id
+     * @param addressToAdd new peer's Address
+     */
+    public void addPeer(String peerId, Address addressToAdd) {
+		forwardingTable.put(peerId, addressToAdd);		
+	}
+    
+    /**
+     * Returns the number of connections this peer has
+     * @return number of entries in the forwardingTable
+     */
+    public int getNumberConnections() {
+		return forwardingTable.size();
+	}
+    
+    /**
+     * Returns the peer's current limit of connections
+     * @return peerLimit
+     */
+    public int getPeerLimit() {
+    	return peerLimit;
+    }
+    
+    /**
+     * Switches the peerLimit for newLimit if the former is smaller
+     * @param newLimit new int value for peerLimit
+     */
+    public void changePeerLimit(int newLimit) {
+    	if(newLimit > peerLimit)
+    		peerLimit = newLimit;
+    }
 
     public String getPublicIP() throws IOException {
         URL whatismyip = new URL("http://checkip.amazonaws.com");
@@ -223,4 +268,5 @@ public class Peer {
 		thread.start();
 		return null;
 	}
+
 }

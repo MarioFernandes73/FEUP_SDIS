@@ -13,18 +13,17 @@ public class MessageRejectPeer extends Message implements IMessage{
 
 	@Override
 	public String getHeader() {
-		String header = "";
-		
-		header += super.getHeader();
-		header += " " + peerId;
-		
-		return header;
+		return super.getHeader() + " " + peerId;
 	}
 
 	@Override
 	public byte[] getBytes() {
-		String bytesString = getHeader();
-		byte bytes[] = bytesString.getBytes();
+		byte superBytes[] = super.getBytes();
+		byte headerBytes[] = getHeader().getBytes();
+		
+		byte bytes[] = new byte[superBytes.length + headerBytes.length];
+		System.arraycopy(superBytes, 0, bytes, 0, superBytes.length);
+		System.arraycopy(headerBytes, 0, bytes, superBytes.length, headerBytes.length);
 				
 		return bytes;
 	}

@@ -14,31 +14,31 @@ public class MessageAddPeer extends Message implements IMessage{
     private String peerId;
     private Address addressToAdd;
 
-    public MessageAddPeer(){
-
+    public MessageAddPeer(String peerId, Address addressToAdd){
+    	this.peerId = peerId;
+    	this.addressToAdd = addressToAdd;
     }
 
 	@Override
 	public String getHeader() {
-		String header = "";
-		
-		header += super.getHeader();
-		header += " " + peerId + " " + addressToAdd.toString();
-		
-		return header;
+		return super.getHeader() + " " + peerId + " " + addressToAdd.toString();
 	}
 
 	@Override
 	public byte[] getBytes() {
-		String bytesString = getHeader();
-		byte bytes[] = bytesString.getBytes();
+		byte superBytes[] = super.getBytes();
+		byte headerBytes[] = getHeader().getBytes();
+		
+		byte bytes[] = new byte[superBytes.length + headerBytes.length];
+		System.arraycopy(superBytes, 0, bytes, 0, superBytes.length);
+		System.arraycopy(headerBytes, 0, bytes, superBytes.length, headerBytes.length);
 				
 		return bytes;
 	}
 
 	@Override
 	public void handleMessage(Object... args) {
-		Peer p;
+		Peer p = null;
 		
 		int count = 0;
 		for (Object o : args) {
@@ -49,8 +49,8 @@ public class MessageAddPeer extends Message implements IMessage{
 		
 		byte[] data;
 		
-		if(p.getNumberConnections() < p.getMaxConnections){
-			p.addPeer(peerId, AddressToAdd);
+		if(p.getNumberConnections() < p.getPeerLimit()){
+			p.addPeer(peerId, addressToAdd);
 			data = new MessageAcceptPeer(peerId).getBytes();
 		}
 		else

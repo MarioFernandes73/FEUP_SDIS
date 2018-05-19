@@ -18,7 +18,7 @@ public class Constants {
     
     public static final String RESTORED_FILES_DIR = "../../RestoredFiles/"; //located in the directory level as "src" folder
 
-    public enum Operation {BACKUP, RESTORE, DELETE, STATE};
+    public enum Operation {BACKUP, RESTORE, DELETE, STATE, ACCEPT_CONNECTION};
 
     public enum FileType {BACKEDUP, RESTORED};
 

@@ -9,7 +9,7 @@ import messages.Message;
 import peer.Address;
 import peer.Peer;
 
-public class MessageAddPeer extends Message implements IMessage{
+public class MessageAddPeer extends Message{
 
     private String peerId;
     private Address addressToAdd;

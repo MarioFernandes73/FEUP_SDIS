@@ -3,7 +3,7 @@ package messages.peerscomunications;
 import messages.IMessage;
 import messages.Message;
 
-public class MessageAcceptPeer extends Message implements IMessage{
+public class MessageAcceptPeer extends Message{
 	
 	private String peerId;
     

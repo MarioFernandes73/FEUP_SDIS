@@ -18,7 +18,8 @@ public class PacketHandler implements Runnable {
 
     @Override
     public void run() {
-        parseText().receivedOperation(peer);
+
+        //parseText().receivedOperation(peer);
     }
 
 
@@ -117,7 +118,7 @@ public class PacketHandler implements Runnable {
         if(operation.equals("PUTCHUNK") || operation.equals("CHUNK")) {
             byte[] body = new byte[this.data.length - message.getHeader().length()];
             System.arraycopy(this.data, message.getHeader().length(), body, 0, this.data.length - message.getHeader().length());
-            message.setBody(body);
+            message.setData(body);
         }
         return message;
     }

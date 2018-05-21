@@ -2,12 +2,14 @@ package messages.peerscomunications;
 
 import messages.IMessage;
 import messages.Message;
+import utils.Constants;
 
 public class MessageAcceptPeer extends Message{
 	
 	private String peerId;
     
-    public MessageAcceptPeer(String peerId) {
+    public MessageAcceptPeer(String[] args) {
+    	super(Constants.MessageType.ACCEPT_PEER, args[0]);
     	this.peerId = peerId;
     }
 

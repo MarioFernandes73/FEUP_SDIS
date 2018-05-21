@@ -4,11 +4,12 @@ import utils.Constants;
 
 public abstract class Message implements IMessage {
 
-    protected Constants.Operation operation;
+    protected Constants.MessageType messageType;
     protected String senderId;
+    protected byte[] data;
 
-    protected Message(Constants.Operation operation, String senderId){
-        this.operation = operation;
+    protected Message(Constants.MessageType messageType, String senderId){
+        this.messageType = messageType;
         this.senderId = senderId;
     }
 
@@ -26,7 +27,14 @@ public abstract class Message implements IMessage {
     }
 
     protected String getBaseHeader(){
-        return operation.toString() + " " + senderId;
+        return messageType.toString() + " " + senderId;
     }
 
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
 }

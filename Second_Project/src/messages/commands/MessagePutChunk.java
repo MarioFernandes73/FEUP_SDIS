@@ -2,6 +2,7 @@ package messages.commands;
 
 import messages.IMessage;
 import messages.Message;
+import utils.Constants;
 
 public class MessagePutChunk extends Message implements IMessage {
 
@@ -13,8 +14,9 @@ public class MessagePutChunk extends Message implements IMessage {
     private int currentHops;
     private byte[] data;
 
-    public MessagePutChunk(){
-
+    public MessagePutChunk(String[] args){
+        super(Constants.MessageType.PUT_CHUNK, "ola");
+        System.out.println(args[0]);
     }
 
     @Override

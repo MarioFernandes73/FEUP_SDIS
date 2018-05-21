@@ -12,14 +12,14 @@ public class MessageAcceptConnection extends Message {
     private Address address;
 
     public MessageAcceptConnection(String[] args) throws UnknownHostException {
-        super(Constants.Operation.ACCEPT_CONNECTION, args[0]);
+        super(Constants.MessageType.ACCEPT_CONNECTION, args[0]);
         this.address = new Address(args[1], Integer.parseInt(args[2]));
     }
 
 
     @Override
     public String getHeader() {
-        return super.getBaseHeader() + " " + address.toString();
+        return super.getBaseHeader() + " " + this.address.toString();
     }
 
     @Override

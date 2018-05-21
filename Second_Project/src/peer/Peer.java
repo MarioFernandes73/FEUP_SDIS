@@ -247,7 +247,7 @@ public class Peer {
     }
 
     /* RMI methods */
-
+/*
 	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {
 		System.out.println("Starting to backup " + fileName);
 		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
@@ -268,5 +268,5 @@ public class Peer {
 		thread.start();
 		return null;
 	}
-
+*/
 }

@@ -1,5 +1,10 @@
 package utils;
 
+import messages.Message;
+import messages.commands.MessagePutChunk;
+
+import java.util.HashMap;
+
 public class Constants {
 
     public static final int MAX_PACKET_SIZE = 65000;
@@ -18,7 +23,15 @@ public class Constants {
     
     public static final String RESTORED_FILES_DIR = "../../RestoredFiles/"; //located in the directory level as "src" folder
 
-    public enum Operation {BACKUP, RESTORE, DELETE, STATE, ACCEPT_CONNECTION};
+    public enum Operation {BACKUP, RESTORE, DELETE, STATE}
+    public enum MessageType {ACCEPT_CONNECTION, REJECT_PEER, ACCEPT_PEER, ADD_PEER, CONNECT, PUT_CHUNK}
+
+    public static final HashMap<String, Class<?>> messageHashMap;
+    static
+    {
+        messageHashMap = new HashMap<>();
+        messageHashMap.put("PUTCHUNK",MessagePutChunk.class);
+    }
 
     public enum FileType {BACKEDUP, RESTORED};
 

@@ -8,13 +8,15 @@ import messages.IMessage;
 import messages.Message;
 import peer.Address;
 import peer.Peer;
+import utils.Constants;
 
 public class MessageAddPeer extends Message{
 
     private String peerId;
     private Address addressToAdd;
 
-    public MessageAddPeer(String peerId, Address addressToAdd){
+    public MessageAddPeer(String[] args){
+    	super(Constants.MessageType.ADD_PEER, args[0]);
     	this.peerId = peerId;
     	this.addressToAdd = addressToAdd;
     }
@@ -48,7 +50,7 @@ public class MessageAddPeer extends Message{
 		}
 		
 		byte[] data;
-		
+		/*
 		if(p.getNumberConnections() < p.getPeerLimit()){
 			p.addPeer(peerId, addressToAdd);
 			data = new MessageAcceptPeer(peerId).getBytes();
@@ -60,7 +62,7 @@ public class MessageAddPeer extends Message{
 
         Address DestinationAddress = p.getConnectionAddress(this.senderId);
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, DestinationAddress.getInetAddress(), DestinationAddress.getPort());
-        sendSocket.send(sendPacket);		
+        sendSocket.send(sendPacket);		*/
 	}
     
 

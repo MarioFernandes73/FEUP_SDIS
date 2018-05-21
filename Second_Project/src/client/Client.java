@@ -41,7 +41,7 @@ public class Client {
 	}
 	
 	private static boolean getPeerRMIStub() {
-		try {
+		/*try {
             stub = (RMIInterface) Naming.lookup(peerAccessPoint);
             
         } catch (RemoteException | NotBoundException e) {
@@ -54,7 +54,7 @@ public class Client {
             System.out.println("Invalid RMI access point");
             return false;           
         }
-		
+		*/
 		return true;
 	}
 	

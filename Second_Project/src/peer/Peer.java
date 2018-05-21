@@ -4,6 +4,7 @@ import client.Client;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.FilesManager;
+import messages.Message;
 import messages.MessagesRecords;
 
 import java.io.BufferedReader;
@@ -244,6 +245,23 @@ public class Peer {
 
     public MessagesRecords getRecords(){
         return this.records;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public boolean canAddPeers() {
+        return this.forwardingTable.size() < this.peerLimit;
+    }
+
+    public void sendMessage(String targetId, Message message) {
+        for(String peerId : this.forwardingTable.keySet()){
+            if(peerId.equals(targetId) ){
+                this.forwardingTable.get(peerId); // send message to this address;
+                break;
+            }
+        }
     }
 
     /* RMI methods */

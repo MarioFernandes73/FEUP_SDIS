@@ -2,11 +2,13 @@ package messages.peerscomunications;
 
 import messages.IMessage;
 import messages.Message;
+import messages.MessageBuilder;
 import peer.Address;
 import peer.Peer;
 import utils.Constants;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class MessageConnect extends Message implements IMessage {
 
@@ -33,7 +35,13 @@ public class MessageConnect extends Message implements IMessage {
     @Override
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
-        peer.addPeer(this.senderId,this.address);
+        if(peer.canAddPeers()){
+            peer.addPeer(this.senderId,this.address);
+            ArrayList<String> messageArgs = new ArrayList<>();
+            messageArgs.add(Constants.MessageType.ACCEPT_CONNECTION.toString());
+            messageArgs.add(peer.getId());
+            peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
+        }
 
     }
 }

@@ -9,11 +9,11 @@ public class MessageBuilder {
 
     private HashMap<String, Class<?>> messageHashMap = Constants.messageHashMap;
 
-    public Message build(ArrayList<String> args){
-        try{
-            String[] constArgs = args.subList(1,args.size()).toArray(new String[args.size()-1]);
-           return (Message)messageHashMap.get(args.get(0)).getDeclaredConstructor(String[].class).newInstance((Object) constArgs);
-        } catch(Exception e){
+    public Message build(ArrayList<String> args) {
+        try {
+            String[] constArgs = args.subList(1, args.size()).toArray(new String[args.size() - 1]);
+            return (Message) messageHashMap.get(args.get(0)).getDeclaredConstructor(String[].class).newInstance((Object) constArgs);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

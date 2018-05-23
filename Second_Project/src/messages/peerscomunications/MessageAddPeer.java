@@ -1,11 +1,15 @@
 package messages.peerscomunications;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 
-import messages.IMessage;
 import messages.Message;
+import messages.MessageBuilder;
 import peer.Address;
 import peer.Peer;
 import utils.Constants;
@@ -17,8 +21,16 @@ public class MessageAddPeer extends Message{
 
     public MessageAddPeer(String[] args){
     	super(Constants.MessageType.ADD_PEER, args[0]);
-    	this.peerId = peerId;
-    	this.addressToAdd = addressToAdd;
+    	this.peerId = args[1];
+    	try {
+			this.addressToAdd = new Address(args[2], Integer.parseInt(args[3]));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 	@Override
@@ -49,21 +61,57 @@ public class MessageAddPeer extends Message{
 			count++;
 		}
 		
-		byte[] data;
-		/*
-		if(p.getNumberConnections() < p.getPeerLimit()){
-			p.addPeer(peerId, addressToAdd);
-			data = new MessageAcceptPeer(peerId).getBytes();
-		}
-		else
-			data = new MessageRejectPeer(peerId).getBytes();
+		byte[] responseData;
+		ArrayList<String> responseArgs = new ArrayList<>();
 		
-		DatagramSocket sendSocket = new DatagramSocket();
+		byte[] acceptData;
+		ArrayList<String> acceptArgs = new ArrayList<>();
+		boolean accepted = false;
+		
+		if(p.getNumberConnections() < p.getPeerLimit()){
+			accepted = true;
+			p.addPeer(peerId, addressToAdd);
+			responseArgs.add(toString());
+			//TODO finish arguments
+			responseData = MessageBuilder.build(responseArgs).getBytes();
+			
+			acceptArgs.add(toString());
+			//TODO finish arguments
+			acceptData = MessageBuilder.build(acceptArgs).getBytes();
+		}
+		else {
+			responseArgs.add(toString());
+			//TODO finish arguments
+			responseData = MessageBuilder.build(responseArgs).getBytes();
+		}
+		DatagramSocket responseSocket;
+		DatagramSocket addSocket;
+		try {
+			responseSocket = new DatagramSocket();
+			Address DestinationAddress = p.getConnectionAddress(this.senderId);
+		    DatagramPacket sendPacket = new DatagramPacket(responseData, responseData.length, DestinationAddress.getInetAddress(), DestinationAddress.getPort());
+		    responseSocket.send(sendPacket);
+		    
+		    if(accepted)
+		    {
+		    	//TODO send acceptConnection to accepted peer
+		    }
+		        
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        Address DestinationAddress = p.getConnectionAddress(this.senderId);
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, DestinationAddress.getInetAddress(), DestinationAddress.getPort());
-        sendSocket.send(sendPacket);		*/
+       		
 	}
     
+	@Override
+	public String toString()
+	{
+		return "MESSAGEADDPEER";
+	}
 
 }

@@ -1,6 +1,5 @@
 package messages.peerscomunications;
 
-import messages.IMessage;
 import messages.Message;
 import utils.Constants;
 
@@ -10,7 +9,7 @@ public class MessageAcceptPeer extends Message{
     
     public MessageAcceptPeer(String[] args) {
     	super(Constants.MessageType.ACCEPT_PEER, args[0]);
-    	this.peerId = peerId;
+    	this.peerId = args[1];
     }
 
 	@Override
@@ -34,6 +33,12 @@ public class MessageAcceptPeer extends Message{
 	public void handleMessage(Object... args) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "MESSAGEACCEPTPEER";
 	}
 	
 }

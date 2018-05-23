@@ -2,6 +2,7 @@ package utils;
 
 import messages.Message;
 import messages.commands.MessagePutChunk;
+import messages.peerscomunications.*;
 
 import java.util.HashMap;
 
@@ -31,6 +32,9 @@ public class Constants {
     {
         messageHashMap = new HashMap<>();
         messageHashMap.put("PUTCHUNK",MessagePutChunk.class);
+        messageHashMap.put("MESSAGEACCEPTPEER",MessageAcceptPeer.class);
+        messageHashMap.put("MESSAGEADDPEER",MessageAddPeer.class);
+        messageHashMap.put("MESSAGEREJECTPEER",MessageRejectPeer.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED};

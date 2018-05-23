@@ -37,9 +37,7 @@ public class MessageConnect extends Message implements IMessage {
         Peer peer = (Peer) args[0];
         if(peer.canAddPeers()){
             peer.addPeer(this.senderId,this.address);
-            ArrayList<String> messageArgs = new ArrayList<>();
-            messageArgs.add(Constants.MessageType.ACCEPT_CONNECTION.toString());
-            messageArgs.add(peer.getId());
+            String[] messageArgs = new String[]{Constants.MessageType.ACCEPT_CONNECTION.toString(), peer.getId()};
             peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
         }
 

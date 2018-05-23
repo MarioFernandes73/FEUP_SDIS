@@ -62,24 +62,24 @@ public class MessageAddPeer extends Message{
 		}
 		
 		byte[] responseData;
-		ArrayList<String> responseArgs = new ArrayList<>();
+		String[] responseArgs = new String[3];
 		
 		byte[] acceptData;
-		ArrayList<String> acceptArgs = new ArrayList<>();
+		String[] acceptArgs = new String[2];
 		boolean accepted = false;
 		
 		if(p.getNumberConnections() < p.getPeerLimit()){
 			accepted = true;
 			p.addPeer(peerId, addressToAdd);
-			responseArgs.add(MessageAcceptPeer.class.toString());
-			responseArgs.add(p.getId());
-			responseArgs.add(peerId);
+			responseArgs[0] = MessageAcceptPeer.class.toString();
+			responseArgs[1] = p.getId();
+			responseArgs[2] = peerId;
 			responseData = MessageBuilder.build(responseArgs).getBytes();
 		}
 		else {
-			responseArgs.add(MessageRejectPeer.class.toString());
-			responseArgs.add(p.getId());
-			responseArgs.add(peerId);
+			responseArgs[0] = MessageRejectPeer.class.toString();
+			responseArgs[1] = p.getId();
+			responseArgs[2] = peerId;
 			responseData = MessageBuilder.build(responseArgs).getBytes();
 		}
 		DatagramSocket responseSocket;
@@ -92,8 +92,8 @@ public class MessageAddPeer extends Message{
 		    
 		    if(accepted)
 		    {
-		    	acceptArgs.add(MessageAcceptConnection.class.toString());
-		    	acceptArgs.add(p.getId());
+		    	acceptArgs[0] = MessageAcceptConnection.class.toString();
+		    	acceptArgs[1] = p.getId();
 		    	//acceptArgs.add(p.getIP());
 		    	//acceptArgs.add(p.getPort());
 				acceptData = MessageBuilder.build(acceptArgs).getBytes();

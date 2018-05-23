@@ -4,6 +4,7 @@ import messages.Message;
 import peer.Address;
 import peer.Peer;
 import utils.Constants;
+import utils.Utils;
 
 import java.net.UnknownHostException;
 
@@ -24,9 +25,7 @@ public class MessageAcceptConnection extends Message {
 
     @Override
     public byte[] getBytes() {
-        byte[] res = super.getBaseBytes();
-        System.arraycopy(this.getHeader().getBytes(), 0, res, 0, this.getHeader().length());
-        return res;
+        return Utils.concatenateByteArrays(super.getBaseBytes(), this.getHeader().getBytes());
     }
 
     @Override

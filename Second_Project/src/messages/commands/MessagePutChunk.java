@@ -15,8 +15,9 @@ public class MessagePutChunk extends Message implements IMessage {
     private byte[] data;
 
     public MessagePutChunk(String[] args){
-        super(Constants.MessageType.PUT_CHUNK, "ola");
+        super(Constants.MessageType.PUT_CHUNK, args[1]);
         System.out.println(args[0]);
+        System.out.println(args[1]);
     }
 
     @Override

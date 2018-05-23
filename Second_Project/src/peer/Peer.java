@@ -264,6 +264,10 @@ public class Peer {
         }
     }
 
+    public void startConnection(String peerId, Address addressToAdd){
+
+    }
+
     /* RMI methods */
 /*
 	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {

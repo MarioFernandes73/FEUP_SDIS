@@ -23,9 +23,7 @@ public class ChunkBackupProtocol implements Runnable {
     }
     
     private Message createMessage() {
-    	ArrayList<String> msgArgs = new ArrayList<String>();
-    	msgArgs.add("PUTCHUNK");
-    	//ADD OTHER ARGUMENTS
+    	String[] msgArgs = new String[]{"PUTCHUNK"};
     	
     	return new MessageBuilder().build(msgArgs);
     }

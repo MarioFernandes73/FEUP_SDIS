@@ -9,19 +9,39 @@ import java.util.Arrays;
 
 public class PacketHandler implements Runnable {
 
-    private Peer peer;
+    private Peer owner;
     private byte[] data;
 
-    public PacketHandler(DatagramPacket packet){
-        this.data = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
+    public PacketHandler(Peer owner, byte[] data){
+        this.owner = owner;
+        this.data = data;
     }
 
     @Override
     public void run() {
 
+        String text = new String(data, Charset.forName("ISO_8859_1"));
+        String crlf = " \r\n\r\n";
+        int crlfIndex = text.indexOf(crlf);
+        if(!text.contains(" ") || crlfIndex < 1) {
+            return;
+        }
+        String header = text.substring(0,crlfIndex);
+
+
+        int bodyStartPos = (header + crlf).getBytes().length;
+        int bodyLength = this.data.length - bodyStartPos;
+        byte[] body = new byte[bodyLength];
+        System.arraycopy(this.data, bodyStartPos, body, 0, bodyLength);
+
+        Message msg = MessageBuilder.build(header.split(" "));
+        msg.setData(body);
+        msg.handleMessage(this.owner);
+
         //parseText().receivedOperation(peer);
     }
 
+    /*
 
     private String getHeaderFormat(String operation) {
         String version = " ((1\\.0)|(2\\.0))";
@@ -122,5 +142,5 @@ public class PacketHandler implements Runnable {
         }
         return message;
     }
-
+*/
 }

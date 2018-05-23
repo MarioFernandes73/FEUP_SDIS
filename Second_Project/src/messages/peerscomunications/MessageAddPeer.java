@@ -71,30 +71,37 @@ public class MessageAddPeer extends Message{
 		if(p.getNumberConnections() < p.getPeerLimit()){
 			accepted = true;
 			p.addPeer(peerId, addressToAdd);
-			responseArgs.add(toString());
-			//TODO finish arguments
+			responseArgs.add(MessageAcceptPeer.class.toString());
+			responseArgs.add(p.getId());
+			responseArgs.add(peerId);
 			responseData = MessageBuilder.build(responseArgs).getBytes();
-			
-			acceptArgs.add(toString());
-			//TODO finish arguments
-			acceptData = MessageBuilder.build(acceptArgs).getBytes();
 		}
 		else {
-			responseArgs.add(toString());
-			//TODO finish arguments
+			responseArgs.add(MessageRejectPeer.class.toString());
+			responseArgs.add(p.getId());
+			responseArgs.add(peerId);
 			responseData = MessageBuilder.build(responseArgs).getBytes();
 		}
 		DatagramSocket responseSocket;
-		DatagramSocket addSocket;
+		DatagramSocket acceptSocket;
 		try {
 			responseSocket = new DatagramSocket();
-			Address DestinationAddress = p.getConnectionAddress(this.senderId);
-		    DatagramPacket sendPacket = new DatagramPacket(responseData, responseData.length, DestinationAddress.getInetAddress(), DestinationAddress.getPort());
-		    responseSocket.send(sendPacket);
+			Address responseDestinationAddress = p.getConnectionAddress(this.senderId);
+		    DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length, responseDestinationAddress.getInetAddress(), responseDestinationAddress.getPort());
+		    responseSocket.send(responsePacket);
 		    
 		    if(accepted)
 		    {
-		    	//TODO send acceptConnection to accepted peer
+		    	acceptArgs.add(MessageAcceptConnection.class.toString());
+		    	acceptArgs.add(p.getId());
+		    	//acceptArgs.add(p.getIP());
+		    	//acceptArgs.add(p.getPort());
+				acceptData = MessageBuilder.build(acceptArgs).getBytes();
+		    	
+		    	acceptSocket = new DatagramSocket();
+				Address acceptDestinationAddress = p.getConnectionAddress(this.senderId);
+			    DatagramPacket acceptPacket = new DatagramPacket(acceptData, acceptData.length, acceptDestinationAddress.getInetAddress(), acceptDestinationAddress.getPort());
+			    responseSocket.send(acceptPacket);
 		    }
 		        
 		} catch (SocketException e) {

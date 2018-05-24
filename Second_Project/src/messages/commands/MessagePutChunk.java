@@ -8,8 +8,9 @@ import messages.responses.MessageStored;
 import peer.Address;
 import peer.Peer;
 import utils.Constants;
+import utils.Utils;
 
-public class MessagePutChunk extends Message implements IMessage {
+public class MessagePutChunk extends Message {
 
     private String fileId;
     private int chunkNo;
@@ -31,9 +32,7 @@ public class MessagePutChunk extends Message implements IMessage {
 
     @Override
     public byte[] getBytes() {
-        byte[] res = super.getBaseBytes();
-        System.arraycopy(this.getHeader().getBytes(), 0, res, 0, this.getHeader().length());
-        return res;
+        return Utils.concatenateByteArrays(getHeader().getBytes(), data);
     }
 
     @Override

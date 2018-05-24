@@ -29,6 +29,7 @@ public class Peer {
     private String bootPeerIP;
     private int bootPeerPort;
     private ConcurrentHashMap<String,Address> forwardingTable = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Long> aliveTable = new ConcurrentHashMap<>();
     private int peerLimit;
     private int networkSize;
 
@@ -169,6 +170,16 @@ public class Peer {
             System.out.println(entry.getKey());
     }
     
+    public void setAlivePeer(String peerID)
+    {
+    	aliveTable.replace(peerID, System.currentTimeMillis());
+    }
+    
+    public ConcurrentHashMap<String, Long> getAliveTable()
+    {
+    	return aliveTable;
+    }
+    
     
     /**
      * Returns address of the peer with the id peerID if it exists in the forwardingTable and null otherwise
@@ -186,7 +197,13 @@ public class Peer {
      * @param addressToAdd new peer's Address
      */
     public void addPeer(String peerId, Address addressToAdd) {
-		forwardingTable.put(peerId, addressToAdd);		
+		forwardingTable.put(peerId, addressToAdd);	
+		aliveTable.put(peerId, System.currentTimeMillis());
+	}
+    
+    public void removePeer(String peerId) {
+		forwardingTable.remove(peerId);	
+		aliveTable.remove(peerId);
 	}
     
     /**
@@ -219,7 +236,14 @@ public class Peer {
         BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
         return in.readLine();
     }
-
+    
+    public String getIP() {
+    	return ip;
+    }
+    
+    public int getPort() {
+    	return port;
+    }
 
     public String getEncryptedFileName(Client client, File file) {
         return "";
@@ -291,4 +315,5 @@ public class Peer {
 		return null;
 	}
 */
+    
 }

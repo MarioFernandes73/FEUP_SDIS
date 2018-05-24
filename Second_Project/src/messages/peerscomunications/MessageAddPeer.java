@@ -39,15 +39,8 @@ public class MessageAddPeer extends Message{
 	}
 
 	@Override
-	public byte[] getBytes() {
-		byte superBytes[] = super.getBaseBytes();
-		byte headerBytes[] = getHeader().getBytes();
-		
-		byte bytes[] = new byte[superBytes.length + headerBytes.length];
-		System.arraycopy(superBytes, 0, bytes, 0, superBytes.length);
-		System.arraycopy(headerBytes, 0, bytes, superBytes.length, headerBytes.length);
-				
-		return bytes;
+	public byte[] getBytes() {				
+		return getHeader().getBytes();
 	}
 
 	@Override
@@ -94,8 +87,8 @@ public class MessageAddPeer extends Message{
 		    {
 		    	acceptArgs[0] = MessageAcceptConnection.class.toString();
 		    	acceptArgs[1] = p.getId();
-		    	//acceptArgs.add(p.getIP());
-		    	//acceptArgs.add(p.getPort());
+		    	acceptArgs[2] = p.getIP();
+		    	acceptArgs[3] = Integer.toString(p.getPort());
 				acceptData = MessageBuilder.build(acceptArgs).getBytes();
 		    	
 		    	acceptSocket = new DatagramSocket();

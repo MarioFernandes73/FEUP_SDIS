@@ -10,7 +10,7 @@ import utils.Constants;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public class MessageConnect extends Message implements IMessage {
+public class MessageConnect extends Message {
 
     private Address address;
 
@@ -27,9 +27,7 @@ public class MessageConnect extends Message implements IMessage {
 
     @Override
     public byte[] getBytes() {
-        byte[] res = super.getBaseBytes();
-        System.arraycopy(this.getHeader().getBytes(), 0, res, 0, this.getHeader().length());
-        return res;
+    	return getHeader().getBytes();
     }
 
     @Override
@@ -40,6 +38,7 @@ public class MessageConnect extends Message implements IMessage {
             String[] messageArgs = new String[]{Constants.MessageType.ACCEPT_CONNECTION.toString(), peer.getId()};
             peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
         }
+        
 
     }
 }

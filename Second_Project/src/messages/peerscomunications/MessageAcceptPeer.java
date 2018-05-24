@@ -19,14 +19,7 @@ public class MessageAcceptPeer extends Message{
 
 	@Override
 	public byte[] getBytes() {
-		byte superBytes[] = super.getBaseBytes();
-		byte headerBytes[] = getHeader().getBytes();
-		
-		byte bytes[] = new byte[superBytes.length + headerBytes.length];
-		System.arraycopy(superBytes, 0, bytes, 0, superBytes.length);
-		System.arraycopy(headerBytes, 0, bytes, superBytes.length, headerBytes.length);
-				
-		return bytes;
+		return getHeader().getBytes();
 	}
 
 	@Override

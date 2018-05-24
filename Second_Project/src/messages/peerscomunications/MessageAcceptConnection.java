@@ -24,9 +24,9 @@ public class MessageAcceptConnection extends Message {
     }
 
     @Override
-    public byte[] getBytes() {
-        return Utils.concatenateByteArrays(super.getBaseBytes(), this.getHeader().getBytes());
-    }
+	public byte[] getBytes() {
+		return getHeader().getBytes();
+	}
 
     @Override
     public void handleMessage(Object... args) {

@@ -43,11 +43,16 @@ public class MessagePutChunk extends Message {
         
         if(!peer.hasChunk(fileId, chunkNo)){
         	
-        	peer.storeChunk(fileId, chunkNo, data);
+        	//peer.storeChunk(fileId, chunkNo, data);
         	
-        	String[] responseArgs = new String[2];
+        	int newRepDegree = replicationDegree-1;
+        	
+        	String[] responseArgs = new String[5];
 			responseArgs[0] = MessageStored.class.toString();
-			responseArgs[1] = peer.getContacts();
+			responseArgs[1] = fileId;
+			responseArgs[2] = Integer.toString(chunkNo);
+			responseArgs[3] = Integer.toString(newRepDegree);
+			responseArgs[4] = peer.getContacts();
 			
         	byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
 

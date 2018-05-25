@@ -11,11 +11,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +24,7 @@ public class Peer {
     private int port;
     private String bootPeerIP;
     private int bootPeerPort;
-    private ConcurrentHashMap<String,Address> forwardingTable = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, TCPChannel> forwardingTable = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Long> aliveTable = new ConcurrentHashMap<>();
     private int peerLimit;
     private int networkSize;
@@ -140,7 +136,7 @@ public class Peer {
         sendSocket = new DatagramSocket();
 
         StringBuilder table = new StringBuilder();
-        for(Entry<String, Address> entry : forwardingTable.entrySet()) 
+        for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
         {
         	table.append(entry.getKey()).append("\n");
         }
@@ -150,23 +146,23 @@ public class Peer {
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getByName(peerIP), Integer.parseInt(peerPort));
         sendSocket.send(sendPacket);
 
-        forwardingTable.put(peerIP+":"+peerPort, peerAddress);
+        forwardingTable.put(peerIP+":"+peerPort, new TCPChannel(this, peerAddress));
         showForwardingTable();
     }
 
-    private void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException {
+    private void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException, SocketException {
         String[] rows = tableInfo.split("\n");
         for (String row : rows) {
             String addressParts[] = row.split(":");
             Address address = new Address(addressParts[0], Integer.parseInt(addressParts[1]));
-            forwardingTable.put(addressParts[0]+":"+addressParts[1],address);
+            forwardingTable.put(addressParts[0]+":"+addressParts[1],new TCPChannel(this, address));
             System.out.println("Added " + addressParts[0] + ":" + addressParts[1] + " to the the Forwarding Table.");
         }
     }
 
     private void showForwardingTable() {
         System.out.println("\nForwarding Table:");
-        for(Entry<String, Address> entry : forwardingTable.entrySet()) 
+        for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
             System.out.println(entry.getKey());
     }
     
@@ -186,7 +182,7 @@ public class Peer {
      * @param peerID String with the id of the peer
      * @return address of the peer if it exists in forwardingTable and null otherwise
      */
-    public Address getConnectionAddress(String peerID) {
+    public TCPChannel getConnectionAddress(String peerID) {
         return forwardingTable.get(peerID);
     }
     
@@ -196,8 +192,8 @@ public class Peer {
      * @param peerId String with the new peer's Id
      * @param addressToAdd new peer's Address
      */
-    public void addPeer(String peerId, Address addressToAdd) {
-		forwardingTable.put(peerId, addressToAdd);	
+    public void addPeer(String peerId, Address addressToAdd) throws SocketException {
+		forwardingTable.put(peerId, new TCPChannel(this, addressToAdd));
 		aliveTable.put(peerId, System.currentTimeMillis());
 	}
     

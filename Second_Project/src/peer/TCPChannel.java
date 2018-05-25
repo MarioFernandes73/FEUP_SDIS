@@ -33,7 +33,6 @@ public class TCPChannel implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void send(byte[] data) throws IOException {

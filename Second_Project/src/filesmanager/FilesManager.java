@@ -69,7 +69,7 @@ public class FilesManager {
         String[] filesInfoPath = new String[]{Constants.getLogsFile(ownerId), Constants.getChunksInfoFile(ownerId), Constants.getBackedUpFilesInfo(ownerId)};
         try {
             for (int i = 0; i < filesInfoPath.length; i++) {
-                FileOutputStream fos = new FileOutputStream(filesInfoPath[i], false);
+                FileOutputStream fos = new FileOutputStream(filesInfoPath[i], true);
                 oos = new ObjectOutputStream(fos);
                 switch (i) {
                     case 0:

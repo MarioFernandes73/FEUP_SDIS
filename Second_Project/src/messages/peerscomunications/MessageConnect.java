@@ -7,6 +7,7 @@ import peer.Address;
 import peer.Peer;
 import utils.Constants;
 
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -33,11 +34,16 @@ public class MessageConnect extends Message {
     @Override
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
-        if(peer.canAddPeers()){
-            peer.addPeer(this.senderId,this.address);
-            String[] messageArgs = new String[]{Constants.MessageType.ACCEPT_CONNECTION.toString(), peer.getId()};
-            peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
+        try{
+            if(peer.canAddPeers()){
+                peer.addPeer(this.senderId,this.address);
+                String[] messageArgs = new String[]{Constants.MessageType.ACCEPT_CONNECTION.toString(), peer.getId()};
+                peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
+            }
+        } catch (SocketException e){
+
         }
+
         
 
     }

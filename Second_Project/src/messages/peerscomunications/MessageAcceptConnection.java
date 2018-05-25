@@ -4,8 +4,8 @@ import messages.Message;
 import peer.Address;
 import peer.Peer;
 import utils.Constants;
-import utils.Utils;
 
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class MessageAcceptConnection extends Message {
@@ -31,6 +31,10 @@ public class MessageAcceptConnection extends Message {
     @Override
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
-        peer.addPeer(this.senderId,this.address);
+        try {
+            peer.addPeer(this.senderId, this.address);
+        } catch (SocketException e){
+
+        }
     }
 }

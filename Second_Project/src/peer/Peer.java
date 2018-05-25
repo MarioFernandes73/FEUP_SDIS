@@ -316,27 +316,50 @@ public class Peer {
 
     }
 
+    private String encryptFileName(String fileName, String clientId) {
+    	String temp = fileName + clientId;
+
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		byte[] hash = digest.digest(temp.getBytes(StandardCharsets.UTF_8));
+
+		return DatatypeConverter.printHexBinary(hash);  	
+    }
+
     /* RMI methods */
 /*
-	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {
+	public String backup(String fileName, int replicationDegree) throws RemoteException {
 		System.out.println("Starting to backup " + fileName);
 		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
 		thread.start();
 		return null;
 	}
     
-    public String restore(String fileName, boolean enhancement) throws RemoteException {
-		System.out.println("Starting to restore " + fileName);
-		Thread thread = new Thread(new RestoreInitiator(this, fileName));
+    public String restore(String fileName, String clientId) throws RemoteException {
+		System.out.println("Starting to restore file " + fileName + " from client " + clientId);
+		
+		String fileId = encryptedFileName(fileName, clientId);
+		
+		Thread thread = new Thread(new RestoreInitiator(this, fileId));
 		thread.start();
+		
 		return null;
 	}
 
-    public String delete(String fileName, boolean enhancement) throws RemoteException {
+    public String delete(String fileName) throws RemoteException {
 		System.out.println("Starting to delete " + fileName);
 		Thread thread = new Thread(new FileDeleteProtocol(this, fileName, enhancement));
 		thread.start();
 		return null;
+	}
+	
+	// Obtain file chunk from client
+	public int transferFileChunk(String fileName, int chunkNo, byte[] chunkContent) throws RemoteException {
+	
+	}
+	
+	// Send file chunk to client
+	public byte[] getFileChunk(String fileName, int chunkNo) throws RemoteException {
+	
 	}
 */
     

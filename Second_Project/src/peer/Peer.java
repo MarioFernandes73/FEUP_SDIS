@@ -13,11 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.Date;
 import java.util.HashMap;
-=======
->>>>>>> b3535b50de6515f36edbfd2ebcda87c583397300
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,12 +27,8 @@ public class Peer {
     private int port;
     private String bootPeerIP;
     private int bootPeerPort;
-<<<<<<< HEAD
-    private ConcurrentHashMap<String, TCPChannel> forwardingTable = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
-=======
     private ConcurrentHashMap<String, TCPSendChannel> forwardingTable = new ConcurrentHashMap<>();
->>>>>>> b3535b50de6515f36edbfd2ebcda87c583397300
+    private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
     private int peerLimit;
     private int networkSize;
 
@@ -164,7 +157,7 @@ public class Peer {
 	
     public String getContacts(){
     	String contacts = "";
-    	for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
+    	for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet())
     	{
     		contacts += entry.getKey() + "-";
     	}
@@ -205,7 +198,7 @@ public class Peer {
             System.out.println(entry.getKey());
     }
     
-    public ConcurrentHashMap<String, TCPChannel> getForwardingTable() {
+    public ConcurrentHashMap<String, TCPSendChannel> getForwardingTable() {
         return forwardingTable;
     }
     

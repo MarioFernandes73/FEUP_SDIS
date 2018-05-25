@@ -23,7 +23,7 @@ public class CheckContactsAlive implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        for(Entry<String, TCPChannel> entry : peer.getForwardingTable().entrySet()) 
+        for(Entry<String, TCPSendChannel> entry : peer.getForwardingTable().entrySet()) 
         {
         	long secondsOffset = (entry.getValue().getLastTimeAlive().getTime() -  new Date().getTime())/1000;
         	if(secondsOffset > secsToDeclareDead)

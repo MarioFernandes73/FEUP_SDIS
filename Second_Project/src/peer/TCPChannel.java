@@ -8,12 +8,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.Date;
 
 public class TCPChannel implements Runnable {
 
     private Peer owner;
     private Address address;
     private DatagramSocket socket;
+    private Date lastTimeAlive;
     private boolean running;
 
     public TCPChannel(Peer owner, Address address) throws SocketException {
@@ -47,4 +49,11 @@ public class TCPChannel implements Runnable {
         return Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
     }
 
+    public Date getLastTimeAlive() {
+        return lastTimeAlive;
+    }
+
+    public void updateLastTimeAlive() {
+        this.lastTimeAlive = new Date();
+    }
 }

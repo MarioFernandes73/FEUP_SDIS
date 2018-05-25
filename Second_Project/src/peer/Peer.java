@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,7 +26,6 @@ public class Peer {
     private String bootPeerIP;
     private int bootPeerPort;
     private ConcurrentHashMap<String, TCPChannel> forwardingTable = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, Long> aliveTable = new ConcurrentHashMap<>();
     private int peerLimit;
     private int networkSize;
 
@@ -168,12 +168,7 @@ public class Peer {
     
     public void setAlivePeer(String peerID)
     {
-    	aliveTable.replace(peerID, System.currentTimeMillis());
-    }
-    
-    public ConcurrentHashMap<String, Long> getAliveTable()
-    {
-    	return aliveTable;
+        forwardingTable.get(peerID).updateLastTimeAlive();
     }
     
     
@@ -194,12 +189,10 @@ public class Peer {
      */
     public void addPeer(String peerId, Address addressToAdd) throws SocketException {
 		forwardingTable.put(peerId, new TCPChannel(this, addressToAdd));
-		aliveTable.put(peerId, System.currentTimeMillis());
 	}
     
     public void removePeer(String peerId) {
-		forwardingTable.remove(peerId);	
-		aliveTable.remove(peerId);
+		forwardingTable.remove(peerId);
 	}
     
     /**

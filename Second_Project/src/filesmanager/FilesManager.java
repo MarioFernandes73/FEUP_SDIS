@@ -119,6 +119,12 @@ public class FilesManager {
         this.backedUpFilesInfo.add(fileInfo);
     }
 
-    public
+    public BackedUpFileInfo getBackedUpFileInfo(String fileId) {
+    	for(BackedUpFileInfo fileInfo : this.backedUpFilesInfo){
+    		if(fileInfo.getFileId() == fileId)
+    			return fileInfo;
+    	}
+    	return null;
+    }
 
 }

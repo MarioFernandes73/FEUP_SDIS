@@ -8,13 +8,11 @@ import java.util.Date;
 
 public class TCPSendChannel {
 
-    private Peer owner;
     private Address address;
     private DatagramSocket socket;
     private Date lastTimeAlive;
 
     public TCPSendChannel(Peer owner, Address address) throws SocketException {
-        this.owner = owner;
         this.address = address;
         this.socket = new DatagramSocket();
     }

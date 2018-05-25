@@ -15,6 +15,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Peer {
 
@@ -281,6 +282,10 @@ public class Peer {
         return this.forwardingTable.size() < this.peerLimit;
     }
 
+    public BackedUpFileInfo getBackedUpFileInfo(String clientId, String fileName){
+        return this.filesManager.getBackedUpFileInfo(this.encryptFileName(fileName, clientId));
+    }
+
     public void sendMessage(String targetId, Message message) {
         for(String peerId : this.forwardingTable.keySet()){
             if(peerId.equals(targetId) ){
@@ -289,6 +294,8 @@ public class Peer {
             }
         }
     }
+
+
 
     public void startConnection(String peerId, Address addressToAdd){
 

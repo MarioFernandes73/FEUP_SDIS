@@ -33,7 +33,7 @@ public class TCPReceiveChannel implements Runnable {
         }
     }
 
-    public byte[] receive() throws IOException {
+    private byte[] receive() throws IOException {
         byte[] buffer = new byte[Constants.MAX_PACKET_SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);

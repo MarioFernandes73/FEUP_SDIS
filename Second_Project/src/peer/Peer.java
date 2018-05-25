@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +27,7 @@ public class Peer {
     private String bootPeerIP;
     private int bootPeerPort;
     private ConcurrentHashMap<String, TCPChannel> forwardingTable = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
     private int peerLimit;
     private int networkSize;
 
@@ -164,6 +166,17 @@ public class Peer {
         System.out.println("\nForwarding Table:");
         for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
             System.out.println(entry.getKey());
+    }
+    
+    public ConcurrentHashMap<String, TCPChannel> getForwardingTable() {
+        return forwardingTable;
+    }
+    
+    public void updateBackupTable(HashMap<String, Address> backupForwardingTable)
+    {
+    	this.backupForwardingTable.clear();
+    	for(Entry<String, Address> entry : backupForwardingTable.entrySet())
+			this.backupForwardingTable.put(entry.getKey(), entry.getValue());
     }
     
     public void setAlivePeer(String peerID)

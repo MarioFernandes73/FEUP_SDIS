@@ -1,6 +1,7 @@
 package messages.peerscomunications;
 
 import messages.Message;
+import peer.Peer;
 import utils.Constants;
 
 public class MessageRejectPeer extends Message{
@@ -24,8 +25,8 @@ public class MessageRejectPeer extends Message{
 
 	@Override
 	public void handleMessage(Object... args) {
-		// TODO Auto-generated method stub
-		
+		Peer p = (Peer) args[0];
+		p.getRecords().addRejectPeerMessage(this);
 	}
 	
 	@Override

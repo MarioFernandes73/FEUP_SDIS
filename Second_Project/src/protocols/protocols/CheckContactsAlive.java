@@ -1,5 +1,6 @@
 package protocols.protocols;
 
+import java.util.Date;
 import java.util.Map.Entry;
 
 import peer.*;
@@ -22,9 +23,10 @@ public class CheckContactsAlive implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        for(Entry<String, Long> entry : peer.getAliveTable().entrySet()) 
+        for(Entry<String, TCPChannel> entry : peer.getForwardingTable().entrySet()) 
         {
-        	if(System.currentTimeMillis() - entry.getValue() > secsToDeclareDead * 1000)
+        	long secondsOffset = (entry.getValue().getLastTimeAlive().getTime() -  new Date().getTime())/1000;
+        	if(secondsOffset > secsToDeclareDead)
         		peer.removePeer(entry.getKey());
         }
     }

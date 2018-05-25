@@ -28,6 +28,8 @@ public class Peer {
     private int peerLimit;
     private int networkSize;
 
+	private ArrayList<String> temporaryContacts = new ArrayList<String>();
+	
     private FilesManager filesManager;
 
     private MessagesRecords records;

@@ -151,9 +151,9 @@ public class Peer {
 	
     public String getContacts(){
     	String contacts = "";
-    	for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet())
+    	for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
     	{
-    		contacts += entry.getKey() + "\n";
+    		contacts += entry.getKey() + "-";
     	}
     	return contacts;
     }
@@ -162,6 +162,19 @@ public class Peer {
     {
     	return filesManager.hasChunk(fileID, chunkNo);
     }
+    
+    public void addTemporaryContacts(String contacts){
+    	String[] array_contacts = contacts.split("-");
+    	for(int i = 0; i < array_contacts.length; i++)
+    	{
+    		temporaryContacts.add(array_contacts[i]);
+    	}
+    }
+    
+	public String chooseContact() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     private void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException, SocketException {
         String[] rows = tableInfo.split("\n");

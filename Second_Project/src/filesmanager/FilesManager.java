@@ -2,6 +2,7 @@ package filesmanager;
 
 import peer.ChunkInfo;
 import utils.Constants;
+import utils.Utils;
 
 
 import java.io.*;
@@ -89,6 +90,20 @@ public class FilesManager {
             oos.close();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void saveChunk(Chunk chunk) {
+        byte data[] = chunk.getData();
+        try {
+            FileOutputStream out = new FileOutputStream(Constants.getBackedUpChunksDir(this.ownerId) + Utils.getDirSeparator() + chunk.getChunkId(),
+                    false);
+            out.write(data);
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

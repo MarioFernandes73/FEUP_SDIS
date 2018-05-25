@@ -27,9 +27,7 @@ public class BackupInitiator implements Runnable {
     @Override
     public void run() {
         String encryptedFileId = peer.getEncryptedFileName(client, file);
-        if(peer.checkIfFileExists(encryptedFileId)){
-            System.out.println("File has already been backed up.");
-        }
+
 
         ArrayList<Chunk> chunks = this.peer.splitToChunks(file);
         ArrayList<ChunkInfo> chunksInfo = new ArrayList<>();

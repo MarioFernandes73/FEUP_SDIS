@@ -149,6 +149,20 @@ public class Peer {
         forwardingTable.put(peerIP+":"+peerPort, new TCPChannel(this, peerAddress));
         showForwardingTable();
     }
+	
+    public String getContacts(){
+    	String contacts = "";
+    	for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
+    	{
+    		contacts += entry.getKey() + "\n";
+    	}
+    	return contacts;
+    }
+    
+    public boolean hasChunk(String fileID, int chunkNo)
+    {
+    	return filesManager.hasChunk(fileID, chunkNo);
+    }
 
     private void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException, SocketException {
         String[] rows = tableInfo.split("\n");

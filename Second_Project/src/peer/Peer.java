@@ -13,10 +13,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.Date;
 import java.util.HashMap;
+=======
+>>>>>>> b3535b50de6515f36edbfd2ebcda87c583397300
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Peer {
 
@@ -26,11 +30,17 @@ public class Peer {
     private int port;
     private String bootPeerIP;
     private int bootPeerPort;
+<<<<<<< HEAD
     private ConcurrentHashMap<String, TCPChannel> forwardingTable = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
+=======
+    private ConcurrentHashMap<String, TCPSendChannel> forwardingTable = new ConcurrentHashMap<>();
+>>>>>>> b3535b50de6515f36edbfd2ebcda87c583397300
     private int peerLimit;
     private int networkSize;
 
+	private ArrayList<String> temporaryContacts = new ArrayList<String>();
+	
     private FilesManager filesManager;
 
     private MessagesRecords records;
@@ -138,7 +148,7 @@ public class Peer {
         sendSocket = new DatagramSocket();
 
         StringBuilder table = new StringBuilder();
-        for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
+        for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet())
         {
         	table.append(entry.getKey()).append("\n");
         }
@@ -148,23 +158,50 @@ public class Peer {
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getByName(peerIP), Integer.parseInt(peerPort));
         sendSocket.send(sendPacket);
 
-        forwardingTable.put(peerIP+":"+peerPort, new TCPChannel(this, peerAddress));
+        forwardingTable.put(peerIP+":"+peerPort, new TCPSendChannel(this, peerAddress));
         showForwardingTable();
     }
+	
+    public String getContacts(){
+    	String contacts = "";
+    	for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
+    	{
+    		contacts += entry.getKey() + "-";
+    	}
+    	return contacts;
+    }
+    
+    public boolean hasChunk(String fileID, int chunkNo)
+    {
+    	return filesManager.hasChunk(fileID, chunkNo);
+    }
+    
+    public void addTemporaryContacts(String contacts){
+    	String[] array_contacts = contacts.split("-");
+    	for(int i = 0; i < array_contacts.length; i++)
+    	{
+    		temporaryContacts.add(array_contacts[i]);
+    	}
+    }
+    
+	public String chooseContact() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     private void fillForwardingTable(String tableInfo) throws NumberFormatException, UnknownHostException, SocketException {
         String[] rows = tableInfo.split("\n");
         for (String row : rows) {
             String addressParts[] = row.split(":");
             Address address = new Address(addressParts[0], Integer.parseInt(addressParts[1]));
-            forwardingTable.put(addressParts[0]+":"+addressParts[1],new TCPChannel(this, address));
+            forwardingTable.put(addressParts[0]+":"+addressParts[1],new TCPSendChannel(this, address));
             System.out.println("Added " + addressParts[0] + ":" + addressParts[1] + " to the the Forwarding Table.");
         }
     }
 
     private void showForwardingTable() {
         System.out.println("\nForwarding Table:");
-        for(Entry<String, TCPChannel> entry : forwardingTable.entrySet())
+        for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet())
             System.out.println(entry.getKey());
     }
     
@@ -190,7 +227,7 @@ public class Peer {
      * @param peerID String with the id of the peer
      * @return address of the peer if it exists in forwardingTable and null otherwise
      */
-    public TCPChannel getConnectionAddress(String peerID) {
+    public TCPSendChannel getConnectionAddress(String peerID) {
         return forwardingTable.get(peerID);
     }
     
@@ -201,7 +238,7 @@ public class Peer {
      * @param addressToAdd new peer's Address
      */
     public void addPeer(String peerId, Address addressToAdd) throws SocketException {
-		forwardingTable.put(peerId, new TCPChannel(this, addressToAdd));
+		forwardingTable.put(peerId, new TCPSendChannel(this, addressToAdd));
 	}
     
     public void removePeer(String peerId) {
@@ -281,6 +318,10 @@ public class Peer {
         return this.forwardingTable.size() < this.peerLimit;
     }
 
+    public BackedUpFileInfo getBackedUpFileInfo(String clientId, String fileName){
+        return this.filesManager.getBackedUpFileInfo(this.encryptFileName(fileName, clientId));
+    }
+
     public void sendMessage(String targetId, Message message) {
         for(String peerId : this.forwardingTable.keySet()){
             if(peerId.equals(targetId) ){
@@ -290,31 +331,56 @@ public class Peer {
         }
     }
 
+
+
     public void startConnection(String peerId, Address addressToAdd){
 
     }
 
+    private String encryptFileName(String fileName, String clientId) {
+    	String temp = fileName + clientId;
+
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		byte[] hash = digest.digest(temp.getBytes(StandardCharsets.UTF_8));
+
+		return DatatypeConverter.printHexBinary(hash);  	
+    }
+
     /* RMI methods */
 /*
-	public String backup(String fileName, int replicationDegree, boolean enhancement) throws RemoteException {
+	public String backup(String fileName, int replicationDegree) throws RemoteException {
 		System.out.println("Starting to backup " + fileName);
 		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
 		thread.start();
 		return null;
 	}
     
-    public String restore(String fileName, boolean enhancement) throws RemoteException {
-		System.out.println("Starting to restore " + fileName);
-		Thread thread = new Thread(new RestoreInitiator(this, fileName));
+    public String restore(String fileName, String clientId) throws RemoteException {
+		System.out.println("Starting to restore file " + fileName + " from client " + clientId);
+		
+		String fileId = encryptedFileName(fileName, clientId);
+		
+		Thread thread = new Thread(new RestoreInitiator(this, fileId));
 		thread.start();
+		
 		return null;
 	}
 
-    public String delete(String fileName, boolean enhancement) throws RemoteException {
+    public String delete(String fileName) throws RemoteException {
 		System.out.println("Starting to delete " + fileName);
 		Thread thread = new Thread(new FileDeleteProtocol(this, fileName, enhancement));
 		thread.start();
 		return null;
+	}
+	
+	// Obtain file chunk from client
+	public int transferFileChunk(String fileName, int chunkNo, byte[] chunkContent) throws RemoteException {
+	
+	}
+	
+	// Send file chunk to client
+	public byte[] getFileChunk(String fileName, int chunkNo) throws RemoteException {
+	
 	}
 */
     

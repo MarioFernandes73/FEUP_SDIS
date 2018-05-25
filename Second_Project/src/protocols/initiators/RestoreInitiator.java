@@ -10,24 +10,21 @@ import protocols.protocols.ChunkBackupProtocol;
 import java.io.File;
 import java.util.ArrayList;
 
-public class BackupInitiator implements Runnable {
+public class RestoreInitiator implements Runnable {
 
     private Client client;
     private Peer peer;
     private File file;
     private int replicationDegree;
 
-    public BackupInitiator(Client client, Peer peer, File file, int replicationDegree) {
-        this.client = client;
+    public RestoreInitiator(String peer, String fileId) {
         this.peer = peer;
-        this.file = file;
-        this.replicationDegree = replicationDegree;
+        this.fileId = fileId;
     }
 
     @Override
     public void run() {
-        String encryptedFileId = peer.getEncryptedFileName(client, file);
-
+    	BackedUpFileInfo fileInfo = peer.getBackedUpFileInfo(fileId);
 
         ArrayList<Chunk> chunks = this.peer.splitToChunks(file);
         ArrayList<ChunkInfo> chunksInfo = new ArrayList<>();
@@ -72,3 +69,4 @@ public class BackupInitiator implements Runnable {
 
 
 }
+

@@ -10,4 +10,12 @@ public class Utils {
         return joinedArray;
     }
 
+    public static String getDirSeparator() {
+        if(System.getProperty("os.name").split(" ")[0].equals("Windows")) {
+            return "\\";
+        }
+
+        return "/";
+    }
+
 }

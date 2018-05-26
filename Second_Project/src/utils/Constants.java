@@ -56,8 +56,8 @@ public class Constants {
         messageHashMap.put("PUT_CHUNK", MessagePutChunk.class);
         messageHashMap.put("ALIVE", MessageAlive.class);
         messageHashMap.put("STORED", MessageStored.class);
-        messageHashMap.put("REQUEST_CONNECTION", MessageStored.class);
-        messageHashMap.put("CHANGE_CONNECTION_LIMIT", MessageStored.class);
+        messageHashMap.put("REQUEST_CONNECTION", MessageRequestConnection.class);
+        messageHashMap.put("CHANGE_CONNECTION_LIMIT", MessageChangeConnectionLimit.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED}

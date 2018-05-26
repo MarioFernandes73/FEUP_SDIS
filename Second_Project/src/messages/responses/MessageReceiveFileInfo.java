@@ -21,12 +21,12 @@ public class MessageReceiveFileInfo  extends Message {
 
     @Override
     public String getHeader() {
-        return null;
+        return super.getBaseHeader() + " " + this.fileInfo.toString();
     }
 
     @Override
     public byte[] getBytes() {
-        return new byte[0];
+        return getHeader().getBytes();
     }
 
     @Override

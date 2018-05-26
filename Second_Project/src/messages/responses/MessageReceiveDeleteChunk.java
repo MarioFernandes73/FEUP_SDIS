@@ -6,8 +6,8 @@ import utils.Constants;
 
 public class MessageReceiveDeleteChunk extends Message {
 
-    private boolean success = false;
     private String chunkId;
+    private boolean success = false;
 
     public MessageReceiveDeleteChunk(String[] args){
         super(Constants.MessageType.RECEIVED_DELETE_CHUNK, args[1]);
@@ -19,7 +19,7 @@ public class MessageReceiveDeleteChunk extends Message {
 
     @Override
     public String getHeader() {
-        return null;
+        return super.getBaseHeader() + " " + this.chunkId + " " + this.success;
     }
 
     @Override

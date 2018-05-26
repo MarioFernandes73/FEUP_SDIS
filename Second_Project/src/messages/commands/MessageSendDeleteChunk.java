@@ -16,12 +16,12 @@ public class MessageSendDeleteChunk extends Message {
 
     @Override
     public String getHeader() {
-        return null;
+        return super.getBaseHeader() + " " + this.chunkId;
     }
 
     @Override
     public byte[] getBytes() {
-        return new byte[0];
+        return getHeader().getBytes();
     }
 
     @Override

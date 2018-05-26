@@ -48,13 +48,13 @@ public class Constants {
 
     static {
         messageHashMap = new HashMap<>();
-        messageHashMap.put("ACCEPT_CONNECTION", MessageRejectPeer.class);
+        messageHashMap.put("ACCEPT_CONNECTION", MessageAcceptConnection.class);
         messageHashMap.put("MESSAGE_REJECT_PEER", MessageRejectPeer.class);
         messageHashMap.put("MESSAGE_ACCEPT_PEER", MessageAcceptPeer.class);
         messageHashMap.put("MESSAGE_ADD_PEER", MessageAddPeer.class);
-        messageHashMap.put("CONNECT", MessageRejectPeer.class);
+        messageHashMap.put("CONNECT", MessageConnect.class);
         messageHashMap.put("PUT_CHUNK", MessagePutChunk.class);
-        messageHashMap.put("ALIVE", MessageRejectPeer.class);
+        messageHashMap.put("ALIVE", MessageAlive.class);
         messageHashMap.put("STORED", MessageStored.class);
         messageHashMap.put("REQUEST_CONNECTION", MessageStored.class);
         messageHashMap.put("CHANGE_CONNECTION_LIMIT", MessageStored.class);

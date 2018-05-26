@@ -7,11 +7,15 @@ import filesmanager.FilesManager;
 import messages.Message;
 import messages.MessagesRecords;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -316,8 +320,8 @@ public class Peer {
         return this.forwardingTable.size() < this.peerLimit;
     }
 
-    public BackedUpFileInfo getBackedUpFileInfo(String clientId, String fileName){
-        return this.filesManager.getBackedUpFileInfo(this.encryptFileName(fileName, clientId));
+    public BackedUpFileInfo getBackedUpFileInfo(String fileId){
+        return this.filesManager.getBackedUpFileInfo(fileId);
     }
 
     public void sendMessage(String targetId, Message message) {
@@ -329,19 +333,35 @@ public class Peer {
         }
     }
 
+    public void sendMessageToAddress(Address address, Message message) throws IOException{
+        DatagramSocket socket = new DatagramSocket();
+        DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, address.getInetAddress(), address.getPort());
+        socket.send(msgPacket);
+    }
+
+    public void sendFloodMessage(Message message) throws IOException{
+        for(Entry<String, TCPSendChannel> entry : this.forwardingTable.entrySet()){
+            entry.getValue().send(message.getBytes());
+        }
+    }
+
 
 
     public void startConnection(String peerId, Address addressToAdd){
 
     }
 
-    private String encryptFileName(String fileName, String clientId) {
+    public String encryptFileName(String fileName, String clientId) throws NoSuchAlgorithmException {
     	String temp = fileName + clientId;
 
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		byte[] hash = digest.digest(temp.getBytes(StandardCharsets.UTF_8));
 
-		return DatatypeConverter.printHexBinary(hash);  	
+		return DatatypeConverter.printHexBinary(hash);
+    }
+
+    public boolean deleteChunk(String chunkId){
+        return this.filesManager.deleteChunk(chunkId);
     }
 
     /* RMI methods */

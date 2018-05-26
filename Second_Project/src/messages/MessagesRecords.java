@@ -1,9 +1,13 @@
 package messages;
 
+import filesmanager.BackedUpFileInfo;
 import messages.peerscomunications.*;
+import messages.responses.MessageReceiveDeleteChunk;
+import messages.responses.MessageReceiveFileInfo;
 import messages.responses.MessageStored;
 import peer.ChunkInfo;
 
+import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MessagesRecords {
@@ -12,6 +16,8 @@ public class MessagesRecords {
     private CopyOnWriteArrayList<MessageStored> storedMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageAcceptPeer> acceptPeerMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageRejectPeer> rejectPeerMessages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MessageReceiveFileInfo> receiveFileInfoMessages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MessageReceiveDeleteChunk> receiveDeleteChunkMessages = new CopyOnWriteArrayList<>();
 
     public MessagesRecords(String ownerId) {
         this.ownerId = ownerId;
@@ -65,5 +71,31 @@ public class MessagesRecords {
             }
         }
 */
+    }
+
+    public void addReceiveFileInfoMessage(MessageReceiveFileInfo messageReceiveFileInfo) {
+        receiveFileInfoMessages.add(messageReceiveFileInfo);
+    }
+
+    public BackedUpFileInfo getFileInfo(String fileId){
+        for(MessageReceiveFileInfo msg : this.receiveFileInfoMessages){
+            if(msg.getFileInfo().getId().equals(fileId)){
+                return msg.getFileInfo();
+            }
+        }
+        return null;
+    }
+
+    public void addReceiveDeleteChunkMessage(MessageReceiveDeleteChunk messageReceiveDeleteChunk) {
+        this.receiveDeleteChunkMessages.add(messageReceiveDeleteChunk);
+    }
+
+    public boolean checkForDeletedChunk(String peerId, String chunkId){
+        for(MessageReceiveDeleteChunk msg : receiveDeleteChunkMessages){
+            if(msg.getSenderId().equals(peerId) && msg.getChunkId().equals(chunkId) && msg.isSuccess()){
+                return true;
+            }
+        }
+        return false;
     }
 }

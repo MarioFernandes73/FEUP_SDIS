@@ -107,6 +107,16 @@ public class FilesManager {
         }
     }
 
+    public boolean deleteChunk(String fileName) {
+        for (File file : new File(Constants.getBackedUpChunksDir(this.ownerId)).listFiles()) {
+            if (file.getName().equals(fileName)) {
+                file.delete();
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addLog(String log){
         this.logs.add(log);
     }
@@ -121,10 +131,18 @@ public class FilesManager {
 
     public BackedUpFileInfo getBackedUpFileInfo(String fileId) {
     	for(BackedUpFileInfo fileInfo : this.backedUpFilesInfo){
-    		if(fileInfo.getFileId() == fileId)
+    		if(fileInfo.getId() == fileId)
     			return fileInfo;
     	}
     	return null;
     }
 
+    public boolean hasChunk(String fileID, int chunkNo) {
+        for (ChunkInfo chunkInfo : this.chunksInfo) {
+            if ((chunkInfo.getFileId() + chunkInfo.getChunkNo()).equals(fileID + chunkNo)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

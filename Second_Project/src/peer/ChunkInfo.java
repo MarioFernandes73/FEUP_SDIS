@@ -2,6 +2,7 @@ package peer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ChunkInfo implements Serializable {
 
@@ -9,7 +10,7 @@ public class ChunkInfo implements Serializable {
     private static final long serialVersionUID = 1L;
     private String fileId;
     private int chunkNo;
-    private ArrayList<String> ownerIds = new ArrayList<String>();
+    private HashMap<String,Address> ownerAddress = new HashMap<>();
     private int desiredReplicationDeg;
     private int chunkSize;
 
@@ -28,8 +29,8 @@ public class ChunkInfo implements Serializable {
         return chunkNo;
     }
 
-    public ArrayList<String> getOwnerIds() {
-        return ownerIds;
+    public HashMap<String,Address> getOwners() {
+        return ownerAddress;
     }
 
     public int getDesiredReplicationDeg() {
@@ -41,7 +42,7 @@ public class ChunkInfo implements Serializable {
     }
 
     public int getPerceivedReplicationDeg() {
-        return ownerIds.size();
+        return ownerAddress.size();
     }
 
     public String getChunkId() {

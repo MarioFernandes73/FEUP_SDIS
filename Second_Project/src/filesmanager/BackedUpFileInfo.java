@@ -22,6 +22,9 @@ public class BackedUpFileInfo implements Serializable {
         this.isBackedUp = isBackedUp;
     }
 
+    public BackedUpFileInfo(String[] fileInfoArgs) {
+    }
+
     public String getName() {
         return name;
     }

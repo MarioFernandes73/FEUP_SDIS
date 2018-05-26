@@ -37,4 +37,8 @@ public abstract class Message implements IMessage {
     public void setData(byte[] data) {
         this.data = data;
     }
+
+    public String getSenderId(){
+        return this.senderId;
+    }
 }

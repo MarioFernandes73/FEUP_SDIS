@@ -15,7 +15,7 @@ public class MessageRejectPeer extends Message{
 
 	@Override
 	public String getHeader() {
-		return super.getBaseHeader() + " " + peerId;
+		return super.getBaseHeader() + " " + peerId + " \r\n\r\n";
 	}
 
 	@Override

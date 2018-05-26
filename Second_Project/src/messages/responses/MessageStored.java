@@ -27,7 +27,7 @@ public class MessageStored extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + contacts;
+    	return super.getBaseHeader() + " " + contacts + " \r\n\r\n";
     }
 
     @Override

@@ -21,7 +21,7 @@ public class MessageReceiveFileInfo  extends Message {
 
     @Override
     public String getHeader() {
-        return super.getBaseHeader() + " " + this.fileInfo.toString();
+        return super.getBaseHeader() + " " + this.fileInfo.toString() + " \r\n\r\n";
     }
 
     @Override

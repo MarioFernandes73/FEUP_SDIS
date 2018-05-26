@@ -18,7 +18,7 @@ public class MessageSendFileInfo extends Message {
 
     @Override
     public String getHeader() {
-        return super.getBaseHeader() + " " + this.fileId;
+        return super.getBaseHeader() + " " + this.fileId + " \r\n\r\n";
     }
 
     @Override

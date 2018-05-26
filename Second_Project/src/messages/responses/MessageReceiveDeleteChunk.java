@@ -19,7 +19,7 @@ public class MessageReceiveDeleteChunk extends Message {
 
     @Override
     public String getHeader() {
-        return super.getBaseHeader() + " " + this.chunkId + " " + this.success;
+        return super.getBaseHeader() + " " + this.chunkId + " " + this.success + " \r\n\r\n";
     }
 
     @Override

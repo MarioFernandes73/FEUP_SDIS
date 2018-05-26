@@ -16,7 +16,7 @@ public class MessageSendDeleteChunk extends Message {
 
     @Override
     public String getHeader() {
-        return super.getBaseHeader() + " " + this.chunkId;
+        return super.getBaseHeader() + " " + this.chunkId + " \r\n\r\n";
     }
 
     @Override

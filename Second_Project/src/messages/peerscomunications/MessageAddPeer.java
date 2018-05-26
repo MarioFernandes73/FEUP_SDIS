@@ -31,7 +31,7 @@ public class MessageAddPeer extends Message{
 
 	@Override
 	public String getHeader() {
-		return super.getBaseHeader() + " " + peerId + " " + addressToAdd.toString();
+		return super.getBaseHeader() + " " + peerId + " " + addressToAdd.toString() + " \r\n\r\n";
 	}
 
 	@Override

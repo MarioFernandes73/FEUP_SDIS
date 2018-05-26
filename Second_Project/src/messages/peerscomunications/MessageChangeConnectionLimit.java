@@ -20,7 +20,7 @@ public class MessageChangeConnectionLimit extends Message{
 
 	@Override
 	public String getHeader() {
-		return super.getBaseHeader() + " " + Integer.toString(newLimit);
+		return super.getBaseHeader() + " " + Integer.toString(newLimit) + " \r\n\r\n";
 	}
 
 	@Override

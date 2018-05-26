@@ -36,9 +36,9 @@ public class MessageAlive extends Message {
 		String baseHeader = super.getBaseHeader();
 		String header = "";
 		for(Entry<String, Address> entry : backupForwardingTable.entrySet())
-			header += entry.getValue().toString() + " ";
-		
-		return baseHeader + header;
+			header += " " + entry.getValue().toString();
+
+		return baseHeader + header + " \r\n\r\n";
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class MessageRequestConnection extends Message{
 
 	@Override
 	public String getHeader() {
-		return super.getBaseHeader() + " " + addressToAdd.toString();
+		return super.getBaseHeader() + " " + addressToAdd.toString() + " \r\n\r\n";
 	}
 
 	@Override

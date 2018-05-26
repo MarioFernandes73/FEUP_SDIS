@@ -20,7 +20,7 @@ public class MessageAcceptConnection extends Message {
 
     @Override
     public String getHeader() {
-        return super.getBaseHeader() + " " + this.address.toString();
+        return super.getBaseHeader() + " " + this.address.toString() + " \r\n\r\n";
     }
 
     @Override

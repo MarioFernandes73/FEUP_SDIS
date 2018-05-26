@@ -25,11 +25,9 @@ import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Peer implements RMIInterface {
 
@@ -55,8 +53,8 @@ public class Peer implements RMIInterface {
         if (!verifyArgs(args))
             return;
 
-        this.ip = InetAddress.getLocalHost().getHostAddress();
-        //this.ip = getPublicIP();
+        //this.ip = InetAddress.getLocalHost().getHostAddress();
+        this.ip = getPublicIP();
 
         this.id = ip + "." + port;
 

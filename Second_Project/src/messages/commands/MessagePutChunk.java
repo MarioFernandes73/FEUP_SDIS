@@ -27,7 +27,7 @@ public class MessagePutChunk extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + fileId + Integer.toString(chunkNo) + Integer.toString(replicationDegree);
+    	return super.getBaseHeader() + " " + fileId + Integer.toString(chunkNo) + Integer.toString(replicationDegree) + " \r\n\r\n";
     }
 
     @Override

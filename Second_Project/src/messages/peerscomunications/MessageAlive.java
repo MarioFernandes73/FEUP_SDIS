@@ -15,8 +15,8 @@ public class MessageAlive extends Message {
 	private HashMap<String, Address> backupForwardingTable = new HashMap<>();
 	
 	protected MessageAlive(String[] args) {
-		super(Constants.MessageType.ALIVE, args[0]);
-		for(int i = 1; i < args.length; i+=2)
+		super(Constants.MessageType.ALIVE, args[1]);
+		for(int i = 2; i < args.length; i+=2)
 		{
 			String ipPort[] = args[i+1].split(" ");
 			try {

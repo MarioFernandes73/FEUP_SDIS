@@ -16,10 +16,10 @@ public class MessageAddPeer extends Message{
     private Address addressToAdd;
 
     public MessageAddPeer(String[] args){
-    	super(Constants.MessageType.ADD_PEER, args[0]);
-    	this.peerId = args[1];
+    	super(Constants.MessageType.ADD_PEER, args[1]);
+    	this.peerId = args[2];
     	try {
-			this.addressToAdd = new Address(args[2], Integer.parseInt(args[3]));
+			this.addressToAdd = new Address(args[3], Integer.parseInt(args[4]));
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

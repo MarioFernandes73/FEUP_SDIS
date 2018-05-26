@@ -9,8 +9,8 @@ public class MessageAcceptPeer extends Message{
 	private String peerId;
     
     public MessageAcceptPeer(String[] args) {
-    	super(Constants.MessageType.ACCEPT_PEER, args[0]);
-    	this.peerId = args[1];
+    	super(Constants.MessageType.ACCEPT_PEER, args[1]);
+    	this.peerId = args[2];
     }
 
 	@Override

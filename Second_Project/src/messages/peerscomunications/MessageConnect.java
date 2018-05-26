@@ -19,8 +19,8 @@ public class MessageConnect extends Message {
     private final long waitingResponseMS = 5000;
 
     public MessageConnect(String[] args) throws UnknownHostException {
-        super(Constants.MessageType.CONNECT, args[0]);
-        this.address = new Address(args[1], Integer.parseInt(args[2]));
+        super(Constants.MessageType.CONNECT, args[1]);
+        this.address = new Address(args[2], Integer.parseInt(args[3]));
     }
 
 

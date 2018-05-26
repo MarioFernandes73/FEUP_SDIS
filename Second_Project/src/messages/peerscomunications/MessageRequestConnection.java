@@ -16,9 +16,9 @@ public class MessageRequestConnection extends Message{
 	Address addressToAdd;
 	
 	protected MessageRequestConnection(String[] args) {
-		super(Constants.MessageType.REQUEST_CONNECTION, args[0]);
+		super(Constants.MessageType.REQUEST_CONNECTION, args[1]);
 		try {
-			this.addressToAdd = new Address(args[1], Integer.parseInt(args[2]));
+			this.addressToAdd = new Address(args[2], Integer.parseInt(args[3]));
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

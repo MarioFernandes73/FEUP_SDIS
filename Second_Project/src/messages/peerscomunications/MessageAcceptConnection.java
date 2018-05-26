@@ -13,8 +13,8 @@ public class MessageAcceptConnection extends Message {
     private Address address;
 
     public MessageAcceptConnection(String[] args) throws UnknownHostException {
-        super(Constants.MessageType.ACCEPT_CONNECTION, args[0]);
-        this.address = new Address(args[1], Integer.parseInt(args[2]));
+        super(Constants.MessageType.ACCEPT_CONNECTION, args[1]);
+        this.address = new Address(args[2], Integer.parseInt(args[3]));
     }
 
 

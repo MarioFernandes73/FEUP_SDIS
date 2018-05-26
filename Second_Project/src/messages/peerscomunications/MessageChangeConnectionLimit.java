@@ -14,8 +14,8 @@ public class MessageChangeConnectionLimit extends Message{
 	int newLimit;
 	
 	protected MessageChangeConnectionLimit(String[] args) {
-		super(Constants.MessageType.CHANGE_CONNECTION_LIMIT, args[0]);
-		this.newLimit = Integer.parseInt(args[1]);
+		super(Constants.MessageType.CHANGE_CONNECTION_LIMIT, args[1]);
+		this.newLimit = Integer.parseInt(args[2]);
 	}
 
 	@Override

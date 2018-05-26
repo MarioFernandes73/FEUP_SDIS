@@ -18,11 +18,11 @@ public class MessageStored extends Message {
     private String contacts;
 
     public MessageStored(String[] args){
-        super(Constants.MessageType.STORED, args[0]);
-        this.fileId = args[1];
-        this.chunkNo = Integer.parseInt(args[2]);
-        this.replicationDegree = Integer.parseInt(args[3]);
-        this.contacts = args[4];
+        super(Constants.MessageType.STORED, args[1]);
+        this.fileId = args[2];
+        this.chunkNo = Integer.parseInt(args[3]);
+        this.replicationDegree = Integer.parseInt(args[4]);
+        this.contacts = args[5];
     }
 
     @Override

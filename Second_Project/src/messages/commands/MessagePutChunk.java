@@ -18,11 +18,11 @@ public class MessagePutChunk extends Message {
     private byte[] data;
 
     public MessagePutChunk(String[] args){
-        super(Constants.MessageType.PUT_CHUNK, args[0]);
-        this.fileId = args[1];
-        this.chunkNo = Integer.parseInt(args[2]);
-        this.replicationDegree = Integer.parseInt(args[3]);
-        this.data = args[4].getBytes();
+        super(Constants.MessageType.PUT_CHUNK, args[1]);
+        this.fileId = args[2];
+        this.chunkNo = Integer.parseInt(args[3]);
+        this.replicationDegree = Integer.parseInt(args[4]);
+        this.data = args[5].getBytes();
     }
 
     @Override

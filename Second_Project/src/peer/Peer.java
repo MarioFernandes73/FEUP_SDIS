@@ -5,7 +5,14 @@ import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.FilesManager;
 import messages.Message;
+import messages.MessageBuilder;
 import messages.MessagesRecords;
+import protocols.initiators.BackupInitiator;
+import protocols.initiators.DeleteInitiator;
+import protocols.initiators.RestoreInitiator;
+import rmi.RMICreator;
+import rmi.RMIInterface;
+import utils.Constants;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedReader;
@@ -14,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -23,75 +31,83 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Peer {
+public class Peer implements RMIInterface {
 
     private String id;
     private boolean isBootPeer;
     private String ip;
     private int port;
-    private String bootPeerIP;
-    private int bootPeerPort;
+    private Address bootPeerAddress;
     private ConcurrentHashMap<String, TCPSendChannel> forwardingTable = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
-    private int peerLimit;
-    private int networkSize;
+    private int peerLimit = Constants.DEFAULT_CONNECTION_LIMIT;
 
 	private ArrayList<String> temporaryContacts = new ArrayList<String>();
 	
     private FilesManager filesManager;
 
     private MessagesRecords records;
+    private RMICreator rmiCreator;
 
-    private DatagramSocket sendSocket;
-    private DatagramSocket receiveSocket;
+    private TCPReceiveChannel receiveChannel;
 
     Peer(String args[]) throws IOException {
         if (!verifyArgs(args))
             return;
 
+        this.ip = InetAddress.getLocalHost().getHostAddress();
+        //this.ip = getPublicIP();
+
+        this.id = ip + "." + port;
+
         this.filesManager = new FilesManager(this.id);
         this.records = new MessagesRecords(this.id);
 
-        ip = InetAddress.getLocalHost().getHostAddress();
-        //getPublicIP();
+        this.receiveChannel = new TCPReceiveChannel(this);
+        new Thread(this.receiveChannel).start();
 
-        id = ip + ":" + port;
-
-        if (isBootPeer) {
-            bootPeer();
-        } else {
-            normalPeer();
+        if(!isBootPeer){
+            String[] msgArgs = new String[]{
+                    Constants.MessageType.CONNECT.toString(),
+                    this.getId(),
+                    this.ip,
+                    Integer.toString(this.port)
+            };
+            this.sendMessageToAddress(this.bootPeerAddress, MessageBuilder.build(msgArgs));
         }
     }
 
     private boolean verifyArgs(String args[]) {
-        if (args.length != 3) {
-            System.out.println("Incorrect number of arguments.");
-            return false;
-        }
+
 
         switch (args[0]) {
             case "boot":
-                isBootPeer = true;
-
-                int lim = Integer.parseInt(args[2]);
-                if (lim >= 1 && lim <= 1000) {
-                    peerLimit = lim;
-                } else {
-                    System.out.println("Error. Invalid peer limit. Should be 1-1000.");
+                if (args.length != 2) {
+                    System.out.println("Incorrect number of arguments.");
                     return false;
                 }
+                isBootPeer = true;
+
                 break;
             case "normal":
+                if (args.length != 3) {
+                    System.out.println("Incorrect number of arguments.");
+                    return false;
+                }
                 isBootPeer = false;
                 if (args[2].matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}:[0-9]{1,5}")) {
                     String[] bootPeerAddress = args[2].split(":");
-                    bootPeerIP = bootPeerAddress[0];
-                    bootPeerPort = Integer.parseInt(bootPeerAddress[1]);
+                    try {
+                        this.bootPeerAddress = new Address(bootPeerAddress[0], Integer.parseInt(bootPeerAddress[1]));
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     System.out.println("Error. Invalid IP:PORT format.");
                     return false;
                 }
+
                 break;
             default:
                 System.out.println("Error. First argument should be 'boot' or 'normal'.");
@@ -105,58 +121,10 @@ public class Peer {
             return false;
         }
 
+        //this.rmiCreator = new RMICreator(this, args[3]);
+
         System.out.println("Setup successuful.");
         return true;
-    }
-
-    private void normalPeer() throws IOException {
-        sendSocket = new DatagramSocket();
-
-        byte[] data = id.getBytes();
-
-        InetAddress bootPeerAddress = InetAddress.getByName(bootPeerIP);
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, bootPeerAddress, bootPeerPort);
-        sendSocket.send(sendPacket);
-
-        receiveSocket = new DatagramSocket(port);
-
-        byte[] buffer = new byte[256];
-        DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
-        receiveSocket.receive(receivePacket);
-
-        String tableInfo = new String(receivePacket.getData(), 0, receivePacket.getLength());
-        if (!tableInfo.equals(""))
-            fillForwardingTable(tableInfo);
-    }
-
-    private void bootPeer() throws IOException {
-        receiveSocket = new DatagramSocket(port);
-
-        byte[] buffer = new byte[256];
-        DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
-        receiveSocket.receive(receivePacket);
-
-        String msg = new String(receivePacket.getData(), 0, receivePacket.getLength());
-        String[] addressParts = msg.split(":");
-        String peerIP = addressParts[0];
-        String peerPort = addressParts[1];
-        Address peerAddress = new Address(peerIP, Integer.parseInt(peerPort));
-
-        sendSocket = new DatagramSocket();
-
-        StringBuilder table = new StringBuilder();
-        for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet())
-        {
-        	table.append(entry.getKey()).append("\n");
-        }
-
-        byte[] data = table.toString().getBytes();
-
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getByName(peerIP), Integer.parseInt(peerPort));
-        sendSocket.send(sendPacket);
-
-        forwardingTable.put(peerIP+":"+peerPort, new TCPSendChannel(this, peerAddress));
-        showForwardingTable();
     }
 	
     public String getContacts(){
@@ -337,6 +305,7 @@ public class Peer {
         DatagramSocket socket = new DatagramSocket();
         DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, address.getInetAddress(), address.getPort());
         socket.send(msgPacket);
+        System.out.println("MESSAGE SENT TO ADDRESS " + address.toString());
     }
 
     public void sendFloodMessage(Message message) throws IOException{
@@ -365,41 +334,48 @@ public class Peer {
     }
 
     /* RMI methods */
-/*
-	public String backup(String fileName, int replicationDegree) throws RemoteException {
+
+	public int backup(String fileName, int replicationDegree) throws RemoteException {
 		System.out.println("Starting to backup " + fileName);
-		Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
-		thread.start();
-		return null;
-	}
-    
-    public String restore(String fileName, String clientId) throws RemoteException {
-		System.out.println("Starting to restore file " + fileName + " from client " + clientId);
-		
-		String fileId = encryptedFileName(fileName, clientId);
-		
-		Thread thread = new Thread(new RestoreInitiator(this, fileId));
-		thread.start();
-		
-		return null;
+		//Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
+		//thread.start();
+		return 0;
 	}
 
-    public String delete(String fileName) throws RemoteException {
-		System.out.println("Starting to delete " + fileName);
-		Thread thread = new Thread(new FileDeleteProtocol(this, fileName, enhancement));
-		thread.start();
-		return null;
+    @Override
+    public int restore(String fileName) throws RemoteException {
+        return 0;
+    }
+
+    public int restore(String fileName, String clientId) throws RemoteException {
+		System.out.println("Starting to restore file " + fileName + " from client " + clientId);
+		//String fileId = encryptedFileName(fileName, clientId);
+		//Thread thread = new Thread(new RestoreInitiator(this, fileId));
+		//thread.start();
+		
+		return 0;
 	}
-	
-	// Obtain file chunk from client
+
+    public int delete(String fileName) throws RemoteException {
+		System.out.println("Starting to delete " + fileName);
+		//Thread thread = new Thread(new DeleteInitiator(this, fileName, enhancement));
+		//thread.start();
+		return 0;
+	}
+
+    @Override
+    public String state() throws RemoteException {
+        return null;
+    }
+
+    // Obtain file chunk from client
 	public int transferFileChunk(String fileName, int chunkNo, byte[] chunkContent) throws RemoteException {
-	
+	    return 0;
 	}
 	
 	// Send file chunk to client
 	public byte[] getFileChunk(String fileName, int chunkNo) throws RemoteException {
-	
+	    return null;
 	}
-*/
     
 }

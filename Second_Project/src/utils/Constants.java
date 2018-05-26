@@ -24,6 +24,7 @@ public class Constants {
     public static final int FILE_CHUNK_TRANSFER_ERROR = -3; //backup
 
     public static final String RESTORED_FILES_DIR = "../../RestoredFiles/"; //located in the directory level as "src" folder
+    public static final int DEFAULT_CONNECTION_LIMIT = 2;
 
     public enum Operation {BACKUP, RESTORE, DELETE, STATE}
 

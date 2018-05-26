@@ -17,7 +17,7 @@ public class TCPReceiveChannel implements Runnable {
 
     public TCPReceiveChannel(Peer owner) throws SocketException {
         this.owner = owner;
-        this.socket = new DatagramSocket();
+        this.socket = new DatagramSocket(this.owner.getPort());
     }
 
     @Override
@@ -37,6 +37,7 @@ public class TCPReceiveChannel implements Runnable {
         byte[] buffer = new byte[Constants.MAX_PACKET_SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);
+        System.out.println("MESSAGE RECEIVED!!!");
         return Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
     }
 

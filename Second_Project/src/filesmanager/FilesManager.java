@@ -22,7 +22,7 @@ public class FilesManager {
     }
 
     private void loadDirectories() {
-        File[] sharedDirs = new File[]{new File(Constants.getBackedUpChunksDir(ownerId)), new File(Constants.getChunksInfoFile(ownerId))};
+        File[] sharedDirs = new File[]{new File(Constants.getBackedUpChunksDir(ownerId)), new File(Constants.getInfoDir(ownerId))};
         for (File dir : sharedDirs) {
             if (!dir.exists()) {
                 dir.mkdirs();

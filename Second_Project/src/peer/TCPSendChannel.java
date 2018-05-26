@@ -20,6 +20,7 @@ public class TCPSendChannel {
     public void send(byte[] data) throws IOException {
         DatagramPacket msgPacket = new DatagramPacket(data, data.length, address.getInetAddress(), address.getPort());
         socket.send(msgPacket);
+        System.out.println("MESSAGE SENT!");
     }
 
     public Date getLastTimeAlive() {

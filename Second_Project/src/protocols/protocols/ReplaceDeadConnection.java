@@ -4,9 +4,11 @@ import java.net.SocketException;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import messages.MessageBuilder;
 import peer.Address;
 import peer.Peer;
 import peer.TCPSendChannel;
+import utils.Constants;
 
 public class ReplaceDeadConnection implements Runnable{
 
@@ -32,7 +34,13 @@ public class ReplaceDeadConnection implements Runnable{
 				receivedResponse = false;
 				for(Entry<String, Address> entry : backupTable.entrySet()) 
 		        {
-					//TODO use temp socket to send MessageRequestConnection to entry's address
+		            String[] msgArgs = new String[]{
+                            Constants.MessageType.REQUEST_CONNECTION.toString(),
+                            this.peer.toString(),
+                            this.peer.getIP(),
+                            Integer.toString(this.peer.getPort())
+                    };
+                    this.peer.sendMessageToAddress(entry.getValue(), MessageBuilder.build(msgArgs));
 					checkReceivedMessage();
 					if(accepted)
 					{
@@ -42,11 +50,7 @@ public class ReplaceDeadConnection implements Runnable{
 		        }
 				nTries++;
 				Thread.sleep(waitingNewTableMS);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SocketException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

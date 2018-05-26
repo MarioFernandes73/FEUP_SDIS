@@ -10,6 +10,7 @@ public class MessageBuilder {
 
     public static Message build(String[] args) {
         try {
+            System.out.println("MESSAGE CREATED!!!");
             return (Message) messageHashMap.get(args[0]).getDeclaredConstructor(String[].class).newInstance((Object) args);
         } catch (Exception e) {
             e.printStackTrace();

@@ -16,8 +16,9 @@ public class RestoreInitiator implements Runnable {
     private Peer peer;
     private File file;
     private int replicationDegree;
+    private String fileId;
 
-    public RestoreInitiator(String peer, String fileId) {
+    public RestoreInitiator(Peer peer, String fileId) {
         this.peer = peer;
         this.fileId = fileId;
     }
@@ -31,11 +32,11 @@ public class RestoreInitiator implements Runnable {
         ArrayList<Thread> protocolThreads = new ArrayList<>();
 
         for (int i = 0; i < chunks.size(); i++) {
-            ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunks.get(i).getData().length);
+            ChunkInfo chunkInfo = new ChunkInfo(fileId, i, replicationDegree, chunks.get(i).getData().length);
             chunksInfo.add(chunkInfo);
             Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData()));
             protocolThreads.add(thread);
-            this.peer.clearStoredMessagesOfFile(encryptedFileId);
+            this.peer.clearStoredMessagesOfFile(fileId);
             thread.start();
         }
 
@@ -46,11 +47,11 @@ public class RestoreInitiator implements Runnable {
                 e.printStackTrace();
             }
         }
-
+/*
         for(ChunkInfo chunkInfo: chunksInfo) {
             if(chunkInfo.getOwnerIds().size() > 0) {
 
-                BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, file.getName(), file.lastModified(), true);
+                BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(fileId, file.getName(), file.lastModified(), true);
                 newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
                 this.peer.updateBackedUpFiles(newBackedUpFile);
 
@@ -65,6 +66,7 @@ public class RestoreInitiator implements Runnable {
                 System.out.println("Unsuccessful backup of chunk " + chunkInfo.getChunkNo());
             }
         }
+        */
     }
 
 

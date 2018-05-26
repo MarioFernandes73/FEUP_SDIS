@@ -48,7 +48,7 @@ public class ChunkBackupProtocol implements Runnable {
 
             //verificar replication degree
 
-            if (this.chunkInfo.getOwnerIds().size() >= chunkInfo.getDesiredReplicationDeg()) {
+            if (this.chunkInfo.getOwners().size() >= chunkInfo.getDesiredReplicationDeg()) {
                 break;
             }
 

@@ -51,19 +51,19 @@ public class BackupInitiator implements Runnable {
         }
 
         for(ChunkInfo chunkInfo: chunksInfo) {
-            if(chunkInfo.getOwnerIds().size() > 0) {
+            if(chunkInfo.getOwners().size() > 0) {
 
                 BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, file.getName(), file.lastModified(), true);
                 newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
                 this.peer.updateBackedUpFiles(newBackedUpFile);
 
-                if(chunkInfo.getOwnerIds().size() >= this.replicationDegree) {
+                if(chunkInfo.getOwners().size() >= this.replicationDegree) {
                     System.out.println("Successful backup of chunk "+ chunkInfo.getChunkNo());
                 } else {
                     System.out.println("Successful backup of chunk " + chunkInfo.getChunkNo() +" but with a replication degree below the threshold");
                 }
                 System.out.println("Desired replication degree: " + this.replicationDegree);
-                System.out.println("Current replication degree: " + chunkInfo.getOwnerIds().size());
+                System.out.println("Current replication degree: " + chunkInfo.getOwners().size());
             } else {
                 System.out.println("Unsuccessful backup of chunk " + chunkInfo.getChunkNo());
             }

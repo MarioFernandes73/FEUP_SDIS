@@ -27,7 +27,11 @@ public class CheckContactsAlive implements Runnable {
         {
         	long secondsOffset = (entry.getValue().getLastTimeAlive().getTime() -  new Date().getTime())/1000;
         	if(secondsOffset > secsToDeclareDead)
+        	{
         		peer.removePeer(entry.getKey());
+        		ReplaceDeadConnection RDC = new ReplaceDeadConnection(peer);
+        		RDC.run();
+        	}
         }
     }
 }

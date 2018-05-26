@@ -209,6 +209,11 @@ public class Peer {
 			this.backupForwardingTable.put(entry.getKey(), entry.getValue());
     }
     
+    public ConcurrentHashMap<String, Address> getBackupForwardingTable()
+    {
+    	return backupForwardingTable;
+    }
+    
     public void setAlivePeer(String peerID)
     {
         forwardingTable.get(peerID).updateLastTimeAlive();

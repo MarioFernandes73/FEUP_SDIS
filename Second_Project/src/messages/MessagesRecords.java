@@ -28,6 +28,32 @@ public class MessagesRecords {
     public void addRejectPeerMessage(MessageRejectPeer message){
         this.rejectPeerMessages.add(message);
     }
+    
+    public boolean checkAcceptMessage(String peerId)
+    {
+    	for(int i = acceptPeerMessages.size() - 1; i >= 0; i--)
+    	{
+    		if(acceptPeerMessages.get(i).getPeerId().equals(peerId))
+    		{
+    			acceptPeerMessages.remove(i);
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public boolean checkRejectMessage(String peerId)
+    {
+    	for(int i = rejectPeerMessages.size() - 1; i >= 0; i--)
+    	{
+    		if(rejectPeerMessages.get(i).getPeerId().equals(peerId))
+    		{
+    			rejectPeerMessages.remove(i);
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     public void updateChunkInfoStoredMessages(ChunkInfo chunkInfo, String fileId, int chunkNo, String senderId ){
 /*

@@ -35,4 +35,9 @@ public class MessageAcceptPeer extends Message{
 		return Constants.MessageType.ACCEPT_PEER.toString();
 	}
 	
+	public String getPeerId()
+	{
+		return peerId;
+	}
+	
 }

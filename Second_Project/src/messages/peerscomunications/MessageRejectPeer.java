@@ -34,5 +34,10 @@ public class MessageRejectPeer extends Message{
 	{
 		return Constants.MessageType.REJECT_PEER.toString();
 	}
+	
+	public String getPeerId()
+	{
+		return peerId;
+	}
 
 }

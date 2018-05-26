@@ -26,7 +26,7 @@ public class Constants {
     public static final String RESTORED_FILES_DIR = "../../RestoredFiles/"; //located in the directory level as "src" folder
 
     public enum Operation {BACKUP, RESTORE, DELETE, STATE}
-    public enum MessageType {ACCEPT_CONNECTION, REJECT_PEER, ACCEPT_PEER, ADD_PEER, CONNECT, PUT_CHUNK, ALIVE, STORED, REQUEST_CONNECTION}
+    public enum MessageType {ACCEPT_CONNECTION, REJECT_PEER, ACCEPT_PEER, ADD_PEER, CONNECT, PUT_CHUNK, ALIVE, STORED, REQUEST_CONNECTION, CHANGE_CONNECTION_LIMIT}
 
     public static final HashMap<String, Class<?>> messageHashMap;
     static
@@ -41,6 +41,7 @@ public class Constants {
         messageHashMap.put("ALIVE",MessageRejectPeer.class);
         messageHashMap.put("STORED",MessageStored.class);
         messageHashMap.put("REQUEST_CONNECTION",MessageStored.class);
+        messageHashMap.put("CHANGE_CONNECTION_LIMIT",MessageStored.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED};

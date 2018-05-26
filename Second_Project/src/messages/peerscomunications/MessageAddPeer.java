@@ -69,23 +69,22 @@ public class MessageAddPeer extends Message{
 	
 	private void sendAcceptPeerMessage(Peer p) throws IOException
 	{
-		byte[] responseData;
+		
 		String[] responseArgs = new String[3];
 		responseArgs[0] = MessageAcceptPeer.class.toString();
 		responseArgs[1] = p.getId();
 		responseArgs[2] = peerId;
-		responseData = MessageBuilder.build(responseArgs).getBytes();
+		byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
 		p.getConnectionAddress(this.senderId).send(responseData);
 	}
 	
 	private void sendRejectPeerMessage(Peer p) throws IOException
 	{
-		byte[] responseData;
 		String[] responseArgs = new String[3];
 		responseArgs[0] = MessageRejectPeer.class.toString();
 		responseArgs[1] = p.getId();
 		responseArgs[2] = peerId;
-		responseData = MessageBuilder.build(responseArgs).getBytes();
+		byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
 		p.getConnectionAddress(this.senderId).send(responseData);
 	}
 	
@@ -103,7 +102,7 @@ public class MessageAddPeer extends Message{
 	@Override
 	public String toString()
 	{
-		return "MESSAGEADDPEER";
+		return Constants.MessageType.ADD_PEER.toString();
 	}
 
 }

@@ -68,7 +68,9 @@ public class BackupInitiator implements Runnable {
                 System.out.println("Unsuccessful backup of chunk " + chunkInfo.getChunkNo());
             }
         }
+
+        // CRIAR E FAZER SAVE DO BACKUPFILEINFO E MANDAR PARA TODOS
+
+
     }
-
-
 }

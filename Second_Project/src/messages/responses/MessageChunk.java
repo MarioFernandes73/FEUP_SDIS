@@ -16,18 +16,14 @@ import java.util.Map.Entry;
 
 public class MessageChunk extends Message {
 
-    private String fileId;
-    private int chunkNo;
-    private byte[] data;
+    private String chunkId;
     private Address address;
 
     public MessageChunk(String[] args){
         super(Constants.MessageType.PUT_CHUNK, args[1]);
-        this.fileId = args[2];
-        this.chunkNo = Integer.parseInt(args[3]);
-        this.data = args[4].getBytes();
+        this.chunkId = args[2];
         try {
-            this.address = new Address(args[5], Integer.parseInt(args[6]));
+            this.address = new Address(args[3]);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -35,7 +31,7 @@ public class MessageChunk extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + fileId + Integer.toString(chunkNo) + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + chunkId + " \r\n\r\n";
     }
 
     @Override
@@ -46,10 +42,15 @@ public class MessageChunk extends Message {
     @Override
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
-        
-        //peer e quem recebeu chunk
-        
         peer.getRecords().addChunkMessage(this);
-        
     }
+
+    public String getChunkId(){
+        return this.chunkId;
+    }
+
+    public Chunk getChunk(){
+        return new Chunk(this.chunkId, this.data);
+    }
+
 }

@@ -1,6 +1,7 @@
 package messages;
 
 import filesmanager.BackedUpFileInfo;
+import filesmanager.Chunk;
 import messages.peerscommunications.*;
 import messages.responses.MessageChunk;
 import messages.responses.MessageReceiveDeleteChunk;
@@ -21,6 +22,7 @@ public class MessagesRecords {
     private CopyOnWriteArrayList<MessageRejectPeer> rejectPeerMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageReceiveFileInfo> receiveFileInfoMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageReceiveDeleteChunk> receiveDeleteChunkMessages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MessageChunk> receivedChunkMessages = new CopyOnWriteArrayList<>();
 
     public MessagesRecords(String ownerId) {
         this.ownerId = ownerId;
@@ -107,5 +109,14 @@ public class MessagesRecords {
             }
         }
         return false;
+    }
+
+    public Chunk checkForRestoredChunk(String chunkId) {
+        for(MessageChunk messageChunk : this.receivedChunkMessages){
+            if(messageChunk.getChunkId().equals(chunkId)){
+                return messageChunk.getChunk();
+            }
+        }
+        return null;
     }
 }

@@ -6,6 +6,7 @@ import utils.Utils;
 
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FilesManager {
@@ -93,7 +94,7 @@ public class FilesManager {
         }
     }
 
-    public void saveChunk(Chunk chunk) {
+        public void saveChunk(Chunk chunk) {
         byte data[] = chunk.getData();
         try {
             FileOutputStream out = new FileOutputStream(Constants.getBackedUpChunksDir(this.ownerId) + Utils.getDirSeparator() + chunk.getChunkId(),
@@ -150,5 +151,19 @@ public class FilesManager {
             }
         }
         return false;
+    }
+
+    public Chunk getChunk(String chunkId) {
+        try {
+            for (File file : new File(Constants.getBackedUpChunksDir(this.ownerId)).listFiles()) {
+                if (file.getName().equals(chunkId)) {
+                    return new Chunk(chunkId, Files.readAllBytes(file.toPath()));
+                }
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

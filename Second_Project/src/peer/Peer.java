@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,8 +54,8 @@ public class Peer implements RMIInterface {
         if (!verifyArgs(args))
             return;
 
-        //this.ip = InetAddress.getLocalHost().getHostAddress();
-        this.ip = getPublicIP();
+        this.ip = InetAddress.getLocalHost().getHostAddress();
+        //this.ip = getPublicIP();
 
         this.id = ip + "." + port;
 
@@ -73,6 +74,8 @@ public class Peer implements RMIInterface {
             };
             this.sendMessageToAddress(this.bootPeerAddress, MessageBuilder.build(msgArgs));
         }
+
+        System.out.println("Setup successuful.");
     }
 
     private boolean verifyArgs(String args[]) {
@@ -121,7 +124,6 @@ public class Peer implements RMIInterface {
 
         //this.rmiCreator = new RMICreator(this, args[3]);
 
-        System.out.println("Setup successuful.");
         return true;
     }
 	
@@ -290,10 +292,11 @@ public class Peer implements RMIInterface {
         return this.filesManager.getBackedUpFileInfo(fileId);
     }
 
-    public void sendMessage(String targetId, Message message) {
-        for(String peerId : this.forwardingTable.keySet()){
-            if(peerId.equals(targetId) ){
-                this.forwardingTable.get(peerId); // send message to this address;
+    public void sendMessage(String targetId, Message message) throws IOException {
+        for(Map.Entry<String, TCPSendChannel> connectedPeer : this.forwardingTable.entrySet()){
+            if(connectedPeer.getKey().equals(targetId) ){
+                connectedPeer.getValue().send(message.getBytes());
+                System.out.println("MESSAGE SENT " + message.getHeader());
                 break;
             }
         }

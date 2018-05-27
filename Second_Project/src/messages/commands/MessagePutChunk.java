@@ -10,6 +10,8 @@ import peer.Peer;
 import utils.Constants;
 import utils.Utils;
 
+import java.io.IOException;
+
 public class MessagePutChunk extends Message {
 
     private String fileId;
@@ -56,7 +58,11 @@ public class MessagePutChunk extends Message {
 			
         	byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
 
-            peer.sendMessage(this.senderId,new MessageBuilder().build(responseArgs));
+            try {
+                peer.sendMessage(this.senderId,new MessageBuilder().build(responseArgs));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         
     }

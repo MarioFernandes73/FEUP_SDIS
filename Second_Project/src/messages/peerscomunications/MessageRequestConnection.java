@@ -66,10 +66,11 @@ public class MessageRequestConnection extends Message{
 	private void sendAcceptPeerMessage(Peer p) throws IOException
 	{
 		byte[] responseData;
-		String[] responseArgs = new String[3];
-		responseArgs[0] = MessageAcceptPeer.class.toString();
-		responseArgs[1] = p.getId();
-		responseArgs[2] = senderId;
+        String[] responseArgs = new String[]{
+                Constants.MessageType.ACCEPT_PEER.toString(),
+                p.getId(),
+                senderId
+        };
 		responseData = MessageBuilder.build(responseArgs).getBytes();
 		p.getConnectionAddress(this.senderId).send(responseData);
 	}
@@ -77,10 +78,11 @@ public class MessageRequestConnection extends Message{
 	private void sendRejectPeerMessage(Peer p) throws IOException
 	{
 		byte[] responseData;
-		String[] responseArgs = new String[3];
-		responseArgs[0] = MessageRejectPeer.class.toString();
-		responseArgs[1] = p.getId();
-		responseArgs[2] = senderId;
+        String[] responseArgs = new String[]{
+                Constants.MessageType.REJECT_PEER.toString(),
+                p.getId(),
+                senderId
+        };
 		responseData = MessageBuilder.build(responseArgs).getBytes();
 		//p.getConnectionAddress(this.senderId).send(responseData);
 		//TODO use temp socket instead

@@ -49,9 +49,9 @@ public class Constants {
     static {
         messageHashMap = new HashMap<>();
         messageHashMap.put("ACCEPT_CONNECTION", MessageAcceptConnection.class);
-        messageHashMap.put("MESSAGE_REJECT_PEER", MessageRejectPeer.class);
-        messageHashMap.put("MESSAGE_ACCEPT_PEER", MessageAcceptPeer.class);
-        messageHashMap.put("MESSAGE_ADD_PEER", MessageAddPeer.class);
+        messageHashMap.put("REJECT_PEER", MessageRejectPeer.class);
+        messageHashMap.put("ACCEPT_PEER", MessageAcceptPeer.class);
+        messageHashMap.put("ADD_PEER", MessageAddPeer.class);
         messageHashMap.put("CONNECT", MessageConnect.class);
         messageHashMap.put("PUT_CHUNK", MessagePutChunk.class);
         messageHashMap.put("ALIVE", MessageAlive.class);

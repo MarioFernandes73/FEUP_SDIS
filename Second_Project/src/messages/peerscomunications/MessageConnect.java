@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessageConnect extends Message {
 
     private Address address;
-    private final long waitingResponseMS = 5000;
+    private final long waitingResponseMS = 1000;
 
     public MessageConnect(String[] args) throws UnknownHostException {
         super(Constants.MessageType.CONNECT, args[1]);
@@ -40,7 +40,12 @@ public class MessageConnect extends Message {
         try{
             if(peer.canAddPeers()){
                 peer.addPeer(this.senderId,this.address);
-                String[] messageArgs = new String[]{Constants.MessageType.ACCEPT_CONNECTION.toString(), peer.getId()};
+                String[] messageArgs = new String[]{
+                        Constants.MessageType.ACCEPT_CONNECTION.toString(),
+                        peer.getId(),
+                        peer.getIP(),
+                        Integer.toString(peer.getPort())
+                };
                 peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
             }
             else if(!askConnections(peer))
@@ -56,17 +61,20 @@ public class MessageConnect extends Message {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(peer.getPeerLimit());
     }
     
     
 	public boolean askConnections(Peer peer) throws InterruptedException, IOException {
     	
     	ConcurrentHashMap<String, TCPSendChannel> forwardingTable = peer.getForwardingTable();
-    	String[] messageArgs = new String[4];
-    	messageArgs[0] = MessageAddPeer.class.toString();
-    	messageArgs[1] = peer.getId();
-    	messageArgs[2] = address.getIp();
-    	messageArgs[3] = Integer.toString(address.getPort());
+    	String[] messageArgs = new String[]{
+                Constants.MessageType.ADD_PEER.toString(),
+                peer.getId(),
+                this.senderId,
+                address.getIp(),
+                Integer.toString(address.getPort())
+		};
 		byte[] messageData = MessageBuilder.build(messageArgs).getBytes();
 		for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet()) 
 		{
@@ -103,21 +111,22 @@ public class MessageConnect extends Message {
     
     private void addPeerNIncreaseLimit(Peer peer) throws IOException {
     	peer.addPeer(this.senderId,this.address);
-        String[] messageArgs = new String[]{Constants.MessageType.ACCEPT_CONNECTION.toString(), peer.getId()};
+        String[] messageArgs = new String[]{
+                Constants.MessageType.ACCEPT_CONNECTION.toString(),
+                peer.getId(),
+                peer.getIP(),
+                Integer.toString(peer.getPort())
+        };
         peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
     	
     	peer.changePeerLimit(peer.getPeerLimit() + 1);
     	ConcurrentHashMap<String, TCPSendChannel> forwardingTable = peer.getForwardingTable();
-    	String[] message2Args = new String[3];
-    	message2Args[0] = MessageChangeConnectionLimit.class.toString();
-    	message2Args[1] = peer.getId();
-    	message2Args[2] = Integer.toString(peer.getPeerLimit());
-		byte[] message2Data = MessageBuilder.build(message2Args).getBytes();
-		for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet()) 
-		{
-			entry.getValue().send(message2Data);
-		}
-		
+    	String[] message2Args = new String[]{
+                Constants.MessageType.CHANGE_CONNECTION_LIMIT.toString(),
+                peer.getId(),
+                Integer.toString(peer.getPeerLimit())
+        };
+    	peer.sendFloodMessage(MessageBuilder.build(message2Args));
 	}
     
 }

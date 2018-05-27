@@ -14,7 +14,7 @@ public class MessageAcceptConnection extends Message {
 
     public MessageAcceptConnection(String[] args) throws UnknownHostException {
         super(Constants.MessageType.ACCEPT_CONNECTION, args[1]);
-        this.address = new Address(args[2], Integer.parseInt(args[3]));
+        this.address = new Address(args[2]);
     }
 
 

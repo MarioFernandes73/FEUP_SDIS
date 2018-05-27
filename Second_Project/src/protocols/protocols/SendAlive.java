@@ -32,16 +32,15 @@ public class SendAlive implements Runnable{
 			if(peer.getNumberConnections() == 0)
 				continue;
 			
-			String[] messageArgs = new String[2 + peer.getNumberConnections() * 3];
+			String[] messageArgs = new String[2 + peer.getNumberConnections() * 2];
 			messageArgs[0] = Constants.MessageType.ALIVE.toString();
 			messageArgs[1] = peer.getId();
 			int i = 2;
 			for(Entry<String, TCPSendChannel> entry : peer.getForwardingTable().entrySet())
 			{
 				messageArgs[i] = entry.getKey();
-				messageArgs[i+1] = entry.getValue().getAddress().getIp();
-				messageArgs[i+2] = Integer.toString(entry.getValue().getAddress().getPort());
-				i+=3;
+				messageArgs[i+1] = entry.getValue().getAddress().toString();
+				i+=2;
 			}
 			
 			try {

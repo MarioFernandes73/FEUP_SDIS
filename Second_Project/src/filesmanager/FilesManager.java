@@ -138,7 +138,7 @@ public class FilesManager {
 
     public BackedUpFileInfo getBackedUpFileInfo(String fileId) {
     	for(BackedUpFileInfo fileInfo : this.backedUpFilesInfo){
-    		if(fileInfo.getFileId() == fileId)
+    		if(fileInfo.getFileId().equals(fileId))
     			return fileInfo;
     	}
     	return null;
@@ -146,7 +146,7 @@ public class FilesManager {
 
     public boolean hasChunk(String chunkId) {
         for (ChunkInfo chunkInfo : this.chunksInfo) {
-            if ((chunkInfo.getFileId() + chunkInfo.getChunkNo()).equals(chunkId)) {
+            if (chunkInfo.getChunkId().equals(chunkId)) {
                 return true;
             }
         }

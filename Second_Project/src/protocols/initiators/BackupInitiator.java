@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 public class BackupInitiator extends ProtocolInitiator implements Runnable {
 
-    private String clientId;
     private int replicationDegree;
 
     public BackupInitiator(Peer peer, String clientId, String fileName, int replicationDegree) {
@@ -33,7 +32,6 @@ public class BackupInitiator extends ProtocolInitiator implements Runnable {
             e.printStackTrace();
         }
 
-
         ArrayList<Chunk> chunks = this.peer.getClientTransferFileChunks(encryptedFileId);
         ArrayList<ChunkInfo> chunksInfo = new ArrayList<>();
         ArrayList<Thread> protocolThreads = new ArrayList<>();
@@ -41,7 +39,7 @@ public class BackupInitiator extends ProtocolInitiator implements Runnable {
         for (int i = 0; i < chunks.size(); i++) {
             Chunk chunk = chunks.get(i);
 
-            ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunk.getData().length);
+            ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree);
             chunksInfo.add(chunkInfo);
 
             Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunk.getData()));

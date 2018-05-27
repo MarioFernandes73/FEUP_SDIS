@@ -2,6 +2,7 @@ package utils;
 
 import messages.commands.MessageGetChunk;
 import messages.commands.MessagePutChunk;
+import messages.commands.MessageSendFileInfo;
 import messages.peerscommunications.*;
 import messages.responses.*;
 import peer.Address;
@@ -16,7 +17,7 @@ public class Constants {
 
     public static final int MAX_CHUNK_TRANSFER_TRIES = 3;
 
-    public static final int RESPONSE_AWAITING_TIME = 300;
+    public static final int RESPONSE_AWAITING_TIME = 3000;
 
     public static final int RMI_DEFAULT_PORT = 1099;
 
@@ -28,6 +29,9 @@ public class Constants {
     public static final int FILE_CHUNK_TRANSFER_ERROR = -3; //backup
 
     public static final String RESTORED_FILES_DIR = "../../RestoredFiles/"; //located in the directory level as "src" folder
+    public static String getRestoredFilesDir(String peerId) {
+        return getMainDir(peerId) + "/RestoredFiles";
+    }
     public static final int DEFAULT_CONNECTION_LIMIT = 2;
 
     public enum Operation {BACKUP, RESTORE, DELETE, STATE}
@@ -73,6 +77,8 @@ public class Constants {
         messageHashMap.put("REQUEST_PEER", MessageRequestPeer.class);
         messageHashMap.put("ACCEPT_PEER_REQUEST", MessageAcceptPeerRequest.class);
         messageHashMap.put("ACCEPT_PEER_REQUEST_CONNECTION", MessageAcceptPeerRequestConnection.class);
+        messageHashMap.put("SEND_BACKED_UP_FILE_INFO", MessageSendBackedUpFileInfo.class);
+        messageHashMap.put("SEND_FILE_INFO", MessageSendFileInfo.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED}

@@ -15,7 +15,7 @@ public class MessageAcceptPeerRequestConnection extends Message{
 	public MessageAcceptPeerRequestConnection(String[] args) {
 		super(Constants.MessageType.ACCEPT_PEER_REQUEST_CONNECTION, args[1]);
 		try {
-			this.address = new Address(args[2], Integer.parseInt(args[3]));
+			this.address = new Address(args[2]);
 		} catch (NumberFormatException | UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

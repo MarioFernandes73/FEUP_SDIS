@@ -2,13 +2,17 @@ package peer;
 
 import client.Client;
 import client_peer_file_transfer.ClientChunkTransfer;
+import client_peer_file_transfer.Partition;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.FilesManager;
 import messages.Message;
 import messages.MessageBuilder;
 import messages.MessagesRecords;
+import protocols.initiators.BackupInitiator;
+import protocols.initiators.RestoreInitiator;
 import protocols.protocols.CheckContactsAlive;
+import protocols.protocols.CheckIfNeedConnections;
 import protocols.protocols.SendAlive;
 import rmi.RMIInterface;
 import utils.Constants;
@@ -20,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -72,8 +77,7 @@ public class Peer implements RMIInterface {
             String[] msgArgs = new String[]{
                     Constants.MessageType.CONNECT.toString(),
                     this.getId(),
-                    this.ip,
-                    Integer.toString(this.port)
+                    this.ip + ":" + Integer.toString(this.port)
             };
             this.sendMessageToAddress(this.bootPeerAddress, MessageBuilder.build(msgArgs));
         }
@@ -82,6 +86,7 @@ public class Peer implements RMIInterface {
         new Thread(this.checkContactsAlive).start();
         this.sendAlive = new SendAlive(this);
         new Thread(this.sendAlive).start();
+        new Thread(new CheckIfNeedConnections(this)).start();
 
         System.out.println("Setup successuful.");
     }
@@ -135,10 +140,13 @@ public class Peer implements RMIInterface {
         return true;
     }
 	
-    public String getContacts(){
+    public String getContactsExcept(String senderId){
     	StringBuilder contacts = new StringBuilder();
     	for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet())
     	{
+    	    if(entry.getKey().equals(senderId)){
+    	        continue;
+            }
     		contacts.append(entry.getKey())
                     .append("-")
                     .append(entry.getValue().getAddress().getIp())
@@ -277,8 +285,33 @@ public class Peer implements RMIInterface {
         return false;
     }
 
-    public ArrayList<Chunk> splitToChunks(File file) {
-        return new ArrayList<>();
+    public ArrayList<Chunk> splitToChunks(File file, String encryptedFileId) {
+        ArrayList<Chunk> chunks = new ArrayList<>();
+        int partitionSize = Constants.MAX_CHUNK_SIZE;
+        int partitionsQuantity = (int) (file.length() / partitionSize) + 1;
+        byte[] fileBytes = new byte[0];
+        try {
+            fileBytes = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (int partitionNo = 0; partitionNo < partitionsQuantity; partitionNo++) {
+
+            if (partitionNo == partitionsQuantity - 1) {
+                partitionSize = fileBytes.length % Constants.MAX_CHUNK_SIZE;
+            }
+
+            // copy file data to partition
+            int partitionStart = partitionNo * Constants.MAX_CHUNK_SIZE;
+            byte[] partitionData = new byte[partitionSize];
+            int byteCounter = 0;
+
+            System.arraycopy(fileBytes, partitionStart, partitionData, 0, partitionSize);
+
+            chunks.add(new Chunk( encryptedFileId + partitionNo, partitionData));
+        }
+        return chunks;
     }
 
     public void clearStoredMessagesOfFile(String encryptedFileId) {
@@ -366,16 +399,15 @@ public class Peer implements RMIInterface {
         }
 
 		System.out.println("Starting to backup " + fileName);
-		//Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
-		//thread.start();
+		Thread thread = new Thread(new BackupInitiator(this, clientId, fileName, replicationDegree));
+		thread.start();
 		return 0;
 	}
 
     public int restore(String clientId, String fileName) throws RemoteException {
 		System.out.println("Starting to restore file " + fileName + " from client " + clientId);
-		//String fileId = encryptedFileName(fileName, clientId);
-		//Thread thread = new Thread(new RestoreInitiator(this, fileId));
-		//thread.start();
+		Thread thread = new Thread(new RestoreInitiator(this, clientId, fileName));
+		thread.start();
 		
 		return 0;
 	}
@@ -478,5 +510,9 @@ public class Peer implements RMIInterface {
 
     public void addClientTransferChunks(String fileName, ArrayList<Chunk> chunks) {
 	    this.clientTransferChunks.put(fileName, chunks);
+    }
+
+    public void addChunkInfo(ChunkInfo chunkInfo){
+	    this.filesManager.addChunkInfo(chunkInfo);
     }
 }

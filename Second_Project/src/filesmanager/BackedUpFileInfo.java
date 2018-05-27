@@ -69,7 +69,7 @@ public class BackedUpFileInfo implements Serializable {
 
     @Override
     public String toString(){
-        StringBuilder res = new StringBuilder(fileId + "-" + "fileName");
+        StringBuilder res = new StringBuilder(fileId + "-" + fileName);
         for(ChunkInfo chunkInfo : this.backedUpChunks){
             res.append("-").append(chunkInfo.toString());
         }

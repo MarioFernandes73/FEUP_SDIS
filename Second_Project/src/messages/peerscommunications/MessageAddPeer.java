@@ -19,7 +19,7 @@ public class MessageAddPeer extends Message{
     	super(Constants.MessageType.ADD_PEER, args[1]);
     	this.peerId = args[2];
     	try {
-			this.addressToAdd = new Address(args[3], Integer.parseInt(args[4]));
+			this.addressToAdd = new Address(args[3]);
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -87,8 +87,7 @@ public class MessageAddPeer extends Message{
 		String[] acceptArgs = new String[]{
                 Constants.MessageType.ACCEPT_CONNECTION.toString(),
                 p.getId(),
-                p.getIP(),
-                Integer.toString(p.getPort())
+                p.getIP() + ":" + Integer.toString(p.getPort())
         };
         p.sendMessage(peerId, MessageBuilder.build(acceptArgs));
 	}

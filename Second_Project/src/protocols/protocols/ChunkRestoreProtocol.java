@@ -7,10 +7,6 @@ import peer.Address;
 import peer.ChunkInfo;
 import peer.Peer;
 import utils.Constants;
-import utils.Utils;
-
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ChunkRestoreProtocol implements Runnable {
@@ -30,8 +26,7 @@ public class ChunkRestoreProtocol implements Runnable {
                 Constants.MessageType.GET_CHUNK.toString(),
                 this.peer.getId(),
                 chunkInfo.getChunkId(),
-                this.peer.getIP(),
-                Integer.toString(this.peer.getPort())
+                this.peer.getIP() + ":" + Integer.toString(this.peer.getPort())
         };
         Message msg = MessageBuilder.build(msgArgs);
 
@@ -42,6 +37,8 @@ public class ChunkRestoreProtocol implements Runnable {
                 Chunk chunk = this.peer.getRecords().checkForRestoredChunk(chunkInfo.getChunkId());
                 if(chunk != null){
                     break;
+                } else {
+                    this.chunk = chunk;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

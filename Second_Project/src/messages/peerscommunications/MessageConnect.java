@@ -20,7 +20,7 @@ public class MessageConnect extends Message {
 
     public MessageConnect(String[] args) throws UnknownHostException {
         super(Constants.MessageType.CONNECT, args[1]);
-        this.address = new Address(args[2], Integer.parseInt(args[3]));
+        this.address = new Address(args[2]);
     }
 
 
@@ -43,8 +43,7 @@ public class MessageConnect extends Message {
                 String[] messageArgs = new String[]{
                         Constants.MessageType.ACCEPT_CONNECTION.toString(),
                         peer.getId(),
-                        peer.getIP(),
-                        Integer.toString(peer.getPort())
+                        peer.getIP() + ":" + Integer.toString(peer.getPort())
                 };
                 peer.sendMessage(this.senderId, MessageBuilder.build(messageArgs));
             }

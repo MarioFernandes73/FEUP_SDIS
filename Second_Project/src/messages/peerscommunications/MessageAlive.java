@@ -16,10 +16,10 @@ public class MessageAlive extends Message {
 	
 	public MessageAlive(String[] args) {
 		super(Constants.MessageType.ALIVE, args[1]);
-		for(int i = 2; i < args.length; i+=3)
+		for(int i = 2; i < args.length; i+=2)
 		{
 			try {
-				backupForwardingTable.put(args[i], new Address(args[i+1], Integer.parseInt(args[i+2])));
+				backupForwardingTable.put(args[i], new Address(args[i+1]));
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

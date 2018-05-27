@@ -33,8 +33,8 @@ public class ChunkBackupProtocol implements Runnable {
                 Constants.MessageType.PUT_CHUNK.toString(),
                 this.peer.getId(),
                 chunkInfo.getChunkId(),
-                this.peer.getIP(),
-                Integer.toString(this.peer.getPort())
+                this.peer.getIP() + ":" + Integer.toString(this.peer.getPort()),
+                Integer.toString(chunkInfo.getDesiredReplicationDeg())
         };
         Message msg = MessageBuilder.build(msgArgs);
         msg.setData(this.data);
@@ -55,7 +55,7 @@ public class ChunkBackupProtocol implements Runnable {
 
                 int currentRepDegree = this.chunkInfo.getDesiredReplicationDeg() - this.chunkInfo.getPerceivedReplicationDeg();
 
-                if (currentRepDegree <= 0) {
+                if (currentRepDegree <= 0 || nextContacts.size() == 0 ) {
                     break;
                 }
 

@@ -31,12 +31,12 @@ public class MessageStored extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + this.chunkId + " " + this.contacts + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + this.chunkId + " " + this.contacts + " " + this.address.toString() + " \r\n\r\n";
     }
 
     @Override
     public byte[] getBytes() {
-        return Utils.concatenateByteArrays(getHeader().getBytes(), data);
+        return getHeader().getBytes();
     }
 
     @Override

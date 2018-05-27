@@ -13,7 +13,7 @@ public class CheckIfNeedConnections implements Runnable{
 	private Peer peer;
 	private final long secsToSleep = 10;
 	
-	CheckIfNeedConnections(Peer peer)
+	public CheckIfNeedConnections(Peer peer)
 	{
 		this.peer = peer;
 	}

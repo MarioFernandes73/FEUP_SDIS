@@ -14,13 +14,11 @@ public class ChunkInfo implements Serializable {
     private int chunkNo;
     private HashMap<String,Address> ownerAddress = new HashMap<>();
     private int desiredReplicationDeg;
-    private int chunkSize;
 
-    public ChunkInfo(String fileId, int chunkNo, int desiredReplicationDeg, int chunkSize) {
+    public ChunkInfo(String fileId, int chunkNo, int desiredReplicationDeg) {
         this.fileId = fileId;
         this.chunkNo = chunkNo;
         this.desiredReplicationDeg = desiredReplicationDeg;
-        this.chunkSize = chunkSize;
     }
 
     public ChunkInfo(String chunkInfo) throws UnknownHostException {
@@ -35,7 +33,6 @@ public class ChunkInfo implements Serializable {
         }
 
         this.desiredReplicationDeg = Integer.parseInt(chunkInfoArgs[3]);
-        this.chunkSize = Integer.parseInt(chunkInfoArgs[4]);
     }
 
     public String getFileId() {
@@ -52,10 +49,6 @@ public class ChunkInfo implements Serializable {
 
     public int getDesiredReplicationDeg() {
         return desiredReplicationDeg;
-    }
-
-    public int getChunkSize() {
-        return this.chunkSize;
     }
 
     public int getPerceivedReplicationDeg() {
@@ -91,6 +84,6 @@ public class ChunkInfo implements Serializable {
                 res.append(",");
             }
         }
-        return res.toString() + "_" + desiredReplicationDeg + "_" + chunkSize;
+        return res.toString() + "_" + desiredReplicationDeg;
     }
 }

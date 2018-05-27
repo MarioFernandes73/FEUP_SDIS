@@ -18,7 +18,7 @@ public class MessageRequestPeer extends Message{
     	super(Constants.MessageType.REQUEST_PEER, args[1]);
     	this.peerId = args[2];
     	try {
-			this.address = new Address(args[3], Integer.parseInt(args[4]));
+			this.address = new Address(args[3]);
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -66,8 +66,7 @@ public class MessageRequestPeer extends Message{
 		String[] acceptArgs = new String[]{
                 Constants.MessageType.ACCEPT_PEER_REQUEST.toString(),
                 p.getId(),
-                p.getIP(),
-                Integer.toString(p.getPort())
+                p.getIP() + ":" + Integer.toString(p.getPort())
         };
         p.sendMessageToAddress(address, MessageBuilder.build(acceptArgs));
 	}

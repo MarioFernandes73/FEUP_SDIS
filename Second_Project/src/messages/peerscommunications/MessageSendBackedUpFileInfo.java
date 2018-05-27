@@ -22,12 +22,12 @@ public class MessageSendBackedUpFileInfo extends Message {
 
     @Override
     public String getHeader() {
-        return null;
+        return super.getBaseHeader() + " " + this.backedUpFileInfo.toString() + " \r\n\r\n";
     }
 
     @Override
     public byte[] getBytes() {
-        return new byte[0];
+        return getHeader().getBytes();
     }
 
     @Override

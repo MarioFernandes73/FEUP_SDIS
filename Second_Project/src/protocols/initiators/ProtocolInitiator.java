@@ -8,7 +8,7 @@ import utils.Constants;
 public abstract class ProtocolInitiator {
 
     protected Peer peer;
-    String clientId;
+    protected String clientId;
     protected String fileName;
 
     ProtocolInitiator(Peer peer, String clientId, String fileName){

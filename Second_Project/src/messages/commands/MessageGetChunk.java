@@ -20,7 +20,7 @@ public class MessageGetChunk extends Message {
     private Address address;
 
     public MessageGetChunk(String[] args){
-        super(Constants.MessageType.PUT_CHUNK, args[1]);
+        super(Constants.MessageType.GET_CHUNK, args[1]);
         this.chunkId = args[2];
         try {
             this.address = new Address(args[3]);
@@ -31,12 +31,12 @@ public class MessageGetChunk extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + chunkId + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + chunkId + " " + this.address.toString() + " \r\n\r\n";
     }
 
     @Override
     public byte[] getBytes() {
-        return Utils.concatenateByteArrays(getHeader().getBytes(), data);
+        return getHeader().getBytes();
     }
 
     @Override
@@ -53,7 +53,9 @@ public class MessageGetChunk extends Message {
                     this.address.toString()
             };
             try {
-                peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs));
+                Message msg = MessageBuilder.build(msgArgs);
+                msg.setData(wantedChunk.getData());
+                peer.sendMessageToAddress(this.address, msg);
             } catch (IOException e) {
                 e.printStackTrace();
             }

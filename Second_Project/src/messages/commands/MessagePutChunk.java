@@ -3,8 +3,8 @@ package messages.commands;
 import filesmanager.Chunk;
 import messages.Message;
 import messages.MessageBuilder;
-import messages.responses.MessageStored;
 import peer.Address;
+import peer.ChunkInfo;
 import peer.Peer;
 import utils.Constants;
 import utils.Utils;
@@ -16,15 +16,17 @@ public class MessagePutChunk extends Message {
 
     private String chunkId;
     private Address address;
+    private int replicationDeg;
 
     public MessagePutChunk(String[] args){
         super(Constants.MessageType.PUT_CHUNK, args[1]);
         this.chunkId = args[2];
         try {
-            this.address = new Address(args[3], Integer.parseInt(args[4]));
+            this.address = new Address(args[3]);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+        this.replicationDeg = Integer.parseInt(args[4]);
     }
 
     @Override
@@ -43,12 +45,13 @@ public class MessagePutChunk extends Message {
 
         if(!peer.hasChunk(chunkId)){
         	peer.saveChunk(new Chunk(chunkId, data));
-        	
+        	peer.addChunkInfo(new ChunkInfo(chunkId.substring(0,64),Integer.parseInt(chunkId.substring(64)), this.replicationDeg));
         	String[] msgArgs = new String[]{
                     Constants.MessageType.STORED_CHUNK.toString(),
+                    peer.getId(),
                     this.chunkId,
-                    peer.getContacts(),
-                    peer.getIP() + ":" + peer.getPort()
+                    peer.getContactsExcept(this.senderId),
+                    peer.getIP() + ":" + Integer.toString(peer.getPort())
             };
             try {
                 peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs));

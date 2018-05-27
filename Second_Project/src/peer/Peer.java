@@ -8,9 +8,6 @@ import filesmanager.FilesManager;
 import messages.Message;
 import messages.MessageBuilder;
 import messages.MessagesRecords;
-import protocols.initiators.BackupInitiator;
-import protocols.initiators.DeleteInitiator;
-import protocols.initiators.RestoreInitiator;
 import protocols.protocols.CheckContactsAlive;
 import protocols.protocols.SendAlive;
 import rmi.RMIInterface;
@@ -44,7 +41,7 @@ public class Peer implements RMIInterface {
     private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
     private int peerLimit = Constants.DEFAULT_CONNECTION_LIMIT;
 
-    private ConcurrentHashMap<String, ArrayList<Chunk>> clientTransferedChunks = new ConcurrentHashMap<>(); // <fileId, chunks>
+    private ConcurrentHashMap<String, ArrayList<Chunk>> clientTransferChunks = new ConcurrentHashMap<>(); // <fileId, chunks>
 
 	private ArrayList<String> temporaryContacts = new ArrayList<String>();
 	
@@ -276,10 +273,6 @@ public class Peer implements RMIInterface {
     	return port;
     }
 
-    public String getEncryptedFileName(Client client, File file) {
-        return "";
-    }
-
     public boolean checkIfFileExists(String encryptedFileId) {
         return false;
     }
@@ -367,7 +360,7 @@ public class Peer implements RMIInterface {
             return Constants.PEER_ERROR;
         }
 
-        if(!clientTransferedChunks.containsKey(fileId)) {
+        if(!clientTransferChunks.containsKey(fileId)) {
             System.out.println("File " + fileName + " was not previously transfered from client " + clientId);
             return Constants.FILE_CHUNKS_NOT_RECEIVED;
         }
@@ -416,7 +409,7 @@ public class Peer implements RMIInterface {
 	}
 
     public boolean chunkTransferDuplicated(String fileId, Chunk chunk) {
-        ArrayList<Chunk> fileChunks = clientTransferedChunks.get(fileId);
+        ArrayList<Chunk> fileChunks = clientTransferChunks.get(fileId);
         if(fileChunks == null)
             return false;
 
@@ -430,11 +423,11 @@ public class Peer implements RMIInterface {
     }
 
     public void addClientTransferChunk(String fileId, Chunk chunk) {
-        ArrayList<Chunk> fileChunks = clientTransferedChunks.get(fileId);
+        ArrayList<Chunk> fileChunks = clientTransferChunks.get(fileId);
         if(fileChunks == null) { //no chunks belonging to this file have been added
             ArrayList<Chunk> newFileChunks = new ArrayList<Chunk>();
             newFileChunks.add(chunk);
-            clientTransferedChunks.putIfAbsent(fileId, newFileChunks);
+            clientTransferChunks.putIfAbsent(fileId, newFileChunks);
         }
     }
 

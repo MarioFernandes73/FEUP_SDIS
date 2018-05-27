@@ -11,25 +11,28 @@ import utils.Constants;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-public class BackupInitiator implements Runnable {
+public class BackupInitiator extends ProtocolInitiator implements Runnable {
 
-    private Client client;
-    private Peer peer;
+    private String clientId;
     private File file;
     private int replicationDegree;
 
-    public BackupInitiator(Client client, Peer peer, File file, int replicationDegree) {
-        this.client = client;
-        this.peer = peer;
-        this.file = file;
+    public BackupInitiator(Peer peer, String clientId, String fileName, File file, int replicationDegree) {
+        super(peer, clientId, fileName);
         this.replicationDegree = replicationDegree;
     }
 
     @Override
     public void run() {
-        String encryptedFileId = peer.getEncryptedFileName(client, file);
+        String encryptedFileId = null;
+        try {
+            encryptedFileId = peer.encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
 
         ArrayList<Chunk> chunks = this.peer.splitToChunks(file);

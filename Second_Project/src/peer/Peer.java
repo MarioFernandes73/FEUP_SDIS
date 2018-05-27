@@ -127,9 +127,9 @@ public class Peer implements RMIInterface {
             return false;
         }
 
-        //this.rmiCreator = new RMICreator(this, args[3]);
+        this.rmiCreator = new RMICreator(this, args[3]);
 
-        return true;
+        return rmiCreator.isCommunicationReady();
     }
 	
     public String getContacts(){

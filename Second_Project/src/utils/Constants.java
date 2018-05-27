@@ -17,6 +17,8 @@ public class Constants {
 
     public static final int RESPONSE_AWAITING_TIME = 300;
 
+    public static final int RMI_DEFAULT_PORT = 1099;
+
     //Peer RMI operation responses
     public static final int SUCCESS = 0;
     public static final int FILE_CHUNKS_NOT_RECEIVED = -1; //backup

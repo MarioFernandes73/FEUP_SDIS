@@ -90,7 +90,7 @@ public class PartitionedFile {
 	public boolean uploadToEndpoint(RMIInterface endpoint) {
 		int partitionTransfTries = 0;
 		
-		for (int i = 0; (i < partitions.size()) && (partitionTransfTries < Constants.MAX_CHUNK_TRANSFER_TRIES); i++) {
+		for (int i = 0; ((i < partitions.size()) && (partitionTransfTries < Constants.MAX_CHUNK_TRANSFER_TRIES)); i++) {
 			Partition partition = partitions.get(i);
 			
 			try {
@@ -119,37 +119,23 @@ public class PartitionedFile {
 		return true;
 	}
 	
-	public boolean downloadFromEndpoint(RMIInterface endpoint) { //TO DO
-		/*int partitionTransfTries = 0;
+	public void downloadFromEndpoint(RMIInterface endpoint) {
 		boolean reachedFinalPartition = false;
 		
-		for (int partitionNo = 0; !reachedFinalPartition; i++) {
-			byte[] partitionData;
-			
-			Partition partition = partitions.get(i);
-			
-			endpoint.transferFileChunk(fileName, partition.getPartitionNo(), partition.getData()) == Constants.FILE_CHUNK_TRANSFER_ERROR) {
-					partitionTransfTries++;
-					
-					System.out.println("ERROR! File transfer to peer failed on Chunk no. " + partition.getPartitionNo());
-					if (partitionTransfTries == Constants.MAX_CHUNK_TRANSFER_TRIES) {
-						System.out.println("Max transfer tries have been reached! Backup failed");
-						return false;
-					}
-					
-					System.out.println("Retrying...");
-					i--;
-					
-				} else {
-					partitionTransfTries = 0;
-				}
-			} catch (RemoteException e) {
-				e.printStackTrace();
-				System.out.println("ERROR! Couldn't invoke chunk transfer function");
-				return false;
-			}
-		}*/
-		
-		return true;
+		for (int partitionNo = 0; !reachedFinalPartition; partitionNo++) {
+            byte[] partitionData = new byte[0];
+            try {
+                partitionData = endpoint.getFileChunk(this.clientId, this.fileName, partitionNo);
+            } catch (RemoteException e) {
+                System.out.println("ERROR! Couldn't extract partition no. " + partitionNo + " from file " + this.fileName + " on client " + this.clientId);
+            }
+
+            if(partitionData == null)
+                break;
+
+            partitions.add(new Partition(partitionData, partitionNo));
+		}
+
+        createFileFromPartitions();
 	}
 }

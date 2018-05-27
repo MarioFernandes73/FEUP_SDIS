@@ -6,6 +6,8 @@ import filesmanager.Chunk;
 import peer.ChunkInfo;
 import peer.Peer;
 import protocols.protocols.ChunkBackupProtocol;
+import protocols.protocols.ChunkDeleteProtocol;
+import protocols.protocols.ChunkRestoreProtocol;
 
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
@@ -19,6 +21,9 @@ public class RestoreInitiator extends ProtocolInitiator implements Runnable {
 
     @Override
     public void run() {
+
+        ArrayList<Chunk> chunks = new ArrayList<>();
+
     	String fileId = "";
         try {
             fileId = peer.encryptFileName(fileName, clientId);
@@ -27,8 +32,40 @@ public class RestoreInitiator extends ProtocolInitiator implements Runnable {
         }
         BackedUpFileInfo fileInfo = findBackedUpFileInfo(fileId);
         if(fileInfo != null){
+            int tries = 0;
 
+            ArrayList<Thread> protocolThreads = new ArrayList<>();
+            ArrayList<ChunkRestoreProtocol> protocols = new ArrayList<>();
 
+            for(ChunkInfo chunkInfo: fileInfo.getBackedUpChunks()){
+                boolean cont = false;
+                for(Chunk chunk : chunks){
+                    if(chunk.getChunkId().equals(chunkInfo)){
+                        cont = true;
+                        break;
+                    }
+                }
+                if(cont){
+                    continue;
+                }
+                ChunkRestoreProtocol protocol = new ChunkRestoreProtocol(this.peer, chunkInfo);
+                protocols.add(protocol);
+                Thread thread = new Thread(protocol);
+                protocolThreads.add(thread);
+                thread.start();
+            }
+
+            for (Thread thread : protocolThreads) {
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for(ChunkRestoreProtocol protocol : protocols){
+                chunks.add(protocol.getChunk());
+            }
 
         } else {
             System.out.println("File does not exist!");

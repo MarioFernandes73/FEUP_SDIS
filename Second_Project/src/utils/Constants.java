@@ -45,7 +45,10 @@ public class Constants {
         SEND_DELETE_CHUNK,
         RECEIVED_DELETE_CHUNK,
         GET_CHUNK,
-        CHUNK
+        CHUNK,
+        REQUEST_PEER,
+        ACCEPT_PEER_REQUEST,
+        ACCEPT_PEER_REQUEST_CONNECTION
     }
 
     public static final HashMap<String, Class<?>> messageHashMap;
@@ -64,6 +67,9 @@ public class Constants {
         messageHashMap.put("CHANGE_CONNECTION_LIMIT", MessageChangeConnectionLimit.class);
         messageHashMap.put("GET_CHUNK", MessageGetChunk.class);
         messageHashMap.put("CHUNK", MessageChunk.class);
+        messageHashMap.put("REQUEST_PEER", MessageRequestPeer.class);
+        messageHashMap.put("ACCEPT_PEER_REQUEST", MessageAcceptPeerRequest.class);
+        messageHashMap.put("ACCEPT_PEER_REQUEST_CONNECTION", MessageAcceptPeerRequestConnection.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED}

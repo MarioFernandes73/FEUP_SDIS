@@ -10,6 +10,7 @@ import peer.Address;
 import peer.ChunkInfo;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MessagesRecords {
@@ -21,6 +22,8 @@ public class MessagesRecords {
     private CopyOnWriteArrayList<MessageRejectPeer> rejectPeerMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageReceiveFileInfo> receiveFileInfoMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageReceiveDeleteChunk> receiveDeleteChunkMessages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MessageRequestPeer> requestPeerMessages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MessageAcceptPeerRequest> acceptPeerRequestMessages = new CopyOnWriteArrayList<>();
 
     public MessagesRecords(String ownerId) {
         this.ownerId = ownerId;
@@ -42,6 +45,14 @@ public class MessagesRecords {
         this.rejectPeerMessages.add(message);
     }
     
+    public void addRequestPeerMessage(MessageRequestPeer message) {
+    	this.requestPeerMessages.add(message);
+    }
+    
+    public void addAcceptPeerRequestMessage(MessageAcceptPeerRequest message) {
+    	this.acceptPeerRequestMessages.add(message);
+    }
+    
     public boolean checkAcceptMessage(String peerId)
     {
     	for(int i = acceptPeerMessages.size() - 1; i >= 0; i--)
@@ -55,6 +66,20 @@ public class MessagesRecords {
     	return false;
     }
     
+    public MessageAcceptPeerRequest getRandomAcceptPeerRequestMessage()
+    {
+    	if(acceptPeerRequestMessages.size() == 0)
+    		return null;
+    	
+    	Random r = new Random();
+    	return acceptPeerRequestMessages.get(r.nextInt(acceptPeerRequestMessages.size()));
+    }
+    
+    public void clearAcceptPeerRequestMessages()
+    {
+    	acceptPeerRequestMessages.clear();
+    }
+    
     public boolean checkRejectMessage(String peerId)
     {
     	for(int i = rejectPeerMessages.size() - 1; i >= 0; i--)
@@ -62,6 +87,31 @@ public class MessagesRecords {
     		if(rejectPeerMessages.get(i).getPeerId().equals(peerId))
     		{
     			rejectPeerMessages.remove(i);
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public boolean hasRequestPeerMessage(String peerId)
+    {
+    	for(int i = requestPeerMessages.size() - 1; i >= 0; i--)
+    	{
+    		if(requestPeerMessages.get(i).getPeerId().equals(peerId))
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public boolean removeRequestPeerMessage(String peerId)
+    {
+    	for(int i = requestPeerMessages.size() - 1; i >= 0; i--)
+    	{
+    		if(requestPeerMessages.get(i).getPeerId().equals(peerId))
+    		{
+    			requestPeerMessages.remove(i);
     			return true;
     		}
     	}

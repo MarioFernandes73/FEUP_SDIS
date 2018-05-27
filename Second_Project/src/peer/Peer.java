@@ -88,7 +88,7 @@ public class Peer implements RMIInterface {
 
         switch (args[0]) {
             case "boot":
-                if (args.length != 2) {
+                if (args.length != 3) {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }
@@ -96,7 +96,7 @@ public class Peer implements RMIInterface {
 
                 break;
             case "normal":
-                if (args.length != 3) {
+                if (args.length != 4) {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }

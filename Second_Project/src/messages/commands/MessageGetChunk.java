@@ -47,7 +47,7 @@ public class MessageGetChunk extends Message {
         
         //peer e quem recebeu getchunk
 
-        if(peer.hasChunk(fileId, chunkNo)){
+        if(peer.hasChunk(fileId + chunkNo)){
         	Chunk wantedChunk = peer.getChunk(fileId, chunkNo);
         	String chunkData = new String(wantedChunk.getData());
         	

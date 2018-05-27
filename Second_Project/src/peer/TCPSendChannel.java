@@ -17,10 +17,6 @@ public class TCPSendChannel {
         this.socket = new DatagramSocket();
     }
 
-    public Address getAddress() {
-		return address;
-	}
-
 	public void send(byte[] data) throws IOException {
         DatagramPacket msgPacket = new DatagramPacket(data, data.length, address.getInetAddress(), address.getPort());
         socket.send(msgPacket);

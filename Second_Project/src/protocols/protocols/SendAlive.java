@@ -39,8 +39,8 @@ public class SendAlive implements Runnable{
 			for(Entry<String, TCPSendChannel> entry : peer.getForwardingTable().entrySet())
 			{
 				messageArgs[i] = entry.getKey();
-				messageArgs[i+1] = entry.getValue().getAddres().getIp();
-				messageArgs[i+2] = Integer.toString(entry.getValue().getAddres().getPort());
+				messageArgs[i+1] = entry.getValue().getAddress().getIp();
+				messageArgs[i+2] = Integer.toString(entry.getValue().getAddress().getPort());
 				i+=3;
 			}
 			

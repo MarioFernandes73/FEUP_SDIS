@@ -14,13 +14,12 @@ public class MessageAlive extends Message {
 
 	private HashMap<String, Address> backupForwardingTable = new HashMap<>();
 	
-	protected MessageAlive(String[] args) {
+	public MessageAlive(String[] args) {
 		super(Constants.MessageType.ALIVE, args[1]);
-		for(int i = 2; i < args.length; i+=2)
+		for(int i = 2; i < args.length; i+=3)
 		{
-			String ipPort[] = args[i+1].split(" ");
 			try {
-				backupForwardingTable.put(args[i], new Address(ipPort[0], Integer.parseInt(ipPort[1])));
+				backupForwardingTable.put(args[i], new Address(args[i+1], Integer.parseInt(args[i+2])));
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -36,7 +35,7 @@ public class MessageAlive extends Message {
 		String baseHeader = super.getBaseHeader();
 		String header = "";
 		for(Entry<String, Address> entry : backupForwardingTable.entrySet())
-			header += " " + entry.getValue().toString();
+			header += " " + entry.getKey() + " " + entry.getValue().toString();
 
 		return baseHeader + header + " \r\n\r\n";
 	}

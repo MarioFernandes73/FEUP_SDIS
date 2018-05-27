@@ -6,8 +6,10 @@ import messages.responses.MessageChunk;
 import messages.responses.MessageReceiveDeleteChunk;
 import messages.responses.MessageReceiveFileInfo;
 import messages.responses.MessageStored;
+import peer.Address;
 import peer.ChunkInfo;
 
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MessagesRecords {
@@ -66,16 +68,19 @@ public class MessagesRecords {
     	return false;
     }
 
-    public void updateChunkInfoStoredMessages(ChunkInfo chunkInfo, String fileId, int chunkNo, String senderId ){
-/*
+    public HashMap<String, Address> updateChunkInfoGetNextContacts(ChunkInfo chunkInfo){
+        HashMap<String, Address> contacts = new HashMap<>();
+
         for (MessageStored storedMessage : storedMessages) {
-            if (storedMessage.getFileId().equals(fileId)
-                    && storedMessage.getChunkNo() == chunkNo
-                    && !chunkInfo.getOwnerIds().contains(senderId)) {
-                chunkInfo.getOwnerIds().add(senderId);
+            if (storedMessage.getChunkId().equals(chunkInfo.getChunkId())
+                    && !chunkInfo.getOwners().containsKey(storedMessage.getSenderId())) {
+                chunkInfo.getOwners().put(storedMessage.getSenderId(), storedMessage.getAddress());
+                contacts.putAll(storedMessage.getSenderContacts());
+                storedMessages.remove(storedMessage);
             }
         }
-*/
+
+        return contacts;
     }
 
     public void addReceiveFileInfoMessage(MessageReceiveFileInfo messageReceiveFileInfo) {

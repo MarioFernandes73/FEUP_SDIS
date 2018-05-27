@@ -15,6 +15,13 @@ public class Address {
         this.inetAddress = InetAddress.getByName(ip);
     }
 
+    public Address(String address) throws UnknownHostException {
+        String[] addressArray = address.split(":");
+        this.ip = addressArray[0];
+        this.port = Integer.parseInt(addressArray[1]);
+        this.inetAddress = InetAddress.getByName(this.ip);
+    }
+
     public String getIp() {
         return ip;
     }

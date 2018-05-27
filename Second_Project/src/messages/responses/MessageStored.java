@@ -1,28 +1,37 @@
 package messages.responses;
 
 import messages.Message;
+import peer.Address;
 import peer.Peer;
 import utils.Constants;
 import utils.Utils;
 
+import java.net.UnknownHostException;
+import java.util.HashMap;
+
+
 public class MessageStored extends Message {
 
-	private String fileId;
-    private int chunkNo;
-    private int replicationDegree;
-    private String contacts;
+	private String chunkId;
+	private String contacts;
+	private HashMap<String, Address> senderContacts;
+    private Address address;
 
     public MessageStored(String[] args){
         super(Constants.MessageType.STORED_CHUNK, args[1]);
-        this.fileId = args[2];
-        this.chunkNo = Integer.parseInt(args[3]);
-        this.replicationDegree = Integer.parseInt(args[4]);
-        this.contacts = args[5];
+        this.chunkId = args[2];
+        this.contacts = args[3];
+        this.senderContacts = Utils.createContacts(args[3]);
+        try {
+            this.address = new Address(args[4]);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + contacts + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + this.chunkId + " " + this.contacts + " \r\n\r\n";
     }
 
     @Override
@@ -33,33 +42,18 @@ public class MessageStored extends Message {
     @Override
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
-        
-        //peer e quem recebeu stored
-        
         peer.getRecords().addStoredMessage(this);
-        
-        //if STORED_CHUNK vier com repDegree a 0 nao enviar mais put chunks
-        //else
-        //enviar put chunk (para um dos temporary contacts) com o repDegree que veio no STORED_CHUNK
-        //
-        
-        /*if(replicationDegree != 0)
-        {
-        	peer.addTemporaryContacts(contacts);
-        	
-        	String chosenContact = peer.chooseContact();
-        	
-        	String[] responseArgs = new String[5];
-			responseArgs[0] = MessagePutChunk.class.toString();
-			responseArgs[1] = fileId;
-			responseArgs[2] = Integer.toString(chunkNo);
-			responseArgs[3] = Integer.toString(replicationDegree - 1);
-			responseArgs[4] = peer.getBody();
-			
-        	byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
+    }
 
-            peer.sendMessage(chosenContact,new MessageBuilder().build(responseArgs));
-        }*/
-        
+    public String getChunkId(){
+        return this.chunkId;
+    }
+
+    public HashMap<String, Address> getSenderContacts(){
+        return this.senderContacts;
+    }
+
+    public Address getAddress(){
+        return this.address;
     }
 }

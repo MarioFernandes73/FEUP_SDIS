@@ -53,12 +53,6 @@ public class MessageAlive extends Message {
 		p.setAlivePeer(senderId);
 		p.updateBackupTable(backupForwardingTable);
 	}
-	
-	@Override
-	public String toString()
-	{
-		return Constants.MessageType.ALIVE.toString();
-	}
 
 
 }

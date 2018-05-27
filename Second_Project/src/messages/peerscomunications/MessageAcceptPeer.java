@@ -29,12 +29,6 @@ public class MessageAcceptPeer extends Message{
 		p.getRecords().addAcceptPeerMessage(this);
 	}
 	
-	@Override
-	public String toString()
-	{
-		return Constants.MessageType.ACCEPT_PEER.toString();
-	}
-	
 	public String getPeerId()
 	{
 		return peerId;

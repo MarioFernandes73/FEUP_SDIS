@@ -10,6 +10,7 @@ import messages.MessagesRecords;
 import protocols.initiators.BackupInitiator;
 import protocols.initiators.DeleteInitiator;
 import protocols.initiators.RestoreInitiator;
+import protocols.protocols.CheckContactsAlive;
 import rmi.RMICreator;
 import rmi.RMIInterface;
 import utils.Constants;
@@ -49,6 +50,7 @@ public class Peer implements RMIInterface {
     private RMICreator rmiCreator;
 
     private TCPReceiveChannel receiveChannel;
+    private CheckContactsAlive checkContactsAlive;
 
     Peer(String args[]) throws IOException {
         if (!verifyArgs(args))
@@ -74,6 +76,9 @@ public class Peer implements RMIInterface {
             };
             this.sendMessageToAddress(this.bootPeerAddress, MessageBuilder.build(msgArgs));
         }
+        
+        this.checkContactsAlive = new CheckContactsAlive(this);
+        new Thread(this.checkContactsAlive).start();
 
         System.out.println("Setup successuful.");
     }

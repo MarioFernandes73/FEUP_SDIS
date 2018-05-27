@@ -30,7 +30,7 @@ public class CheckContactsAlive implements Runnable {
         	{
         		peer.removePeer(entry.getKey());
         		ReplaceDeadConnection RDC = new ReplaceDeadConnection(peer);
-        		RDC.run();
+                new Thread(RDC).start();
         	}
         }
     }

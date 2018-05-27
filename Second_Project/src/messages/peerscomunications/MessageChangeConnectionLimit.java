@@ -1,12 +1,10 @@
 package messages.peerscomunications;
 
 import java.io.IOException;
-import java.util.Map.Entry;
 
 import messages.Message;
 import messages.MessageBuilder;
 import peer.Peer;
-import peer.TCPSendChannel;
 import utils.Constants;
 
 public class MessageChangeConnectionLimit extends Message{
@@ -49,10 +47,5 @@ public class MessageChangeConnectionLimit extends Message{
         }
 
     }
-	
-	@Override
-	public String toString() {
-		return Constants.MessageType.CHANGE_CONNECTION_LIMIT.toString();
-	}
 
 }

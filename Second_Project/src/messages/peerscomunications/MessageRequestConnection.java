@@ -9,7 +9,6 @@ import messages.MessageBuilder;
 import peer.Address;
 import peer.Peer;
 import utils.Constants;
-import utils.Constants.MessageType;
 
 public class MessageRequestConnection extends Message{
 
@@ -65,27 +64,22 @@ public class MessageRequestConnection extends Message{
 	
 	private void sendAcceptPeerMessage(Peer p) throws IOException
 	{
-		byte[] responseData;
         String[] responseArgs = new String[]{
                 Constants.MessageType.ACCEPT_PEER.toString(),
                 p.getId(),
                 senderId
         };
-		responseData = MessageBuilder.build(responseArgs).getBytes();
-		p.getConnectionAddress(this.senderId).send(responseData);
+		p.sendMessage(this.senderId, MessageBuilder.build(responseArgs));
 	}
 	
 	private void sendRejectPeerMessage(Peer p) throws IOException
 	{
-		byte[] responseData;
         String[] responseArgs = new String[]{
                 Constants.MessageType.REJECT_PEER.toString(),
                 p.getId(),
                 senderId
         };
-		responseData = MessageBuilder.build(responseArgs).getBytes();
-		//p.getConnectionAddress(this.senderId).send(responseData);
-		//TODO use temp socket instead
+        p.sendMessageToAddress(addressToAdd, MessageBuilder.build(responseArgs));
 	}
 
 }

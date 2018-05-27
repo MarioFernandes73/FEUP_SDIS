@@ -8,6 +8,11 @@ import peer.Peer;
 import utils.Constants;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static java.util.concurrent.ThreadLocalRandom.current;
 
 public class ChunkBackupProtocol implements Runnable {
 
@@ -41,25 +46,35 @@ public class ChunkBackupProtocol implements Runnable {
         }
 
         int tries = 0;
-        while(tries < Constants.MAX_CHUNK_TRANSFER_TRIES){
-            try{
+        HashMap<String, Address> nextContacts = new HashMap<>();
+        while(tries < Constants.MAX_CHUNK_TRANSFER_TRIES) {
+            try {
                 Thread.sleep(Constants.RESPONSE_AWAITING_TIME);
-            } catch(Exception e){
+
+                nextContacts.putAll(this.peer.getRecords().updateChunkInfoGetNextContacts(this.chunkInfo));
+
+                int currentRepDegree = this.chunkInfo.getDesiredReplicationDeg() - this.chunkInfo.getPerceivedReplicationDeg();
+
+                if (currentRepDegree <= 0) {
+                    break;
+                }
+
+                for (int i = 0; i < currentRepDegree; i++) {
+                    int randomConnection = ThreadLocalRandom.current().nextInt(0, nextContacts.size());
+                    int j = 0;
+                    for (Map.Entry<String, Address> randomPeer : nextContacts.entrySet()) {
+                        if (j == randomConnection) {
+                            this.peer.sendMessageToAddress(randomPeer.getValue(), MessageBuilder.build(msgArgs));
+                            nextContacts.remove(randomPeer.getKey());
+                            break;
+                        }
+                        j++;
+                    }
+                }
+                tries++;
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            HashMap<String, Address> nextContacts = this.peer.getRecords().updateChunkInfoGetNextContacts(this.chunkInfo);
-
-            //update chunkinfo
-           // this.peer.getRecords().updateChunkInfoGetNextContacts();
-
-            //verificar replication degree
-
-            if (this.chunkInfo.getOwners().size() >= chunkInfo.getDesiredReplicationDeg()) {
-                break;
-            }
-
-            tries++;
         }
 
     }

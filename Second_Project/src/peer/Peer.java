@@ -405,7 +405,33 @@ public class Peer implements RMIInterface {
 	
 	// Send file chunk to client
 	public byte[] getFileChunk(String clientId, String fileName, int chunkNo) throws RemoteException {
-	    return null;
+        String fileId;
+        try {
+             fileId = encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error encrypting file id");
+            return null;
+        }
+
+        ArrayList<Chunk> fileChunks = clientTransferChunks.get(fileId);
+        if(fileChunks == null)
+            return null;
+
+        String chunkId = fileId + chunkNo;
+        byte[] chunkData = null;
+        for(int i = 0; i < fileChunks.size(); i++) {//get chunk and delete it
+            Chunk chunk = fileChunks.get(i);
+            if(chunk.getChunkId() == chunkId) {
+                chunkData = chunk.getData();
+                fileChunks.remove(i);
+                break;
+            }
+        }
+
+        if(fileChunks.isEmpty())
+            clientTransferChunks.remove(fileId);
+
+        return chunkData;
 	}
 
     public boolean chunkTransferDuplicated(String fileId, Chunk chunk) {

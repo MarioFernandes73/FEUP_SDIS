@@ -137,7 +137,7 @@ public class Client {
 	}
 
 	private void calculateClientId() {
-		this.id	= this.id = ip + "." + port;
+		this.id = ip + "." + port;
 	}
 
 	private void printInfo() {

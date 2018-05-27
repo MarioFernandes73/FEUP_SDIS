@@ -22,6 +22,7 @@ public class Constants {
     //Peer RMI operation responses
     public static final int SUCCESS = 0;
     public static final int FILE_CHUNKS_NOT_RECEIVED = -1; //backup
+    public static final int PEER_ERROR = -4;
     public static final int FILE_NOT_BACKEDUP = -2; //restore & delete
     public static final int FILE_CHUNK_TRANSFER_ERROR = -3; //backup
 

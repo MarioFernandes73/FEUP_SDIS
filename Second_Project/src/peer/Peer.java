@@ -1,6 +1,7 @@
 package peer;
 
 import client.Client;
+import client_peer_file_transfer.ClientChunkTransfer;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.FilesManager;
@@ -42,6 +43,8 @@ public class Peer implements RMIInterface {
     private ConcurrentHashMap<String, TCPSendChannel> forwardingTable = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
     private int peerLimit = Constants.DEFAULT_CONNECTION_LIMIT;
+
+    private ConcurrentHashMap<String, ArrayList<Chunk>> clientTransferedChunks = new ConcurrentHashMap<>(); // <fileId, chunks>
 
 	private ArrayList<String> temporaryContacts = new ArrayList<String>();
 	
@@ -356,6 +359,19 @@ public class Peer implements RMIInterface {
     /* RMI methods */
 
 	public int backup(String clientId, String fileName, int replicationDegree) throws RemoteException {
+        String fileId = "";
+        try {
+            fileId = encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error encrypting file id");
+            return Constants.PEER_ERROR;
+        }
+
+        if(!clientTransferedChunks.containsKey(fileId)) {
+            System.out.println("File " + fileName + " was not previously transfered from client " + clientId);
+            return Constants.FILE_CHUNKS_NOT_RECEIVED;
+        }
+
 		System.out.println("Starting to backup " + fileName);
 		//Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
 		//thread.start();
@@ -380,7 +396,18 @@ public class Peer implements RMIInterface {
 
     // Obtain file chunk from client
 	public int transferFileChunk(String clientId, String fileName, int chunkNo, byte[] chunkContent) throws RemoteException {
-	    return 0;
+        String fileId = "";
+        try {
+            fileId = encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error encrypting file id");
+            return Constants.FILE_CHUNK_TRANSFER_ERROR;
+        }
+
+        Thread thread = new Thread(new ClientChunkTransfer(fileId, new Chunk(fileId + chunkNo, chunkContent), this));
+        thread.start();
+
+        return Constants.SUCCESS;
 	}
 	
 	// Send file chunk to client
@@ -388,6 +415,28 @@ public class Peer implements RMIInterface {
 	    return null;
 	}
 
+    public boolean chunkTransferDuplicated(String fileId, Chunk chunk) {
+        ArrayList<Chunk> fileChunks = clientTransferedChunks.get(fileId);
+        if(fileChunks == null)
+            return false;
+
+        //Search on file chunks
+        for(Chunk c: fileChunks) {
+            if(c.getChunkId() == chunk.getChunkId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addClientTransferChunk(String fileId, Chunk chunk) {
+        ArrayList<Chunk> fileChunks = clientTransferedChunks.get(fileId);
+        if(fileChunks == null) { //no chunks belonging to this file have been added
+            ArrayList<Chunk> newFileChunks = new ArrayList<Chunk>();
+            newFileChunks.add(chunk);
+            clientTransferedChunks.putIfAbsent(fileId, newFileChunks);
+        }
+    }
 
 	public void saveChunk(Chunk chunk){
 	    this.filesManager.saveChunk(chunk);

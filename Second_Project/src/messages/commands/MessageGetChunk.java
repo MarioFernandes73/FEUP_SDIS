@@ -31,7 +31,7 @@ public class MessageGetChunk extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + fileId + Integer.toString(chunkNo) + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + chunkId + " \r\n\r\n";
     }
 
     @Override
@@ -43,17 +43,14 @@ public class MessageGetChunk extends Message {
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
 
-        if(peer.hasChunk(fileId + chunkNo)){
-        	Chunk wantedChunk = peer.getChunk(fileId, chunkNo);
-        	String chunkData = new String(wantedChunk.getData());
+        if(peer.hasChunk(chunkId)){
+        	Chunk wantedChunk = peer.getChunk(this.chunkId);
         	
         	String[] msgArgs = new String[]{
                     Constants.MessageType.CHUNK.toString(),
-                    this.fileId,
-                    Integer.toString(this.chunkNo),
-                    chunkData,
-                    this.address.getIp(),
-                    Integer.toString(this.address.getPort())
+                    peer.getId(),
+                    this.chunkId,
+                    this.address.toString()
             };
             try {
                 peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs));

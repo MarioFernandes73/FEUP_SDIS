@@ -475,4 +475,8 @@ public class Peer implements RMIInterface {
 	public boolean saveBackedUpFileInfo(BackedUpFileInfo info){
 	    return this.filesManager.addBackedUpFileInfo(info);
     }
+
+    public void addClientTransferChunks(String fileName, ArrayList<Chunk> chunks) {
+	    this.clientTransferChunks.put(fileName, chunks);
+    }
 }

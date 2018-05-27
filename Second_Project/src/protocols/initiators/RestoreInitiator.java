@@ -36,16 +36,6 @@ public class RestoreInitiator extends ProtocolInitiator implements Runnable {
             ArrayList<ChunkRestoreProtocol> protocols = new ArrayList<>();
 
             for(ChunkInfo chunkInfo: fileInfo.getBackedUpChunks()){
-                boolean cont = false;
-                for(Chunk chunk : chunks){
-                    if(chunk.getChunkId().equals(chunkInfo)){
-                        cont = true;
-                        break;
-                    }
-                }
-                if(cont){
-                    continue;
-                }
                 ChunkRestoreProtocol protocol = new ChunkRestoreProtocol(this.peer, chunkInfo);
                 protocols.add(protocol);
                 Thread thread = new Thread(protocol);
@@ -63,6 +53,10 @@ public class RestoreInitiator extends ProtocolInitiator implements Runnable {
 
             for(ChunkRestoreProtocol protocol : protocols){
                 chunks.add(protocol.getChunk());
+            }
+
+            if(fileInfo.getBackedUpChunks().size() == chunks.size()){
+                this.peer.addClientTransferChunks(fileName, chunks);
             }
 
         } else {

@@ -8,9 +8,6 @@ import filesmanager.FilesManager;
 import messages.Message;
 import messages.MessageBuilder;
 import messages.MessagesRecords;
-import protocols.initiators.BackupInitiator;
-import protocols.initiators.DeleteInitiator;
-import protocols.initiators.RestoreInitiator;
 import protocols.protocols.CheckContactsAlive;
 import protocols.protocols.SendAlive;
 import rmi.RMIInterface;
@@ -274,10 +271,6 @@ public class Peer implements RMIInterface {
     
     public int getPort() {
     	return port;
-    }
-
-    public String getEncryptedFileName(Client client, File file) {
-        return "";
     }
 
     public boolean checkIfFileExists(String encryptedFileId) {

@@ -1,24 +1,16 @@
 package protocols.initiators;
 
 import filesmanager.BackedUpFileInfo;
-import messages.MessageBuilder;
 import peer.ChunkInfo;
 import peer.Peer;
 import protocols.protocols.ChunkDeleteProtocol;
-import utils.Constants;
 
 import java.util.ArrayList;
 
-public class DeleteInitiator implements Runnable {
-
-    private Peer peer;
-    private String clientId;
-    private String fileName;
+public class DeleteInitiator extends ProtocolInitiator implements Runnable {
 
     public DeleteInitiator(Peer peer, String clientId, String fileName){
-        this.peer = peer;
-        this.clientId = clientId;
-        this.fileName = fileName;
+        super(peer, clientId, fileName);
     }
 
     @Override
@@ -75,24 +67,5 @@ public class DeleteInitiator implements Runnable {
 
     }
 
-    private BackedUpFileInfo findBackedUpFileInfo(String fileId){
 
-        BackedUpFileInfo fileInfo = this.peer.getBackedUpFileInfo(fileId);
-        if(fileInfo == null){
-            String[] msgArgs = new String[]{
-                    Constants.MessageType.SEND_FILE_INFO.toString(),
-                    this.peer.getId(),
-                    fileId
-            };
-            try{
-                this.peer.sendFloodMessage(MessageBuilder.build(msgArgs));
-                Thread.sleep(Constants.RESPONSE_AWAITING_TIME);
-            } catch(Exception e){
-                e.printStackTrace();
-            }
-
-            fileInfo = this.peer.getRecords().getFileInfo(fileId);
-        }
-        return fileInfo;
-    }
 }

@@ -25,7 +25,8 @@ public class TCPReceiveChannel implements Runnable {
         try {
             running = true;
             while (running) {
-                new PacketHandler(this.owner,this.receive()).run();
+                PacketHandler packetHandler = new PacketHandler(this.owner,this.receive());
+                new Thread(packetHandler).start();
             }
             socket.close();
         } catch (IOException e) {

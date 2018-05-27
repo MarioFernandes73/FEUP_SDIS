@@ -70,33 +70,33 @@ public class MessageAddPeer extends Message{
 	private void sendAcceptPeerMessage(Peer p) throws IOException
 	{
 		
-		String[] responseArgs = new String[3];
-		responseArgs[0] = MessageAcceptPeer.class.toString();
-		responseArgs[1] = p.getId();
-		responseArgs[2] = peerId;
-		byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
-		p.getConnectionAddress(this.senderId).send(responseData);
+		String[] responseArgs = new String[]{
+                Constants.MessageType.ACCEPT_PEER.toString(),
+                p.getId(),
+                peerId
+	};
+		p.sendMessage(this.senderId, MessageBuilder.build(responseArgs));
 	}
 	
 	private void sendRejectPeerMessage(Peer p) throws IOException
 	{
-		String[] responseArgs = new String[3];
-		responseArgs[0] = MessageRejectPeer.class.toString();
-		responseArgs[1] = p.getId();
-		responseArgs[2] = peerId;
-		byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
-		p.getConnectionAddress(this.senderId).send(responseData);
+		String[] responseArgs = new String[]{
+                Constants.MessageType.REJECT_PEER.toString(),
+                p.getId(),
+                peerId
+        };
+        p.sendMessage(this.senderId, MessageBuilder.build(responseArgs));
 	}
 	
 	private void sendAcceptConnectionMessage(Peer p) throws IOException
 	{
-		String[] acceptArgs = new String[4];
-		acceptArgs[0] = MessageAcceptConnection.class.toString();
-    	acceptArgs[1] = p.getId();
-    	acceptArgs[2] = p.getIP();
-    	acceptArgs[3] = Integer.toString(p.getPort());
-		byte[] acceptData = MessageBuilder.build(acceptArgs).getBytes();
-		p.getConnectionAddress(peerId).send(acceptData);
+		String[] acceptArgs = new String[]{
+                Constants.MessageType.ACCEPT_CONNECTION.toString(),
+                p.getId(),
+                p.getIP(),
+                Integer.toString(p.getPort())
+        };
+        p.sendMessage(peerId, MessageBuilder.build(acceptArgs));
 	}
     
 	@Override

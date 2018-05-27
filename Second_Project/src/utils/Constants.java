@@ -4,6 +4,7 @@ import messages.commands.MessageGetChunk;
 import messages.commands.MessagePutChunk;
 import messages.peerscommunications.*;
 import messages.responses.*;
+import peer.Address;
 
 import java.util.HashMap;
 
@@ -46,7 +47,8 @@ public class Constants {
         SEND_DELETE_CHUNK,
         RECEIVED_DELETE_CHUNK,
         GET_CHUNK,
-        CHUNK
+        CHUNK,
+        SEND_BACKED_UP_FILE_INFO
     }
 
     public static final HashMap<String, Class<?>> messageHashMap;

@@ -3,46 +3,40 @@ package filesmanager;
 import peer.ChunkInfo;
 
 import java.io.Serializable;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class BackedUpFileInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String id;
-    private String name;
-    private long lastModifiedDate;
-    private boolean isBackedUp = false;
-    private boolean toDelete = false;
+    private String fileId;
+    private String fileName;
     private ArrayList<ChunkInfo> backedUpChunks = new ArrayList<>();
 
-    public BackedUpFileInfo(String id, String name, long lastModifiedDate, boolean isBackedUp) {
-        this.id = id;
-        this.name = name;
-        this.lastModifiedDate = lastModifiedDate;
-        this.isBackedUp = isBackedUp;
+    public BackedUpFileInfo(String id, String name, ArrayList<ChunkInfo> chunkInfos) {
+        this.fileId = id;
+        this.fileName = name;
+        this.backedUpChunks = chunkInfos;
+    }
+
+    public BackedUpFileInfo(String fileInfo) throws UnknownHostException {
+        String[] fileInfoArgs = fileInfo.split("-");
+        this.fileId = fileInfoArgs[0];
+        this.fileName = fileInfoArgs[1];
+        for(int i = 2; i < fileInfoArgs.length; i++){
+            backedUpChunks.add(new ChunkInfo(fileInfoArgs[i]));
+        }
     }
 
     public BackedUpFileInfo(String[] fileInfoArgs) {
     }
 
-    public String getName() {
-        return name;
+    public String getFileName() {
+        return fileName;
     }
 
-    public long getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public boolean isBackedUp() {
-        return isBackedUp;
-    }
-
-    public void setBackedUp(boolean isBackedUp) {
-        this.isBackedUp = isBackedUp;
-    }
-
-    public String getId() {
-        return id;
+    public String getFileId() {
+        return fileId;
     }
 
     public int getDesiredReplicationDeg() {
@@ -57,33 +51,28 @@ public class BackedUpFileInfo implements Serializable {
     }
 
     public String getChunksInfo() {
-        String info = "";
+        StringBuilder info = new StringBuilder();
         for(ChunkInfo chunk: backedUpChunks) {
-            info += "\n \tId: " + chunk.getChunkId();
-            info += "\n \tPerceived replication degree: " + chunk.getPerceivedReplicationDeg() + "\n";
+            info.append("\n \tId: ").append(chunk.getChunkId());
+            info.append("\n \tPerceived replication degree: ").append(chunk.getPerceivedReplicationDeg()).append("\n");
         }
-        return info;
+        return info.toString();
     }
 
     @Override
     public boolean equals(Object object) {
         if(object instanceof BackedUpFileInfo) {
-            if(((BackedUpFileInfo)object).getName().equals(this.getName())) {
-                return true;
-            }
+            return ((BackedUpFileInfo) object).getFileName().equals(this.getFileName());
         }
         return false;
     }
 
-    public void clearChunks() {
-        this.backedUpChunks = new ArrayList<ChunkInfo>();
-    }
-
-    public boolean getToDelete() {
-        return this.toDelete;
-    }
-
-    public void setToDelete(boolean toDelete) {
-        this.toDelete = toDelete;
+    @Override
+    public String toString(){
+        StringBuilder res = new StringBuilder(fileId + "-" + "fileName");
+        for(ChunkInfo chunkInfo : this.backedUpChunks){
+            res.append("-").append(chunkInfo.toString());
+        }
+        return res.toString();
     }
 }

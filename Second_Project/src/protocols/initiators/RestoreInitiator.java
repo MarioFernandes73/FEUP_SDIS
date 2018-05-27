@@ -53,7 +53,7 @@ public class RestoreInitiator implements Runnable {
         for(ChunkInfo chunkInfo: chunksInfo) {
             if(chunkInfo.getOwnerIds().size() > 0) {
 
-                BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(fileId, file.getName(), file.lastModified(), true);
+                BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(fileId, file.getFileName(), file.lastModified(), true);
                 newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
                 this.peer.updateBackedUpFiles(newBackedUpFile);
 

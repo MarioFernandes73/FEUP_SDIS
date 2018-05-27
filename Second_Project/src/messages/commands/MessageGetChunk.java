@@ -44,7 +44,7 @@ public class MessageGetChunk extends Message {
     @Override
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
-        
+
         //peer e quem recebeu getchunk
 
         if(peer.hasChunk(fileId + chunkNo)){

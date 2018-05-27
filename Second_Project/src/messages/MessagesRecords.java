@@ -89,7 +89,7 @@ public class MessagesRecords {
 
     public BackedUpFileInfo getFileInfo(String fileId){
         for(MessageReceiveFileInfo msg : this.receiveFileInfoMessages){
-            if(msg.getFileInfo().getId().equals(fileId)){
+            if(msg.getFileInfo().getFileId().equals(fileId)){
                 return msg.getFileInfo();
             }
         }

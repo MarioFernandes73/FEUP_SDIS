@@ -29,15 +29,15 @@ public class PartitionedFile {
 		this.fileName = fileName;
 		this.type = type;
 		
-		if (type == Constants.FileType.BACKEDUP) {		
+		if (type == Constants.FileType.BACKEDUP) {
 			this.file = new File(fileName);
-			
+
 			if (file.exists() && file.isFile()) {
-				extractFilePartitions();			
+				extractFilePartitions();
 			} else {
 				throw new FileNotFoundException();
 			}
-			
+
 			this.fileName = file.getName();
 		}
 	}

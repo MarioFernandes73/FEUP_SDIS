@@ -7,7 +7,6 @@ import messages.responses.MessageReceiveFileInfo;
 import messages.responses.MessageStored;
 import peer.ChunkInfo;
 
-import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MessagesRecords {

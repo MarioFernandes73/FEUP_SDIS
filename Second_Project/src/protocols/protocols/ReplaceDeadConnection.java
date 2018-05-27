@@ -1,13 +1,11 @@
 package protocols.protocols;
 
-import java.net.SocketException;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import messages.MessageBuilder;
 import peer.Address;
 import peer.Peer;
-import peer.TCPSendChannel;
 import utils.Constants;
 
 public class ReplaceDeadConnection implements Runnable{

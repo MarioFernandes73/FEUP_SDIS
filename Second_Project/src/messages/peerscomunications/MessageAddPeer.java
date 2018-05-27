@@ -42,22 +42,16 @@ public class MessageAddPeer extends Message{
 	@Override
 	public void handleMessage(Object... args) {
 		Peer p = (Peer) args[0];
-		boolean accepted = false;
 		
 		try {
 			if(p.getNumberConnections() < p.getPeerLimit()){
-				accepted = true;
 				p.addPeer(peerId, addressToAdd);
 				sendAcceptPeerMessage(p);
+				sendAcceptConnectionMessage(p);
 			}
 			else {
 				sendRejectPeerMessage(p);
 			}
-			
-		    if(accepted)
-		    {
-		    	sendAcceptConnectionMessage(p);
-		    }	
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -99,10 +93,5 @@ public class MessageAddPeer extends Message{
         p.sendMessage(peerId, MessageBuilder.build(acceptArgs));
 	}
     
-	@Override
-	public String toString()
-	{
-		return Constants.MessageType.ADD_PEER.toString();
-	}
 
 }

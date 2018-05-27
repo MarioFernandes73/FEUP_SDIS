@@ -36,9 +36,8 @@ public class ChunkRestoreProtocol implements Runnable {
                 Thread.sleep(Constants.RESPONSE_AWAITING_TIME);
                 Chunk chunk = this.peer.getRecords().checkForRestoredChunk(chunkInfo.getChunkId());
                 if(chunk != null){
-                    break;
-                } else {
                     this.chunk = chunk;
+                    break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

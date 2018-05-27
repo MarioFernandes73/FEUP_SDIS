@@ -25,7 +25,6 @@ public class MessagesRecords {
     private CopyOnWriteArrayList<MessageReceiveDeleteChunk> receiveDeleteChunkMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageRequestPeer> requestPeerMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageAcceptPeerRequest> acceptPeerRequestMessages = new CopyOnWriteArrayList<>();
-    private CopyOnWriteArrayList<MessageChunk> receivedChunkMessages = new CopyOnWriteArrayList<>();
 
 
     public MessagesRecords(String ownerId) {
@@ -163,7 +162,7 @@ public class MessagesRecords {
     }
 
     public Chunk checkForRestoredChunk(String chunkId) {
-        for(MessageChunk messageChunk : this.receivedChunkMessages){
+        for(MessageChunk messageChunk : this.chunkMessages){
             if(messageChunk.getChunkId().equals(chunkId)){
                 return messageChunk.getChunk();
             }

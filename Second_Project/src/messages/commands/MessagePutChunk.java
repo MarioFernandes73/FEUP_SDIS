@@ -31,7 +31,7 @@ public class MessagePutChunk extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + chunkId + " " + address.toString() + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + chunkId + " " + address.toString() + " " + this.replicationDeg + " \r\n\r\n";
     }
 
     @Override

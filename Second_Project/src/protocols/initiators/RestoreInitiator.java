@@ -52,11 +52,14 @@ public class RestoreInitiator extends ProtocolInitiator implements Runnable {
             }
 
             for(ChunkRestoreProtocol protocol : protocols){
+                if(protocol.getChunk() == null){
+                    return;
+                }
                 chunks.add(protocol.getChunk());
             }
 
             if(fileInfo.getBackedUpChunks().size() == chunks.size()){
-                this.peer.addClientTransferChunks(fileName, chunks);
+                this.peer.addClientTransferChunks(fileId, chunks);
             }
 
 

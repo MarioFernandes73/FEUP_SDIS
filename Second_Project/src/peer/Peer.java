@@ -408,8 +408,12 @@ public class Peer implements RMIInterface {
 		System.out.println("Starting to restore file " + fileName + " from client " + clientId);
 		Thread thread = new Thread(new RestoreInitiator(this, clientId, fileName));
 		thread.start();
-		
-		return 0;
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return 0;
 	}
 
     public int delete(String clientId, String fileName) throws RemoteException {
@@ -453,7 +457,7 @@ public class Peer implements RMIInterface {
         byte[] chunkData = null;
         for(int i = 0; i < fileChunks.size(); i++) {//get chunk and delete it
             Chunk chunk = fileChunks.get(i);
-            if(chunk.getChunkId() == chunkId) {
+            if(chunk.getChunkId().equals(chunkId)) {
                 chunkData = chunk.getData();
                 fileChunks.remove(i);
                 break;

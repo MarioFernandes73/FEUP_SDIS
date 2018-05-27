@@ -20,7 +20,7 @@ public class MessageChunk extends Message {
     private Address address;
 
     public MessageChunk(String[] args){
-        super(Constants.MessageType.PUT_CHUNK, args[1]);
+        super(Constants.MessageType.CHUNK, args[1]);
         this.chunkId = args[2];
         try {
             this.address = new Address(args[3]);
@@ -31,7 +31,7 @@ public class MessageChunk extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + chunkId + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + chunkId + " " + this.address.toString() + " \r\n\r\n";
     }
 
     @Override

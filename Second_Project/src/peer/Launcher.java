@@ -75,6 +75,9 @@ public class Launcher {
             byte[] partitionData = new byte[0];
             try {
                 partitionData = peer.getFileChunk(clientId, fileName, partitionNo);
+                if(partitionData.length < Constants.MAX_CHUNK_SIZE){
+                    reachedFinalPartition = true;
+                }
             } catch (RemoteException e) {
                 System.out.println("ERROR! Couldn't extract partition no. " + partitionNo + " from file " + fileName + " on client " + clientId);
             }
@@ -93,7 +96,7 @@ public class Launcher {
         dir.mkdirs();
         FileOutputStream out;
         try {
-            out = new FileOutputStream(Constants.getRestoredFilesDir("TESTE") + fileName, false);
+            out = new FileOutputStream(Constants.getRestoredFilesDir("TESTE") + "/" + fileName, false);
 
             for (Partition partition : partitions) {
                 out.write(partition.getData());

@@ -27,9 +27,11 @@ public class ChunkInfo implements Serializable {
         this.chunkNo = Integer.parseInt(chunkInfoArgs[1]);
 
         String[] owners = chunkInfoArgs[2].split(",");
-        for(String owner : owners){
-            String[] ownerInfo = owner.split(">");
-            ownerAddress.put(ownerInfo[0], new Address(ownerInfo[1]));
+        if(owners.length > 0){
+            for(String owner : owners){
+                String[] ownerInfo = owner.split(">");
+                ownerAddress.put(ownerInfo[0], new Address(ownerInfo[1]));
+            }
         }
 
         this.desiredReplicationDeg = Integer.parseInt(chunkInfoArgs[3]);

@@ -17,10 +17,9 @@ import java.util.ArrayList;
 public class BackupInitiator extends ProtocolInitiator implements Runnable {
 
     private String clientId;
-    private File file;
     private int replicationDegree;
 
-    public BackupInitiator(Peer peer, String clientId, String fileName, File file, int replicationDegree) {
+    public BackupInitiator(Peer peer, String clientId, String fileName, int replicationDegree) {
         super(peer, clientId, fileName);
         this.replicationDegree = replicationDegree;
     }
@@ -35,14 +34,17 @@ public class BackupInitiator extends ProtocolInitiator implements Runnable {
         }
 
 
-        ArrayList<Chunk> chunks = this.peer.splitToChunks(file);
+        ArrayList<Chunk> chunks = this.peer.getClientTransferFileChunks(encryptedFileId);
         ArrayList<ChunkInfo> chunksInfo = new ArrayList<>();
         ArrayList<Thread> protocolThreads = new ArrayList<>();
 
         for (int i = 0; i < chunks.size(); i++) {
-            ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunks.get(i).getData().length);
+            Chunk chunk = chunks.get(i);
+
+            ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunk.getData().length);
             chunksInfo.add(chunkInfo);
-            Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData()));
+
+            Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunk.getData()));
             protocolThreads.add(thread);
             this.peer.clearStoredMessagesOfFile(encryptedFileId);
             thread.start();
@@ -55,6 +57,9 @@ public class BackupInitiator extends ProtocolInitiator implements Runnable {
                 e.printStackTrace();
             }
         }
+
+        //Eliminate client transferred chunks relative to this file
+        this.peer.eliminateClientTransferFileChunks(encryptedFileId);
 
         for(ChunkInfo chunkInfo: chunksInfo) {
             if(chunkInfo.getOwners().size() > 0) {
@@ -73,7 +78,7 @@ public class BackupInitiator extends ProtocolInitiator implements Runnable {
 
 
 
-        BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, file.getName(), chunksInfo);
+        BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, this.fileName, chunksInfo);
         this.peer.saveBackedUpFileInfo(newBackedUpFile);
         String[] msgArgs2 = new String[]{
                 Constants.MessageType.SEND_BACKED_UP_FILE_INFO.toString(),

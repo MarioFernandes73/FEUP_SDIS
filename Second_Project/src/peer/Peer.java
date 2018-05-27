@@ -456,6 +456,13 @@ public class Peer implements RMIInterface {
             clientTransferChunks.putIfAbsent(fileId, newFileChunks);
         }
     }
+    public ArrayList<Chunk> getClientTransferFileChunks(String fileId) {
+	    return clientTransferChunks.get(fileId);
+    }
+
+    public void eliminateClientTransferFileChunks(String fileId) {
+        clientTransferChunks.remove(fileId);
+    }
 
 	public void saveChunk(Chunk chunk){
 	    this.filesManager.saveChunk(chunk);

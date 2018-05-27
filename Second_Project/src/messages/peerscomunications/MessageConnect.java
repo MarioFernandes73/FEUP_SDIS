@@ -46,7 +46,7 @@ public class MessageConnect extends Message {
                         peer.getIP(),
                         Integer.toString(peer.getPort())
                 };
-                peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
+                peer.sendMessage(this.senderId, MessageBuilder.build(messageArgs));
             }
             else if(!askConnections(peer))
             {
@@ -117,7 +117,7 @@ public class MessageConnect extends Message {
                 peer.getIP(),
                 Integer.toString(peer.getPort())
         };
-        peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
+        peer.sendMessage(this.senderId, MessageBuilder.build(messageArgs));
     	
     	peer.changePeerLimit(peer.getPeerLimit() + 1);
     	String[] message2Args = new String[]{

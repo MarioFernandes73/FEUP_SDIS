@@ -11,7 +11,6 @@ import protocols.initiators.BackupInitiator;
 import protocols.initiators.DeleteInitiator;
 import protocols.initiators.RestoreInitiator;
 import protocols.protocols.CheckContactsAlive;
-import rmi.RMICreator;
 import rmi.RMIInterface;
 import utils.Constants;
 
@@ -34,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Peer implements RMIInterface {
 
     private String id;
+    private String accessPoint;
     private boolean isBootPeer;
     private String ip;
     private int port;
@@ -47,7 +47,6 @@ public class Peer implements RMIInterface {
     private FilesManager filesManager;
 
     private MessagesRecords records;
-    private RMICreator rmiCreator;
 
     private TCPReceiveChannel receiveChannel;
     private CheckContactsAlive checkContactsAlive;
@@ -55,7 +54,7 @@ public class Peer implements RMIInterface {
     Peer(String args[]) throws IOException {
         if (!verifyArgs(args))
             return;
-
+        System.out.println("Everything ok");
         this.ip = InetAddress.getLocalHost().getHostAddress();
         //this.ip = getPublicIP();
 
@@ -92,7 +91,7 @@ public class Peer implements RMIInterface {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }
-                this.rmiCreator = new RMICreator(this, args[2]);
+                this.accessPoint = args[2];
                 isBootPeer = true;
 
                 break;
@@ -114,7 +113,7 @@ public class Peer implements RMIInterface {
                     System.out.println("Error. Invalid IP:PORT format.");
                     return false;
                 }
-                this.rmiCreator = new RMICreator(this, args[3]);
+                this.accessPoint = args[3];
                 break;
             default:
                 System.out.println("Error. First argument should be 'boot' or 'normal'.");
@@ -128,9 +127,7 @@ public class Peer implements RMIInterface {
             return false;
         }
 
-
-
-        return rmiCreator.isCommunicationReady();
+        return true;
     }
 	
     public String getContacts(){
@@ -141,7 +138,11 @@ public class Peer implements RMIInterface {
     	}
     	return contacts;
     }
-    
+
+    public String getAccessPoint() {
+        return this.accessPoint;
+    }
+
     public boolean hasChunk(String fileID, int chunkNo)
     {
     	return filesManager.hasChunk(fileID, chunkNo);
@@ -342,19 +343,14 @@ public class Peer implements RMIInterface {
 
     /* RMI methods */
 
-	public int backup(String fileName, int replicationDegree) throws RemoteException {
+	public int backup(String clientId, String fileName, int replicationDegree) throws RemoteException {
 		System.out.println("Starting to backup " + fileName);
 		//Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
 		//thread.start();
 		return 0;
 	}
 
-    @Override
-    public int restore(String fileName) throws RemoteException {
-        return 0;
-    }
-
-    public int restore(String fileName, String clientId) throws RemoteException {
+    public int restore(String clientId, String fileName) throws RemoteException {
 		System.out.println("Starting to restore file " + fileName + " from client " + clientId);
 		//String fileId = encryptedFileName(fileName, clientId);
 		//Thread thread = new Thread(new RestoreInitiator(this, fileId));
@@ -363,25 +359,20 @@ public class Peer implements RMIInterface {
 		return 0;
 	}
 
-    public int delete(String fileName) throws RemoteException {
+    public int delete(String clientId, String fileName) throws RemoteException {
 		System.out.println("Starting to delete " + fileName);
 		//Thread thread = new Thread(new DeleteInitiator(this, fileName, enhancement));
 		//thread.start();
 		return 0;
 	}
 
-    @Override
-    public String state() throws RemoteException {
-        return null;
-    }
-
     // Obtain file chunk from client
-	public int transferFileChunk(String fileName, int chunkNo, byte[] chunkContent) throws RemoteException {
+	public int transferFileChunk(String clientId, String fileName, int chunkNo, byte[] chunkContent) throws RemoteException {
 	    return 0;
 	}
 	
 	// Send file chunk to client
-	public byte[] getFileChunk(String fileName, int chunkNo) throws RemoteException {
+	public byte[] getFileChunk(String clientId, String fileName, int chunkNo) throws RemoteException {
 	    return null;
 	}
 

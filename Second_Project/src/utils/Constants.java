@@ -35,7 +35,7 @@ public class Constants {
         CONNECT,
         PUT_CHUNK,
         ALIVE,
-        STORED,
+        STORED_CHUNK,
         REQUEST_CONNECTION,
         CHANGE_CONNECTION_LIMIT,
         SEND_FILE_INFO,
@@ -55,7 +55,7 @@ public class Constants {
         messageHashMap.put("CONNECT", MessageConnect.class);
         messageHashMap.put("PUT_CHUNK", MessagePutChunk.class);
         messageHashMap.put("ALIVE", MessageAlive.class);
-        messageHashMap.put("STORED", MessageStored.class);
+        messageHashMap.put("STORED_CHUNK", MessageStored.class);
         messageHashMap.put("REQUEST_CONNECTION", MessageRequestConnection.class);
         messageHashMap.put("CHANGE_CONNECTION_LIMIT", MessageChangeConnectionLimit.class);
     }

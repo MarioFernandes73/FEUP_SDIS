@@ -1,9 +1,8 @@
 package messages.commands;
 
-import messages.IMessage;
+import filesmanager.Chunk;
 import messages.Message;
 import messages.MessageBuilder;
-import messages.peerscomunications.MessageAcceptPeer;
 import messages.responses.MessageStored;
 import peer.Address;
 import peer.Peer;
@@ -11,6 +10,7 @@ import utils.Constants;
 import utils.Utils;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 public class MessagePutChunk extends Message {
 
@@ -18,6 +18,7 @@ public class MessagePutChunk extends Message {
     private int chunkNo;
     private int replicationDegree;
     private byte[] data;
+    private Address address;
 
     public MessagePutChunk(String[] args){
         super(Constants.MessageType.PUT_CHUNK, args[1]);
@@ -25,6 +26,11 @@ public class MessagePutChunk extends Message {
         this.chunkNo = Integer.parseInt(args[3]);
         this.replicationDegree = Integer.parseInt(args[4]);
         this.data = args[5].getBytes();
+        try {
+            this.address = new Address(args[6], Integer.parseInt(args[7]));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -42,24 +48,22 @@ public class MessagePutChunk extends Message {
         Peer peer = (Peer) args[0];
         
         //peer e quem recebeu putchunk
-        
-        if(!peer.hasChunk(fileId, chunkNo)){
-        	
-        	//peer.storeChunk(fileId, chunkNo, data);
-        	
-        	int newRepDegree = replicationDegree-1;
-        	
-        	String[] responseArgs = new String[5];
-			responseArgs[0] = MessageStored.class.toString();
-			responseArgs[1] = fileId;
-			responseArgs[2] = Integer.toString(chunkNo);
-			responseArgs[3] = Integer.toString(newRepDegree);
-			responseArgs[4] = peer.getContacts();
-			
-        	byte[] responseData = MessageBuilder.build(responseArgs).getBytes();
 
+        //se nao tiver o chunk, guarda o
+            //responder com uma stored para quem pediu originalmente a cena e com os filhos
+
+        if(!peer.hasChunk(fileId, chunkNo)){
+        	peer.saveChunk(new Chunk((fileId + chunkNo), data));
+        	
+        	String[] msgArgs = new String[]{
+                    Constants.MessageType.STORED_CHUNK.toString(),
+                    this.fileId,
+                    Integer.toString(this.chunkNo),
+                    Integer.toString(replicationDegree-1),
+                    peer.getContacts()
+            };
             try {
-                peer.sendMessage(this.senderId,new MessageBuilder().build(responseArgs));
+                peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -3,40 +3,48 @@ package protocols.initiators;
 import client.Client;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
+import messages.MessageBuilder;
 import peer.ChunkInfo;
 import peer.Peer;
 import protocols.protocols.ChunkBackupProtocol;
+import utils.Constants;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-public class BackupInitiator implements Runnable {
+public class BackupInitiator extends ProtocolInitiator implements Runnable {
 
-    private Client client;
-    private Peer peer;
-    private File file;
+    private String clientId;
     private int replicationDegree;
 
-    public BackupInitiator(Client client, Peer peer, File file, int replicationDegree) {
-        this.client = client;
-        this.peer = peer;
-        this.file = file;
+    public BackupInitiator(Peer peer, String clientId, String fileName, int replicationDegree) {
+        super(peer, clientId, fileName);
         this.replicationDegree = replicationDegree;
     }
 
     @Override
     public void run() {
-        String encryptedFileId = peer.getEncryptedFileName(client, file);
+        String encryptedFileId = null;
+        try {
+            encryptedFileId = peer.encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
 
-        ArrayList<Chunk> chunks = this.peer.splitToChunks(file);
+        ArrayList<Chunk> chunks = this.peer.getClientTransferFileChunks(encryptedFileId);
         ArrayList<ChunkInfo> chunksInfo = new ArrayList<>();
         ArrayList<Thread> protocolThreads = new ArrayList<>();
 
         for (int i = 0; i < chunks.size(); i++) {
-            ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunks.get(i).getData().length);
+            Chunk chunk = chunks.get(i);
+
+            ChunkInfo chunkInfo = new ChunkInfo(encryptedFileId, i, replicationDegree, chunk.getData().length);
             chunksInfo.add(chunkInfo);
-            Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData()));
+
+            Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunk.getData()));
             protocolThreads.add(thread);
             this.peer.clearStoredMessagesOfFile(encryptedFileId);
             thread.start();
@@ -50,12 +58,11 @@ public class BackupInitiator implements Runnable {
             }
         }
 
+        //Eliminate client transferred chunks relative to this file
+        this.peer.eliminateClientTransferFileChunks(encryptedFileId);
+
         for(ChunkInfo chunkInfo: chunksInfo) {
             if(chunkInfo.getOwners().size() > 0) {
-
-                BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, file.getName(), file.lastModified(), true);
-                newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
-                this.peer.updateBackedUpFiles(newBackedUpFile);
 
                 if(chunkInfo.getOwners().size() >= this.replicationDegree) {
                     System.out.println("Successful backup of chunk "+ chunkInfo.getChunkNo());
@@ -69,8 +76,20 @@ public class BackupInitiator implements Runnable {
             }
         }
 
-        // CRIAR E FAZER SAVE DO BACKUPFILEINFO E MANDAR PARA TODOS
 
+
+        BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, this.fileName, chunksInfo);
+        this.peer.saveBackedUpFileInfo(newBackedUpFile);
+        String[] msgArgs2 = new String[]{
+                Constants.MessageType.SEND_BACKED_UP_FILE_INFO.toString(),
+                this.peer.getId(),
+                newBackedUpFile.toString()
+        };
+        try {
+            this.peer.sendFloodMessage(MessageBuilder.build(msgArgs2));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

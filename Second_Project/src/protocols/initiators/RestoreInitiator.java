@@ -6,69 +6,62 @@ import filesmanager.Chunk;
 import peer.ChunkInfo;
 import peer.Peer;
 import protocols.protocols.ChunkBackupProtocol;
+import protocols.protocols.ChunkDeleteProtocol;
+import protocols.protocols.ChunkRestoreProtocol;
 
 import java.io.File;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-public class RestoreInitiator implements Runnable {
+public class RestoreInitiator extends ProtocolInitiator implements Runnable {
 
-    private Client client;
-    private Peer peer;
-    private File file;
-    private int replicationDegree;
-    private String fileId;
-
-    public RestoreInitiator(Peer peer, String fileId) {
-        this.peer = peer;
-        this.fileId = fileId;
+    public RestoreInitiator(Peer peer, String clientId, String fileName) {
+        super(peer, clientId, fileName);
     }
 
     @Override
     public void run() {
-    	BackedUpFileInfo fileInfo = peer.getBackedUpFileInfo(fileId);
 
-        ArrayList<Chunk> chunks = this.peer.splitToChunks(file);
-        ArrayList<ChunkInfo> chunksInfo = new ArrayList<>();
-        ArrayList<Thread> protocolThreads = new ArrayList<>();
+        ArrayList<Chunk> chunks = new ArrayList<>();
 
-        for (int i = 0; i < chunks.size(); i++) {
-            ChunkInfo chunkInfo = new ChunkInfo(fileId, i, replicationDegree, chunks.get(i).getData().length);
-            chunksInfo.add(chunkInfo);
-            Thread thread = new Thread(new ChunkBackupProtocol(this.peer, chunkInfo, chunks.get(i).getData()));
-            protocolThreads.add(thread);
-            this.peer.clearStoredMessagesOfFile(fileId);
-            thread.start();
+    	String fileId = "";
+        try {
+            fileId = peer.encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
+        BackedUpFileInfo fileInfo = findBackedUpFileInfo(fileId);
+        if(fileInfo != null){
+            ArrayList<Thread> protocolThreads = new ArrayList<>();
+            ArrayList<ChunkRestoreProtocol> protocols = new ArrayList<>();
 
-        for (Thread thread : protocolThreads) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            for(ChunkInfo chunkInfo: fileInfo.getBackedUpChunks()){
+                ChunkRestoreProtocol protocol = new ChunkRestoreProtocol(this.peer, chunkInfo);
+                protocols.add(protocol);
+                Thread thread = new Thread(protocol);
+                protocolThreads.add(thread);
+                thread.start();
             }
-        }
-/*
-        for(ChunkInfo chunkInfo: chunksInfo) {
-            if(chunkInfo.getOwnerIds().size() > 0) {
 
-                BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(fileId, file.getName(), file.lastModified(), true);
-                newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
-                this.peer.updateBackedUpFiles(newBackedUpFile);
-
-                if(chunkInfo.getOwnerIds().size() >= this.replicationDegree) {
-                    System.out.println("Successful backup of chunk "+ chunkInfo.getChunkNo());
-                } else {
-                    System.out.println("Successful backup of chunk " + chunkInfo.getChunkNo() +" but with a replication degree below the threshold");
+            for (Thread thread : protocolThreads) {
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                System.out.println("Desired replication degree: " + this.replicationDegree);
-                System.out.println("Current replication degree: " + chunkInfo.getOwnerIds().size());
-            } else {
-                System.out.println("Unsuccessful backup of chunk " + chunkInfo.getChunkNo());
             }
+
+            for(ChunkRestoreProtocol protocol : protocols){
+                chunks.add(protocol.getChunk());
+            }
+
+            if(fileInfo.getBackedUpChunks().size() == chunks.size()){
+                this.peer.addClientTransferChunks(fileName, chunks);
+            }
+
+        } else {
+            System.out.println("File does not exist!");
         }
-        */
     }
-
-
 }
 

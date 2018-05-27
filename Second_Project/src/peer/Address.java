@@ -37,10 +37,7 @@ public class Address {
     @Override
     public String toString()
     {
-    	String ret = "";    	
-    	ret += ip + " " + Integer.toString(port);
-
-    	return ret;
+        return ip + ":" + Integer.toString(port);
     }
 
 

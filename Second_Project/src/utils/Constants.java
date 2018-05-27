@@ -4,6 +4,7 @@ import messages.commands.MessageGetChunk;
 import messages.commands.MessagePutChunk;
 import messages.peerscommunications.*;
 import messages.responses.*;
+import peer.Address;
 
 import java.util.HashMap;
 
@@ -22,6 +23,7 @@ public class Constants {
     //Peer RMI operation responses
     public static final int SUCCESS = 0;
     public static final int FILE_CHUNKS_NOT_RECEIVED = -1; //backup
+    public static final int PEER_ERROR = -4;
     public static final int FILE_NOT_BACKEDUP = -2; //restore & delete
     public static final int FILE_CHUNK_TRANSFER_ERROR = -3; //backup
 
@@ -48,7 +50,8 @@ public class Constants {
         CHUNK,
         REQUEST_PEER,
         ACCEPT_PEER_REQUEST,
-        ACCEPT_PEER_REQUEST_CONNECTION
+        ACCEPT_PEER_REQUEST_CONNECTION,
+        SEND_BACKED_UP_FILE_INFO
     }
 
     public static final HashMap<String, Class<?>> messageHashMap;

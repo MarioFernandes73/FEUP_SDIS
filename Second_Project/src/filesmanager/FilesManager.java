@@ -6,6 +6,7 @@ import utils.Utils;
 
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FilesManager {
@@ -93,7 +94,7 @@ public class FilesManager {
         }
     }
 
-    public void saveChunk(Chunk chunk) {
+        public void saveChunk(Chunk chunk) {
         byte data[] = chunk.getData();
         try {
             FileOutputStream out = new FileOutputStream(Constants.getBackedUpChunksDir(this.ownerId) + Utils.getDirSeparator() + chunk.getChunkId(),
@@ -125,13 +126,19 @@ public class FilesManager {
         this.chunksInfo.add(chunkInfo);
     }
 
-    public void addBackedUpFileInfo(BackedUpFileInfo fileInfo){
+    public boolean addBackedUpFileInfo(BackedUpFileInfo fileInfo){
+        for(BackedUpFileInfo file: this.backedUpFilesInfo){
+            if(file.equals(fileInfo)){
+                return false;
+            }
+        }
         this.backedUpFilesInfo.add(fileInfo);
+        return true;
     }
 
     public BackedUpFileInfo getBackedUpFileInfo(String fileId) {
     	for(BackedUpFileInfo fileInfo : this.backedUpFilesInfo){
-    		if(fileInfo.getId() == fileId)
+    		if(fileInfo.getFileId() == fileId)
     			return fileInfo;
     	}
     	return null;
@@ -144,5 +151,19 @@ public class FilesManager {
             }
         }
         return false;
+    }
+
+    public Chunk getChunk(String chunkId) {
+        try {
+            for (File file : new File(Constants.getBackedUpChunksDir(this.ownerId)).listFiles()) {
+                if (file.getName().equals(chunkId)) {
+                    return new Chunk(chunkId, Files.readAllBytes(file.toPath()));
+                }
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

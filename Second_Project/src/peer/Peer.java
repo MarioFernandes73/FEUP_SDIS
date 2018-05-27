@@ -1,15 +1,13 @@
 package peer;
 
 import client.Client;
+import client_peer_file_transfer.ClientChunkTransfer;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.FilesManager;
 import messages.Message;
 import messages.MessageBuilder;
 import messages.MessagesRecords;
-import protocols.initiators.BackupInitiator;
-import protocols.initiators.DeleteInitiator;
-import protocols.initiators.RestoreInitiator;
 import protocols.protocols.CheckContactsAlive;
 import protocols.protocols.SendAlive;
 import rmi.RMIInterface;
@@ -42,6 +40,8 @@ public class Peer implements RMIInterface {
     private ConcurrentHashMap<String, TCPSendChannel> forwardingTable = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Address> backupForwardingTable = new ConcurrentHashMap<>();
     private int peerLimit = Constants.DEFAULT_CONNECTION_LIMIT;
+
+    private ConcurrentHashMap<String, ArrayList<Chunk>> clientTransferChunks = new ConcurrentHashMap<>(); // <fileId, chunks>
 
 	private ArrayList<String> temporaryContacts = new ArrayList<String>();
 	
@@ -273,10 +273,6 @@ public class Peer implements RMIInterface {
     	return port;
     }
 
-    public String getEncryptedFileName(Client client, File file) {
-        return "";
-    }
-
     public boolean checkIfFileExists(String encryptedFileId) {
         return false;
     }
@@ -356,6 +352,19 @@ public class Peer implements RMIInterface {
     /* RMI methods */
 
 	public int backup(String clientId, String fileName, int replicationDegree) throws RemoteException {
+        String fileId = "";
+        try {
+            fileId = encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error encrypting file id");
+            return Constants.PEER_ERROR;
+        }
+
+        if(!clientTransferChunks.containsKey(fileId)) {
+            System.out.println("File " + fileName + " was not previously transfered from client " + clientId);
+            return Constants.FILE_CHUNKS_NOT_RECEIVED;
+        }
+
 		System.out.println("Starting to backup " + fileName);
 		//Thread thread = new Thread(new BackupInitiator(this, fileName, replicationDegree, enhancement));
 		//thread.start();
@@ -380,21 +389,94 @@ public class Peer implements RMIInterface {
 
     // Obtain file chunk from client
 	public int transferFileChunk(String clientId, String fileName, int chunkNo, byte[] chunkContent) throws RemoteException {
-	    return 0;
+        String fileId = "";
+        try {
+            fileId = encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error encrypting file id");
+            return Constants.FILE_CHUNK_TRANSFER_ERROR;
+        }
+
+        Thread thread = new Thread(new ClientChunkTransfer(fileId, new Chunk(fileId + chunkNo, chunkContent), this));
+        thread.start();
+
+        return Constants.SUCCESS;
 	}
 	
 	// Send file chunk to client
 	public byte[] getFileChunk(String clientId, String fileName, int chunkNo) throws RemoteException {
-	    return null;
+        String fileId;
+        try {
+             fileId = encryptFileName(fileName, clientId);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error encrypting file id");
+            return null;
+        }
+
+        ArrayList<Chunk> fileChunks = clientTransferChunks.get(fileId);
+        if(fileChunks == null)
+            return null;
+
+        String chunkId = fileId + chunkNo;
+        byte[] chunkData = null;
+        for(int i = 0; i < fileChunks.size(); i++) {//get chunk and delete it
+            Chunk chunk = fileChunks.get(i);
+            if(chunk.getChunkId() == chunkId) {
+                chunkData = chunk.getData();
+                fileChunks.remove(i);
+                break;
+            }
+        }
+
+        if(fileChunks.isEmpty())
+            clientTransferChunks.remove(fileId);
+
+        return chunkData;
 	}
 
+    public boolean chunkTransferDuplicated(String fileId, Chunk chunk) {
+        ArrayList<Chunk> fileChunks = clientTransferChunks.get(fileId);
+        if(fileChunks == null)
+            return false;
+
+        //Search on file chunks
+        for(Chunk c: fileChunks) {
+            if(c.getChunkId() == chunk.getChunkId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addClientTransferChunk(String fileId, Chunk chunk) {
+        ArrayList<Chunk> fileChunks = clientTransferChunks.get(fileId);
+        if(fileChunks == null) { //no chunks belonging to this file have been added
+            ArrayList<Chunk> newFileChunks = new ArrayList<Chunk>();
+            newFileChunks.add(chunk);
+            clientTransferChunks.putIfAbsent(fileId, newFileChunks);
+        }
+    }
+    public ArrayList<Chunk> getClientTransferFileChunks(String fileId) {
+	    return clientTransferChunks.get(fileId);
+    }
+
+    public void eliminateClientTransferFileChunks(String fileId) {
+        clientTransferChunks.remove(fileId);
+    }
 
 	public void saveChunk(Chunk chunk){
 	    this.filesManager.saveChunk(chunk);
     }
 
-	public Chunk getChunk(String fileId, int chunkNo) {
-		// TODO Auto-generated method stub
-		return null;
+	public Chunk getChunk(String chunkId) {
+	    return this.filesManager.getChunk(chunkId);
 	}
+
+	public boolean saveBackedUpFileInfo(BackedUpFileInfo info){
+	    return this.filesManager.addBackedUpFileInfo(info);
+    }
+
+    public void addClientTransferChunks(String fileName, ArrayList<Chunk> chunks) {
+	    this.clientTransferChunks.put(fileName, chunks);
+    }
 }

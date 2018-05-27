@@ -14,7 +14,7 @@ public class MessageRequestConnection extends Message{
 
 	Address addressToAdd;
 	
-	protected MessageRequestConnection(String[] args) {
+	public MessageRequestConnection(String[] args) {
 		super(Constants.MessageType.REQUEST_CONNECTION, args[1]);
 		try {
 			this.addressToAdd = new Address(args[2], Integer.parseInt(args[3]));
@@ -40,6 +40,9 @@ public class MessageRequestConnection extends Message{
 	@Override
 	public void handleMessage(Object... args) {
 		Peer p = (Peer) args[0];
+		if(p.getForwardingTable().containsKey(senderId))
+			return;
+		
 		try {
 			if(p.getNumberConnections() < p.getPeerLimit()){
 				p.addPeer(senderId, addressToAdd);

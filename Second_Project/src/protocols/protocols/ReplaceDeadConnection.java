@@ -1,6 +1,7 @@
 package protocols.protocols;
 
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import messages.MessageBuilder;
@@ -32,12 +33,16 @@ public class ReplaceDeadConnection implements Runnable{
 				receivedResponse = false;
 				for(Entry<String, Address> entry : backupTable.entrySet()) 
 		        {
-		            String[] msgArgs = new String[]{
+		            if(entry.getKey().equals(peer.getId()))
+		            	continue;
+					String[] msgArgs = new String[]{
                             Constants.MessageType.REQUEST_CONNECTION.toString(),
-                            this.peer.toString(),
+                            this.peer.getId(),
                             this.peer.getIP(),
                             Integer.toString(this.peer.getPort())
                     };
+					Random random =  new Random();
+					Thread.sleep(random.nextInt(400)); //0-400ms delay
                     this.peer.sendMessageToAddress(entry.getValue(), MessageBuilder.build(msgArgs));
 					checkReceivedMessage();
 					if(accepted)

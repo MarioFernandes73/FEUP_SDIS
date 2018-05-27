@@ -11,6 +11,7 @@ import protocols.initiators.BackupInitiator;
 import protocols.initiators.DeleteInitiator;
 import protocols.initiators.RestoreInitiator;
 import protocols.protocols.CheckContactsAlive;
+import protocols.protocols.SendAlive;
 import rmi.RMICreator;
 import rmi.RMIInterface;
 import utils.Constants;
@@ -51,6 +52,7 @@ public class Peer implements RMIInterface {
 
     private TCPReceiveChannel receiveChannel;
     private CheckContactsAlive checkContactsAlive;
+	private SendAlive sendAlive;
 
     Peer(String args[]) throws IOException {
         if (!verifyArgs(args))
@@ -79,6 +81,8 @@ public class Peer implements RMIInterface {
         
         this.checkContactsAlive = new CheckContactsAlive(this);
         new Thread(this.checkContactsAlive).start();
+        this.sendAlive = new SendAlive(this);
+        new Thread(this.sendAlive).start();
 
         System.out.println("Setup successuful.");
     }
@@ -88,16 +92,16 @@ public class Peer implements RMIInterface {
 
         switch (args[0]) {
             case "boot":
-                if (args.length != 3) {
+                if (args.length != 2) {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }
-                this.rmiCreator = new RMICreator(this, args[2]);
+                //this.rmiCreator = new RMICreator(this, args[2]);
                 isBootPeer = true;
 
                 break;
             case "normal":
-                if (args.length != 4) {
+                if (args.length != 3) {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }
@@ -114,7 +118,7 @@ public class Peer implements RMIInterface {
                     System.out.println("Error. Invalid IP:PORT format.");
                     return false;
                 }
-                this.rmiCreator = new RMICreator(this, args[3]);
+                //this.rmiCreator = new RMICreator(this, args[3]);
                 break;
             default:
                 System.out.println("Error. First argument should be 'boot' or 'normal'.");
@@ -128,9 +132,8 @@ public class Peer implements RMIInterface {
             return false;
         }
 
-
-
-        return rmiCreator.isCommunicationReady();
+        //return rmiCreator.isCommunicationReady();
+        return true;
     }
 	
     public String getContacts(){
@@ -194,7 +197,8 @@ public class Peer implements RMIInterface {
     
     public void setAlivePeer(String peerID)
     {
-        forwardingTable.get(peerID).updateLastTimeAlive();
+        if(forwardingTable.containsKey(peerID))
+        	forwardingTable.get(peerID).updateLastTimeAlive();
     }
     
     
@@ -215,6 +219,7 @@ public class Peer implements RMIInterface {
      */
     public void addPeer(String peerId, Address addressToAdd) throws SocketException {
 		forwardingTable.put(peerId, new TCPSendChannel(this, addressToAdd));
+		forwardingTable.get(peerId).updateLastTimeAlive();
 	}
     
     public void removePeer(String peerId) {

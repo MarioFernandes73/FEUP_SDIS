@@ -3,11 +3,14 @@ package protocols.initiators;
 import client.Client;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
+import messages.MessageBuilder;
 import peer.ChunkInfo;
 import peer.Peer;
 import protocols.protocols.ChunkBackupProtocol;
+import utils.Constants;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class BackupInitiator implements Runnable {
@@ -53,10 +56,6 @@ public class BackupInitiator implements Runnable {
         for(ChunkInfo chunkInfo: chunksInfo) {
             if(chunkInfo.getOwners().size() > 0) {
 
-                BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, file.getName(), file.lastModified(), true);
-                newBackedUpFile.getBackedUpChunks().addAll(chunksInfo);
-                this.peer.updateBackedUpFiles(newBackedUpFile);
-
                 if(chunkInfo.getOwners().size() >= this.replicationDegree) {
                     System.out.println("Successful backup of chunk "+ chunkInfo.getChunkNo());
                 } else {
@@ -69,8 +68,20 @@ public class BackupInitiator implements Runnable {
             }
         }
 
-        // CRIAR E FAZER SAVE DO BACKUPFILEINFO E MANDAR PARA TODOS
 
+
+        BackedUpFileInfo newBackedUpFile = new BackedUpFileInfo(encryptedFileId, file.getName(), chunksInfo);
+        this.peer.saveBackedUpFileInfo(newBackedUpFile);
+        String[] msgArgs2 = new String[]{
+                Constants.MessageType.SEND_BACKED_UP_FILE_INFO.toString(),
+                this.peer.getId(),
+                newBackedUpFile.toString()
+        };
+        try {
+            this.peer.sendFloodMessage(MessageBuilder.build(msgArgs2));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

@@ -446,4 +446,8 @@ public class Peer implements RMIInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public boolean saveBackedUpFileInfo(BackedUpFileInfo info){
+	    return this.filesManager.addBackedUpFileInfo(info);
+    }
 }

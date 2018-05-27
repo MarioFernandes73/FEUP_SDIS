@@ -125,13 +125,19 @@ public class FilesManager {
         this.chunksInfo.add(chunkInfo);
     }
 
-    public void addBackedUpFileInfo(BackedUpFileInfo fileInfo){
+    public boolean addBackedUpFileInfo(BackedUpFileInfo fileInfo){
+        for(BackedUpFileInfo file: this.backedUpFilesInfo){
+            if(file.equals(fileInfo)){
+                return false;
+            }
+        }
         this.backedUpFilesInfo.add(fileInfo);
+        return true;
     }
 
     public BackedUpFileInfo getBackedUpFileInfo(String fileId) {
     	for(BackedUpFileInfo fileInfo : this.backedUpFilesInfo){
-    		if(fileInfo.getId() == fileId)
+    		if(fileInfo.getFileId() == fileId)
     			return fileInfo;
     	}
     	return null;

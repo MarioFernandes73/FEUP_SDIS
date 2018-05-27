@@ -1,8 +1,10 @@
 package peer;
 
 import java.io.Serializable;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ChunkInfo implements Serializable {
 
@@ -19,6 +21,21 @@ public class ChunkInfo implements Serializable {
         this.chunkNo = chunkNo;
         this.desiredReplicationDeg = desiredReplicationDeg;
         this.chunkSize = chunkSize;
+    }
+
+    public ChunkInfo(String chunkInfo) throws UnknownHostException {
+        String[] chunkInfoArgs = chunkInfo.split("_");
+        this.fileId = chunkInfoArgs[0];
+        this.chunkNo = Integer.parseInt(chunkInfoArgs[1]);
+
+        String[] owners = chunkInfoArgs[2].split(",");
+        for(String owner : owners){
+            String[] ownerInfo = owner.split(">");
+            ownerAddress.put(ownerInfo[0], new Address(ownerInfo[1]));
+        }
+
+        this.desiredReplicationDeg = Integer.parseInt(chunkInfoArgs[3]);
+        this.chunkSize = Integer.parseInt(chunkInfoArgs[4]);
     }
 
     public String getFileId() {
@@ -59,5 +76,21 @@ public class ChunkInfo implements Serializable {
             return (((ChunkInfo) object)).getChunkId().equals(this.getChunkId());
         }
         return false;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder res = new StringBuilder(fileId + "_" + chunkNo + "_");
+        int i = 0;
+        for(Map.Entry<String,Address> owner : this.ownerAddress.entrySet()){
+            i++;
+            res.append(owner.getKey())
+                    .append(">")
+                    .append(owner.getValue().toString());
+            if(i != this.ownerAddress.size()){
+                res.append(",");
+            }
+        }
+        return res.toString() + "_" + desiredReplicationDeg + "_" + chunkSize;
     }
 }

@@ -1,5 +1,6 @@
 package utils;
 
+import messages.commands.MessageGetChunk;
 import messages.commands.MessagePutChunk;
 import messages.peerscommunications.*;
 import messages.responses.*;
@@ -42,7 +43,9 @@ public class Constants {
         SEND_FILE_INFO,
         RECEIVE_FILE_INFO,
         SEND_DELETE_CHUNK,
-        RECEIVED_DELETE_CHUNK
+        RECEIVED_DELETE_CHUNK,
+        GET_CHUNK,
+        CHUNK
     }
 
     public static final HashMap<String, Class<?>> messageHashMap;
@@ -59,6 +62,8 @@ public class Constants {
         messageHashMap.put("STORED_CHUNK", MessageStored.class);
         messageHashMap.put("REQUEST_CONNECTION", MessageRequestConnection.class);
         messageHashMap.put("CHANGE_CONNECTION_LIMIT", MessageChangeConnectionLimit.class);
+        messageHashMap.put("GET_CHUNK", MessageGetChunk.class);
+        messageHashMap.put("CHUNK", MessageChunk.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED}

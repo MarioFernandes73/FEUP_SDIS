@@ -2,6 +2,7 @@ package messages;
 
 import filesmanager.BackedUpFileInfo;
 import messages.peerscommunications.*;
+import messages.responses.MessageChunk;
 import messages.responses.MessageReceiveDeleteChunk;
 import messages.responses.MessageReceiveFileInfo;
 import messages.responses.MessageStored;
@@ -13,6 +14,7 @@ public class MessagesRecords {
 
     private String ownerId;
     private CopyOnWriteArrayList<MessageStored> storedMessages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MessageChunk> chunkMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageAcceptPeer> acceptPeerMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageRejectPeer> rejectPeerMessages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<MessageReceiveFileInfo> receiveFileInfoMessages = new CopyOnWriteArrayList<>();
@@ -24,6 +26,10 @@ public class MessagesRecords {
 
     public void addStoredMessage(MessageStored message){
         this.storedMessages.add(message);
+    }
+    
+    public void addChunkMessage(MessageChunk message){
+        this.chunkMessages.add(message);
     }
     
     public void addAcceptPeerMessage(MessageAcceptPeer message){

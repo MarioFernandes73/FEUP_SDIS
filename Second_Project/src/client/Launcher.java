@@ -8,5 +8,6 @@ public class Launcher {
 		try {
 			Client client = new Client(args);
 		} catch (Exception e) {}
+
 	}
 }

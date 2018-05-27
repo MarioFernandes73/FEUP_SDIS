@@ -161,7 +161,7 @@ public class Client {
 		case BACKUP:
 			PartitionedFile backupFile;
 			try {
-				backupFile = new PartitionedFile(fileName, Constants.FileType.BACKEDUP);
+				backupFile = new PartitionedFile(this.id, this.fileName, Constants.FileType.BACKEDUP);
 				
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -169,24 +169,20 @@ public class Client {
 	            return false;
 			}
 			if(backupFile.uploadToEndpoint(stub)) {
-				response = stub.backup(fileName, replicationDeg);		
+				response = stub.backup(this.id, this.fileName, this.replicationDeg);
 			}
 			break;
 			
 		case RESTORE:
-			PartitionedFile restoreFile = new PartitionedFile(fileName, Constants.FileType.RESTORED);				
-			if((response = stub.restore(fileName)) == Constants.SUCCESS) {
+			PartitionedFile restoreFile = new PartitionedFile(this.id, this.fileName, Constants.FileType.RESTORED);
+			if((response = stub.restore(this.id, this.fileName)) == Constants.SUCCESS) {
 				restoreFile.downloadFromEndpoint(stub);
 			}
 			break;
 			
 		case DELETE:
-			response = stub.delete(fileName);
+			response = stub.delete(this.id, this.fileName);
 			break;
-
-		case STATE:
-			System.out.println(stub.state());
-			return true;
     	}
 		
 		switch(response) {

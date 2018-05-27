@@ -12,7 +12,8 @@ import rmi.RMIInterface;
 import utils.Constants;
 
 public class PartitionedFile {
-	
+
+	private String clientId;
 	private String fileName;
 	private File file;
 	private Constants.FileType type;
@@ -25,7 +26,8 @@ public class PartitionedFile {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public PartitionedFile(String fileName, Constants.FileType type) throws FileNotFoundException, IOException {
+	public PartitionedFile(String clientId, String fileName, Constants.FileType type) throws FileNotFoundException, IOException {
+		this.clientId = clientId;
 		this.fileName = fileName;
 		this.type = type;
 		
@@ -92,7 +94,7 @@ public class PartitionedFile {
 			Partition partition = partitions.get(i);
 			
 			try {
-				if (endpoint.transferFileChunk(fileName, partition.getPartitionNo(), partition.getData()) == Constants.FILE_CHUNK_TRANSFER_ERROR) {
+				if (endpoint.transferFileChunk(this.clientId, this.fileName, partition.getPartitionNo(), partition.getData()) == Constants.FILE_CHUNK_TRANSFER_ERROR) {
 					partitionTransfTries++;
 					
 					System.out.println("ERROR! File transfer to peer failed on Chunk no. " + partition.getPartitionNo());

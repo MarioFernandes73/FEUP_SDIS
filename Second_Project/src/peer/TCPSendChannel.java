@@ -29,4 +29,8 @@ public class TCPSendChannel {
     public void updateLastTimeAlive() {
         this.lastTimeAlive = new Date();
     }
+
+    public Address getAddress(){
+        return this.address;
+    }
 }

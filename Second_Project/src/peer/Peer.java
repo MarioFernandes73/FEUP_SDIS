@@ -134,17 +134,22 @@ public class Peer implements RMIInterface {
     }
 	
     public String getContacts(){
-    	String contacts = "";
+    	StringBuilder contacts = new StringBuilder();
     	for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet())
     	{
-    		contacts += entry.getKey() + "-";
+    		contacts.append(entry.getKey())
+                    .append("-")
+                    .append(entry.getValue().getAddress().getIp())
+                    .append(":")
+                    .append(entry.getValue().getAddress().getPort())
+                    .append("-");
     	}
-    	return contacts;
+    	return contacts.toString();
     }
     
-    public boolean hasChunk(String fileID, int chunkNo)
+    public boolean hasChunk(String chunkId)
     {
-    	return filesManager.hasChunk(fileID, chunkNo);
+    	return filesManager.hasChunk(chunkId);
     }
     
     public void addTemporaryContacts(String contacts){

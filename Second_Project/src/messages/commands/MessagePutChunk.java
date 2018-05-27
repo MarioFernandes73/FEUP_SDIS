@@ -14,20 +14,14 @@ import java.net.UnknownHostException;
 
 public class MessagePutChunk extends Message {
 
-    private String fileId;
-    private int chunkNo;
-    private int replicationDegree;
-    private byte[] data;
+    private String chunkId;
     private Address address;
 
     public MessagePutChunk(String[] args){
         super(Constants.MessageType.PUT_CHUNK, args[1]);
-        this.fileId = args[2];
-        this.chunkNo = Integer.parseInt(args[3]);
-        this.replicationDegree = Integer.parseInt(args[4]);
-        this.data = args[5].getBytes();
+        this.chunkId = args[2];
         try {
-            this.address = new Address(args[6], Integer.parseInt(args[7]));
+            this.address = new Address(args[3], Integer.parseInt(args[4]));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -35,7 +29,7 @@ public class MessagePutChunk extends Message {
 
     @Override
     public String getHeader() {
-    	return super.getBaseHeader() + " " + fileId + Integer.toString(chunkNo) + Integer.toString(replicationDegree) + " \r\n\r\n";
+    	return super.getBaseHeader() + " " + chunkId + " " + address.toString() + " \r\n\r\n";
     }
 
     @Override
@@ -46,21 +40,15 @@ public class MessagePutChunk extends Message {
     @Override
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
-        
-        //peer e quem recebeu putchunk
 
-        //se nao tiver o chunk, guarda o
-            //responder com uma stored para quem pediu originalmente a cena e com os filhos
-
-        if(!peer.hasChunk(fileId, chunkNo)){
-        	peer.saveChunk(new Chunk((fileId + chunkNo), data));
+        if(!peer.hasChunk(chunkId)){
+        	peer.saveChunk(new Chunk(chunkId, data));
         	
         	String[] msgArgs = new String[]{
                     Constants.MessageType.STORED_CHUNK.toString(),
-                    this.fileId,
-                    Integer.toString(this.chunkNo),
-                    Integer.toString(replicationDegree-1),
-                    peer.getContacts()
+                    this.chunkId,
+                    peer.getContacts(),
+                    peer.getIP() + ":" + peer.getPort()
             };
             try {
                 peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs));

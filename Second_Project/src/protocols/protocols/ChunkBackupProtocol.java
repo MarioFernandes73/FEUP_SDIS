@@ -1,14 +1,13 @@
 package protocols.protocols;
 
-import java.util.ArrayList;
-
 import messages.MessageBuilder;
-import messages.MessagesRecords;
 import messages.Message;
-import messages.responses.MessageStored;
+import peer.Address;
 import peer.ChunkInfo;
 import peer.Peer;
 import utils.Constants;
+
+import java.util.HashMap;
 
 public class ChunkBackupProtocol implements Runnable {
 
@@ -22,29 +21,37 @@ public class ChunkBackupProtocol implements Runnable {
         this.data = data;
     }
     
-    private Message createMessage() {
-    	String[] msgArgs = new String[]{"PUTCHUNK"};
-    	
-    	return new MessageBuilder().build(msgArgs);
-    }
-    
     @Override
     public void run() {
+
+        String[] msgArgs = new String[]{
+                Constants.MessageType.PUT_CHUNK.toString(),
+                this.peer.getId(),
+                chunkInfo.getChunkId(),
+                this.peer.getIP(),
+                Integer.toString(this.peer.getPort())
+        };
+        Message msg = MessageBuilder.build(msgArgs);
+        msg.setData(this.data);
+
+        try{
+            this.peer.sendFloodMessage(msg);
+        } catch( Exception e){
+            e.printStackTrace();
+        }
+
         int tries = 0;
         while(tries < Constants.MAX_CHUNK_TRANSFER_TRIES){
-            //construir mensagem
-        	Message message = createMessage();
-            //mandar
-
-            //esperar
             try{
                 Thread.sleep(Constants.RESPONSE_AWAITING_TIME);
             } catch(Exception e){
                 e.printStackTrace();
             }
 
+            HashMap<String, Address> nextContacts = this.peer.getRecords().updateChunkInfoGetNextContacts(this.chunkInfo);
+
             //update chunkinfo
-           // this.peer.getRecords().updateChunkInfoStoredMessages();
+           // this.peer.getRecords().updateChunkInfoGetNextContacts();
 
             //verificar replication degree
 

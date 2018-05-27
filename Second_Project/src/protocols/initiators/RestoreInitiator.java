@@ -25,6 +25,8 @@ public class RestoreInitiator implements Runnable {
 
     @Override
     public void run() {
+
+        //Restore deve guardar, no clientTransferedChunks do peer, os chunks restaurados para serem posteriormente transferidos para o cliente
     	BackedUpFileInfo fileInfo = peer.getBackedUpFileInfo(fileId);
 
         ArrayList<Chunk> chunks = this.peer.splitToChunks(file);

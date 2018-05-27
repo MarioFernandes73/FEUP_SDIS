@@ -40,7 +40,7 @@ public class RMICreator {
         try {
             // Bind remote object to rmi registry
             Naming.rebind(accessPoint, obj);
-            comunicationReady = true;
+            communicationReady = true;
             System.out.println("Server ready for RMI communication " + "\n \tAccess point: " + accessPoint);
 
         } catch (RemoteException e) {
@@ -55,6 +55,6 @@ public class RMICreator {
     }
 
     public boolean isCommunicationReady() {
-        return this.comunicationReady;
+        return this.communicationReady;
     }
 }

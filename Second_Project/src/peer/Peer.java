@@ -92,6 +92,7 @@ public class Peer implements RMIInterface {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }
+                this.rmiCreator = new RMICreator(this, args[2]);
                 isBootPeer = true;
 
                 break;
@@ -113,7 +114,7 @@ public class Peer implements RMIInterface {
                     System.out.println("Error. Invalid IP:PORT format.");
                     return false;
                 }
-
+                this.rmiCreator = new RMICreator(this, args[3]);
                 break;
             default:
                 System.out.println("Error. First argument should be 'boot' or 'normal'.");
@@ -127,7 +128,7 @@ public class Peer implements RMIInterface {
             return false;
         }
 
-        this.rmiCreator = new RMICreator(this, args[3]);
+
 
         return rmiCreator.isCommunicationReady();
     }

@@ -32,8 +32,6 @@ public class RestoreInitiator extends ProtocolInitiator implements Runnable {
         }
         BackedUpFileInfo fileInfo = findBackedUpFileInfo(fileId);
         if(fileInfo != null){
-            int tries = 0;
-
             ArrayList<Thread> protocolThreads = new ArrayList<>();
             ArrayList<ChunkRestoreProtocol> protocols = new ArrayList<>();
 

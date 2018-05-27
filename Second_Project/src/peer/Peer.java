@@ -461,9 +461,8 @@ public class Peer implements RMIInterface {
 	    this.filesManager.saveChunk(chunk);
     }
 
-	public Chunk getChunk(String fileId, int chunkNo) {
-		// TODO Auto-generated method stub
-		return null;
+	public Chunk getChunk(String chunkId) {
+	    return this.filesManager.getChunk(chunkId);
 	}
 
 	public boolean saveBackedUpFileInfo(BackedUpFileInfo info){

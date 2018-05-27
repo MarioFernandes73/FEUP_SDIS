@@ -16,16 +16,14 @@ import java.util.Map.Entry;
 
 public class MessageGetChunk extends Message {
 
-    private String fileId;
-    private int chunkNo;
+    private String chunkId;
     private Address address;
 
     public MessageGetChunk(String[] args){
         super(Constants.MessageType.PUT_CHUNK, args[1]);
-        this.fileId = args[2];
-        this.chunkNo = Integer.parseInt(args[3]);
+        this.chunkId = args[2];
         try {
-            this.address = new Address(args[4], Integer.parseInt(args[5]));
+            this.address = new Address(args[3]);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -45,8 +43,6 @@ public class MessageGetChunk extends Message {
     public void handleMessage(Object... args) {
         Peer peer = (Peer) args[0];
 
-        //peer e quem recebeu getchunk
-
         if(peer.hasChunk(fileId + chunkNo)){
         	Chunk wantedChunk = peer.getChunk(fileId, chunkNo);
         	String chunkData = new String(wantedChunk.getData());
@@ -65,25 +61,5 @@ public class MessageGetChunk extends Message {
                 e.printStackTrace();
             }
         }
-        else
-        {
-        	String[] msgArgs = new String[]{
-                    Constants.MessageType.GET_CHUNK.toString(),
-                    this.fileId,
-                    Integer.toString(this.chunkNo),
-                    this.address.getIp(),
-                    Integer.toString(this.address.getPort())
-            };
-
-        	for(Entry<String, TCPSendChannel> entry : peer.getForwardingTable().entrySet())
-        	{
-        		try {
-					peer.sendMessageToAddress(entry.getValue().getAddress(),MessageBuilder.build(msgArgs));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-        	}
-        }
-        
     }
 }

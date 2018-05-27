@@ -1,11 +1,6 @@
 package messages.responses;
 
-import messages.IMessage;
 import messages.Message;
-import messages.MessageBuilder;
-import messages.peerscomunications.MessageAcceptPeer;
-import messages.responses.MessageStored;
-import peer.Address;
 import peer.Peer;
 import utils.Constants;
 import utils.Utils;
@@ -18,7 +13,7 @@ public class MessageStored extends Message {
     private String contacts;
 
     public MessageStored(String[] args){
-        super(Constants.MessageType.STORED, args[1]);
+        super(Constants.MessageType.STORED_CHUNK, args[1]);
         this.fileId = args[2];
         this.chunkNo = Integer.parseInt(args[3]);
         this.replicationDegree = Integer.parseInt(args[4]);
@@ -43,9 +38,9 @@ public class MessageStored extends Message {
         
         peer.getRecords().addStoredMessage(this);
         
-        //if STORED vier com repDegree a 0 nao enviar mais put chunks
+        //if STORED_CHUNK vier com repDegree a 0 nao enviar mais put chunks
         //else
-        //enviar put chunk (para um dos temporary contacts) com o repDegree que veio no STORED
+        //enviar put chunk (para um dos temporary contacts) com o repDegree que veio no STORED_CHUNK
         //
         
         /*if(replicationDegree != 0)

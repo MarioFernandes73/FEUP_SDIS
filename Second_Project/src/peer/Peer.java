@@ -383,5 +383,9 @@ public class Peer implements RMIInterface {
 	public byte[] getFileChunk(String fileName, int chunkNo) throws RemoteException {
 	    return null;
 	}
-    
+
+
+	public void saveChunk(Chunk chunk){
+	    this.filesManager.saveChunk(chunk);
+    }
 }

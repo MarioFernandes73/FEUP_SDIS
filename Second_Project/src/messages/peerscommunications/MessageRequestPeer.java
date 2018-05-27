@@ -1,4 +1,4 @@
-package messages.peerscomunications;
+package messages.peerscommunications;
 
 import peer.Address;
 

@@ -1,15 +1,15 @@
-package messages.peerscomunications;
+package messages.peerscommunications;
 
 import messages.Message;
 import peer.Peer;
 import utils.Constants;
 
-public class MessageRejectPeer extends Message{
-
-    private String peerId;
+public class MessageAcceptPeer extends Message{
+	
+	private String peerId;
     
-    public MessageRejectPeer(String[] args) {
-    	super(Constants.MessageType.REJECT_PEER, args[1]);
+    public MessageAcceptPeer(String[] args) {
+    	super(Constants.MessageType.ACCEPT_PEER, args[1]);
     	this.peerId = args[2];
     }
 
@@ -26,12 +26,12 @@ public class MessageRejectPeer extends Message{
 	@Override
 	public void handleMessage(Object... args) {
 		Peer p = (Peer) args[0];
-		p.getRecords().addRejectPeerMessage(this);
+		p.getRecords().addAcceptPeerMessage(this);
 	}
 	
 	public String getPeerId()
 	{
 		return peerId;
 	}
-
+	
 }

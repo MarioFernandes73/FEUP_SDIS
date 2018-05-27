@@ -1,7 +1,7 @@
 package messages;
 
 import filesmanager.BackedUpFileInfo;
-import messages.peerscomunications.*;
+import messages.peerscommunications.*;
 import messages.responses.MessageReceiveDeleteChunk;
 import messages.responses.MessageReceiveFileInfo;
 import messages.responses.MessageStored;

@@ -120,7 +120,6 @@ public class MessageConnect extends Message {
         peer.sendMessage(this.senderId,new MessageBuilder().build(messageArgs));
     	
     	peer.changePeerLimit(peer.getPeerLimit() + 1);
-    	ConcurrentHashMap<String, TCPSendChannel> forwardingTable = peer.getForwardingTable();
     	String[] message2Args = new String[]{
                 Constants.MessageType.CHANGE_CONNECTION_LIMIT.toString(),
                 peer.getId(),

@@ -13,7 +13,7 @@ public class MessageChangeConnectionLimit extends Message{
 
 	int newLimit;
 	
-	protected MessageChangeConnectionLimit(String[] args) {
+	public MessageChangeConnectionLimit(String[] args) {
 		super(Constants.MessageType.CHANGE_CONNECTION_LIMIT, args[1]);
 		this.newLimit = Integer.parseInt(args[2]);
 	}
@@ -36,21 +36,19 @@ public class MessageChangeConnectionLimit extends Message{
 			return;
 		
 		p.changePeerLimit(newLimit);
-		String[] floodArgs = new String[3];
-		floodArgs[0] = MessageChangeConnectionLimit.class.toString();
-		floodArgs[1] = p.getId();
-		floodArgs[2] = Integer.toString(newLimit);
-		byte[] floodData = MessageBuilder.build(floodArgs).getBytes();
-		for(Entry<String, TCPSendChannel> entry : p.getForwardingTable().entrySet()) {
-			try {
-				entry.getValue().send(floodData);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-	}
+        String[] message2Args = new String[]{
+                Constants.MessageType.CHANGE_CONNECTION_LIMIT.toString(),
+                p.getId(),
+                Integer.toString(newLimit)
+        };
+
+        try {
+            p.sendFloodMessage(MessageBuilder.build(message2Args));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 	
 	@Override
 	public String toString() {

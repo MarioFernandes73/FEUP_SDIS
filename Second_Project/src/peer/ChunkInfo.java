@@ -29,6 +29,9 @@ public class ChunkInfo implements Serializable {
         if(owners.length > 0){
             for(String owner : owners){
                 String[] ownerInfo = owner.split(">");
+                if(ownerInfo[0].length() <= 2){
+                    break;
+                }
                 ownerAddress.put(ownerInfo[0], new Address(ownerInfo[1]));
             }
         }

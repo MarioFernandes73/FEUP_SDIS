@@ -2,13 +2,17 @@ package peer;
 
 
 import client_peer_file_transfer.Partition;
+import rmi.RMIInterface;
 import utils.Constants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 public class Launcher {
@@ -39,7 +43,7 @@ public class Launcher {
 
 
 
-       /* try {
+        try {
             RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
             System.out.println("Passou");
             // Bind remote object to rmi registry
@@ -58,7 +62,7 @@ public class Launcher {
 
         while(true) {
 
-        }*/
+        }
     }
 
     private static void temp(Peer peer, String clientId, String fileName){

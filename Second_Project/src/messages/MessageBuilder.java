@@ -1,5 +1,6 @@
 package messages;
 
+import filesmanager.FilesManager;
 import utils.Constants;
 
 import java.util.HashMap;
@@ -10,9 +11,9 @@ public class MessageBuilder {
 
     public static Message build(String[] args) {
         try {
-            System.out.println("MESSAGE CREATED!!!");
             Message msg = (Message) messageHashMap.get(args[0]).getDeclaredConstructor(String[].class).newInstance((Object) args);
-            System.out.println(msg.getHeader());
+            FilesManager.addLog("New Message created!");
+            FilesManager.addLog(msg.getHeader());
             return msg;
         } catch (Exception e) {
             e.printStackTrace();

@@ -22,26 +22,10 @@ public class Launcher {
         Peer peer = null;
         try{
             peer = new Peer(args);
-            /*if(args[1].equals(Integer.toString(8001))){
-                Thread.sleep(5000);
-                File file = new File("C:\\Users\\Mario\\Desktop\\teste.jpg");
-                String encryptedFileName = peer.encryptFileName(file.getName(), "Mario");
-                ArrayList<Chunk> chunks = peer.splitToChunks(file, encryptedFileName);
-                peer.addClientTransferChunks(encryptedFileName, chunks);
-                peer.backup("Mario", file.getName(), 2);
-                Thread.sleep(5000);
-                peer.restore("Mario",file.getName());
-                temp(peer,"Mario","teste.jpg");
-                //peer.delete("Mario", file.getName());
-            }*/
         } catch ( Exception e){
             e.printStackTrace();
             return;
         }
-
-
-
-
 
         try {
             RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);

@@ -12,9 +12,9 @@ public class UpdateTask extends TimerTask {
 
     @Override
     public void run() {
-        System.out.println("UPDATE TASK!");
 
         try {
+            System.out.println("Updated Info!");
             peer.saveAllInfo();
         } catch(Exception e) {
             e.printStackTrace();

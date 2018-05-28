@@ -29,7 +29,7 @@ public class CheckIfNeedConnections implements Runnable{
 				e.printStackTrace();
 			}
             peer.getRecords().clearRequestPeerMessage();
-			if(peer.getNumberConnections() * 1.0 >= (peer.getPeerLimit() / 2.0))
+			if(peer.getNumberConnections() * 1.0 >= (peer.getPeerLimit() / 3.0))
 				continue;
 			
 			String[] messageArgs = new String[] {

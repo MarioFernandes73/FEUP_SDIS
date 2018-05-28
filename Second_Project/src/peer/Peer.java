@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Peer implements RMIInterface {
@@ -61,8 +62,11 @@ public class Peer implements RMIInterface {
         if (!verifyArgs(args))
             return;
         System.out.println("Everything ok");
-        this.ip = InetAddress.getLocalHost().getHostAddress();
-        //this.ip = getPublicIP();
+        if(args[args.length-1].equals("lan")){
+            this.ip = InetAddress.getLocalHost().getHostAddress();
+        } else {
+            this.ip = getPublicIP();
+        }
 
         this.id = ip + "." + port;
 
@@ -86,6 +90,8 @@ public class Peer implements RMIInterface {
         this.sendAlive = new SendAlive(this);
         new Thread(this.sendAlive).start();
         new Thread(new CheckIfNeedConnections(this)).start();
+        Timer timer = new Timer();
+        timer.schedule(new UpdateTask(this), 0, 10000);
 
         System.out.println("Setup successuful.");
     }
@@ -95,7 +101,7 @@ public class Peer implements RMIInterface {
 
         switch (args[0]) {
             case "boot":
-                if (args.length != 3) {
+                if (args.length != 4) {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }
@@ -105,7 +111,7 @@ public class Peer implements RMIInterface {
 
                 break;
             case "normal":
-                if (args.length != 4) {
+                if (args.length != 5) {
                     System.out.println("Incorrect number of arguments.");
                     return false;
                 }
@@ -346,7 +352,7 @@ public class Peer implements RMIInterface {
         for(Map.Entry<String, TCPSendChannel> connectedPeer : this.forwardingTable.entrySet()){
             if(connectedPeer.getKey().equals(targetId) ){
                 connectedPeer.getValue().send(message.getBytes());
-                System.out.println("MESSAGE SENT " + message.getHeader());
+                FilesManager.addLog("Message has been sent!");
                 break;
             }
         }
@@ -356,19 +362,13 @@ public class Peer implements RMIInterface {
         DatagramSocket socket = new DatagramSocket();
         DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, address.getInetAddress(), address.getPort());
         socket.send(msgPacket);
-        System.out.println("MESSAGE SENT TO ADDRESS " + address.toString());
+        FilesManager.addLog("Message has been sent!");
     }
 
     public void sendFloodMessage(Message message) throws IOException{
         for(Entry<String, TCPSendChannel> entry : this.forwardingTable.entrySet()){
             entry.getValue().send(message.getBytes());
         }
-    }
-
-
-
-    public void startConnection(String peerId, Address addressToAdd){
-
     }
 
     public String encryptFileName(String fileName, String clientId) throws NoSuchAlgorithmException {

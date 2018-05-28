@@ -102,7 +102,7 @@ public class Constants {
     }
 
     public static String getLogsFile(String peerId) {
-        return getMainDir(peerId) + "/Logs.ser";
+        return getMainDir(peerId) + "/Logs.txt";
     }
 
     public static String getChunksInfoFile(String peerId) {

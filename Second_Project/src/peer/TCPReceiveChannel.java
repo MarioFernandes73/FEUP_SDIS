@@ -1,5 +1,6 @@
 package peer;
 
+import filesmanager.FilesManager;
 import messages.PacketHandler;
 import utils.Constants;
 
@@ -38,7 +39,7 @@ public class TCPReceiveChannel implements Runnable {
         byte[] buffer = new byte[Constants.MAX_PACKET_SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);
-        System.out.println("MESSAGE RECEIVED!!!");
+        FilesManager.addLog("Message has been received!");
         return Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
     }
 

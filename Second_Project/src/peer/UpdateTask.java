@@ -14,8 +14,11 @@ public class UpdateTask extends TimerTask {
     public void run() {
 
         try {
-            System.out.println("Updated Info!");
-            peer.saveAllInfo();
+            while(true){
+                Thread.sleep(30000);
+                System.out.println("Updated Info!");
+                peer.saveAllInfo();
+            }
         } catch(Exception e) {
             e.printStackTrace();
         }

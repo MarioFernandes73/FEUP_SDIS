@@ -90,8 +90,7 @@ public class Peer implements RMIInterface {
         this.sendAlive = new SendAlive(this);
         new Thread(this.sendAlive).start();
         new Thread(new CheckIfNeedConnections(this)).start();
-        Timer timer = new Timer();
-        timer.schedule(new UpdateTask(this), 0, 10000);
+        new Thread(new UpdateTask(this)).start();
 
         System.out.println("Setup successuful.");
     }

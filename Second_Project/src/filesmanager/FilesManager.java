@@ -33,13 +33,6 @@ public class FilesManager {
 
     public void saveFiles() {
         try {
-
-            FileOutputStream fos = new FileOutputStream(Constants.getChunksInfoFile(ownerId), true);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(this.chunksInfo);
-            this.chunksInfo.clear();
-            oos.close();
-
             BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.getLogsFile(ownerId), true));
             for(String log : logs){
                 writer.write(log + "\n");

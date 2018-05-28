@@ -26,7 +26,8 @@ public class ChunkDeleteProtocol implements Runnable {
             String[] msgArgs = new String[]{
                     Constants.MessageType.SEND_DELETE_CHUNK.toString(),
                     this.peer.getId(),
-                    this.chunkInfo.getChunkId()
+                    this.chunkInfo.getChunkId(),
+                    this.peer.getIP() + ":" + peer.getPort()
             };
 
             for(Map.Entry<String, Address> owner : chunkInfo.getOwners().entrySet()){

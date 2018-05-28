@@ -10,6 +10,7 @@ import messages.Message;
 import messages.MessageBuilder;
 import messages.MessagesRecords;
 import protocols.initiators.BackupInitiator;
+import protocols.initiators.DeleteInitiator;
 import protocols.initiators.RestoreInitiator;
 import protocols.protocols.CheckContactsAlive;
 import protocols.protocols.CheckIfNeedConnections;
@@ -417,9 +418,9 @@ public class Peer implements RMIInterface {
 	}
 
     public int delete(String clientId, String fileName) throws RemoteException {
-		System.out.println("Starting to delete " + fileName);
-		//Thread thread = new Thread(new DeleteInitiator(this, fileName, enhancement));
-		//thread.start();
+		System.out.println("Starting to delete " + fileName + " from client  " + clientId);
+		Thread thread = new Thread(new DeleteInitiator(this, clientId, fileName));
+		thread.start();
 		return 0;
 	}
 

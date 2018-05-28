@@ -2,6 +2,7 @@ package utils;
 
 import messages.commands.MessageGetChunk;
 import messages.commands.MessagePutChunk;
+import messages.commands.MessageSendDeleteChunk;
 import messages.commands.MessageSendFileInfo;
 import messages.peerscommunications.*;
 import messages.responses.*;
@@ -49,7 +50,7 @@ public class Constants {
         SEND_FILE_INFO,
         RECEIVE_FILE_INFO,
         SEND_DELETE_CHUNK,
-        RECEIVED_DELETE_CHUNK,
+        RECEIVE_DELETE_CHUNK,
         GET_CHUNK,
         CHUNK,
         REQUEST_PEER,
@@ -79,11 +80,13 @@ public class Constants {
         messageHashMap.put("ACCEPT_PEER_REQUEST_CONNECTION", MessageAcceptPeerRequestConnection.class);
         messageHashMap.put("SEND_BACKED_UP_FILE_INFO", MessageSendBackedUpFileInfo.class);
         messageHashMap.put("SEND_FILE_INFO", MessageSendFileInfo.class);
+        messageHashMap.put("SEND_DELETE_CHUNK", MessageSendDeleteChunk.class);
+        messageHashMap.put("RECEIVE_DELETE_CHUNK", MessageReceiveDeleteChunk.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED}
 
-    ;
+
 
     private static String getMainDir(String peerId) {
         return "PeerFiles/" + peerId;

@@ -10,7 +10,7 @@ public class MessageReceiveDeleteChunk extends Message {
     private boolean success = false;
 
     public MessageReceiveDeleteChunk(String[] args){
-        super(Constants.MessageType.RECEIVED_DELETE_CHUNK, args[1]);
+        super(Constants.MessageType.RECEIVE_DELETE_CHUNK, args[1]);
         this.chunkId = args[2];
         if(args[3].equals("true")){
             this.success = true;

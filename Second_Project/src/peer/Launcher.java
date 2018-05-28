@@ -32,8 +32,9 @@ public class Launcher {
                 peer.addClientTransferChunks(encryptedFileName, chunks);
                 peer.backup("Mario", file.getName(), 1);
                 Thread.sleep(5000);
-                peer.restore("Mario",file.getName());
-                temp(peer,"Mario","teste.jpg");
+                peer.delete("Mario", file.getName());
+                //peer.restore("Mario",file.getName());
+                //temp(peer,"Mario","teste.jpg");
             }
         } catch ( Exception e){
             e.printStackTrace();

@@ -2,21 +2,31 @@ package messages.commands;
 
 import messages.Message;
 import messages.MessageBuilder;
+import peer.Address;
 import peer.Peer;
 import utils.Constants;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
 
 public class MessageSendDeleteChunk extends Message {
 
     private String chunkId;
+    private Address address;
 
     public MessageSendDeleteChunk(String[] args){
         super(Constants.MessageType.SEND_DELETE_CHUNK, args[1]);
         this.chunkId = args[2];
+        try {
+            this.address = new Address(args[3]);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public String getHeader() {
-        return super.getBaseHeader() + " " + this.chunkId + " \r\n\r\n";
+        return super.getBaseHeader() + " " + this.chunkId + " " + this.address + " \r\n\r\n";
     }
 
     @Override
@@ -32,11 +42,15 @@ public class MessageSendDeleteChunk extends Message {
             success = "true";
         }
         String[] msgArgs = new String[]{
-                Constants.MessageType.RECEIVED_DELETE_CHUNK.toString(),
+                Constants.MessageType.RECEIVE_DELETE_CHUNK.toString(),
                 peer.getId(),
                 this.chunkId,
                 success
         };
-        MessageBuilder.build(msgArgs);
+        try {
+            peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs) );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

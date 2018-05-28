@@ -1,10 +1,9 @@
 package messages.peerscommunications;
 
-import peer.Address;
-import peer.Peer;
+import p.Address;
+import p.Peer;
 import utils.Constants;
 
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -20,11 +19,7 @@ public class MessageAlive extends Message {
 		{
 			try {
 				backupForwardingTable.put(args[i], new Address(args[i+1]));
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

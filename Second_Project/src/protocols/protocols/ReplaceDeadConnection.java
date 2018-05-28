@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import messages.MessageBuilder;
-import peer.Address;
-import peer.Peer;
+import p.Address;
+import p.Peer;
 import utils.Constants;
 
 public class ReplaceDeadConnection implements Runnable{
@@ -38,8 +38,7 @@ public class ReplaceDeadConnection implements Runnable{
 					String[] msgArgs = new String[]{
                             Constants.MessageType.REQUEST_CONNECTION.toString(),
                             this.peer.getId(),
-                            this.peer.getIP(),
-                            Integer.toString(this.peer.getPort())
+                            this.peer.getIP() + ":" + Integer.toString(this.peer.getPort())
                     };
 					Random random =  new Random();
 					Thread.sleep(random.nextInt(400)); //0-400ms delay

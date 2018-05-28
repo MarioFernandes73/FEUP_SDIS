@@ -3,10 +3,9 @@ package messages.peerscommunications;
 import java.net.UnknownHostException;
 
 import messages.Message;
-import peer.Address;
-import peer.Peer;
+import p.Address;
+import p.Peer;
 import utils.Constants;
-import utils.Constants.MessageType;
 
 public class MessageAcceptPeerRequest extends Message{
 

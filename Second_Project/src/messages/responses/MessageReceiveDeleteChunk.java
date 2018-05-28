@@ -1,7 +1,7 @@
 package messages.responses;
 
 import messages.Message;
-import peer.Peer;
+import p.Peer;
 import utils.Constants;
 
 public class MessageReceiveDeleteChunk extends Message {

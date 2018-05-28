@@ -2,17 +2,12 @@ package messages.responses;
 
 import filesmanager.Chunk;
 import messages.Message;
-import messages.MessageBuilder;
-import messages.responses.MessageStored;
-import peer.Address;
-import peer.Peer;
-import peer.TCPSendChannel;
+import p.Address;
+import p.Peer;
 import utils.Constants;
 import utils.Utils;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Map.Entry;
 
 public class MessageChunk extends Message {
 

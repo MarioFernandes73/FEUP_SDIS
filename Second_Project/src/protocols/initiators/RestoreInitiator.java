@@ -1,15 +1,11 @@
 package protocols.initiators;
 
-import client.Client;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
-import peer.ChunkInfo;
-import peer.Peer;
-import protocols.protocols.ChunkBackupProtocol;
-import protocols.protocols.ChunkDeleteProtocol;
+import p.ChunkInfo;
+import p.Peer;
 import protocols.protocols.ChunkRestoreProtocol;
 
-import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 

@@ -1,11 +1,8 @@
 package messages;
 
-import peer.Peer;
+import p.Peer;
 
-import java.net.DatagramPacket;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class PacketHandler implements Runnable {
 

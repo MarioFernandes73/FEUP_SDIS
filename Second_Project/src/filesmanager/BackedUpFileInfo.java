@@ -1,6 +1,6 @@
 package filesmanager;
 
-import peer.ChunkInfo;
+import p.ChunkInfo;
 
 import java.io.Serializable;
 import java.net.UnknownHostException;

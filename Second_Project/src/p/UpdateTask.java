@@ -1,4 +1,4 @@
-package peer;
+package p;
 
 import java.util.TimerTask;
 

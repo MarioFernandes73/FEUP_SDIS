@@ -2,9 +2,9 @@ package messages.peerscommunications;
 
 import messages.Message;
 import messages.MessageBuilder;
-import peer.Address;
-import peer.Peer;
-import peer.TCPSendChannel;
+import p.Address;
+import p.Peer;
+import p.TCPSendChannel;
 import utils.Constants;
 
 import java.io.IOException;
@@ -46,18 +46,26 @@ public class MessageConnect extends Message {
                         peer.getIP() + ":" + Integer.toString(peer.getPort())
                 };
                 peer.sendMessage(this.senderId, MessageBuilder.build(messageArgs));
+                String[] msgArgs = new String[]{
+						Constants.MessageType.SEND_ALL_BACKED_UP_FILES_INFO.toString(),
+						peer.getId(),
+						peer.getBackedUpFilesInfo()
+				};
+                peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs));
             }
             else if(!askConnections(peer))
             {
             	addPeerNIncreaseLimit(peer);
+                String[] msgArgs = new String[]{
+                        Constants.MessageType.SEND_ALL_BACKED_UP_FILES_INFO.toString(),
+                        peer.getId(),
+                        peer.getBackedUpFilesInfo()
+                };
+                peer.sendMessageToAddress(this.address,MessageBuilder.build(msgArgs));
             }
         } catch (SocketException e){
 
-        } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+        } catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.println(peer.getPeerLimit());
@@ -71,8 +79,7 @@ public class MessageConnect extends Message {
                 Constants.MessageType.ADD_PEER.toString(),
                 peer.getId(),
                 this.senderId,
-                address.getIp(),
-                Integer.toString(address.getPort())
+                address.getIp() + ":" + Integer.toString(address.getPort())
 		};
 		byte[] messageData = MessageBuilder.build(messageArgs).getBytes();
 		for(Entry<String, TCPSendChannel> entry : forwardingTable.entrySet()) 
@@ -113,8 +120,7 @@ public class MessageConnect extends Message {
         String[] messageArgs = new String[]{
                 Constants.MessageType.ACCEPT_CONNECTION.toString(),
                 peer.getId(),
-                peer.getIP(),
-                Integer.toString(peer.getPort())
+                peer.getIP() + ":" + Integer.toString(peer.getPort())
         };
         peer.sendMessage(this.senderId, MessageBuilder.build(messageArgs));
     	

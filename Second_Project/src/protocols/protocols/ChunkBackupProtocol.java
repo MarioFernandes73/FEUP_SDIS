@@ -2,17 +2,14 @@ package protocols.protocols;
 
 import messages.MessageBuilder;
 import messages.Message;
-import peer.Address;
-import peer.ChunkInfo;
-import peer.Peer;
+import p.Address;
+import p.ChunkInfo;
+import p.Peer;
 import utils.Constants;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static java.util.concurrent.ThreadLocalRandom.current;
 
 public class ChunkBackupProtocol implements Runnable {
 

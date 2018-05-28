@@ -6,8 +6,8 @@ import java.net.UnknownHostException;
 
 import messages.Message;
 import messages.MessageBuilder;
-import peer.Address;
-import peer.Peer;
+import p.Address;
+import p.Peer;
 import utils.Constants;
 
 public class MessageAddPeer extends Message{
@@ -48,6 +48,12 @@ public class MessageAddPeer extends Message{
 				p.addPeer(peerId, addressToAdd);
 				sendAcceptPeerMessage(p);
 				sendAcceptConnectionMessage(p);
+				String[] msgArgs = new String[]{
+						Constants.MessageType.SEND_ALL_BACKED_UP_FILES_INFO.toString(),
+						p.getId(),
+						p.getBackedUpFilesInfo()
+				};
+				p.sendMessageToAddress(this.addressToAdd,MessageBuilder.build(msgArgs));
 			}
 			else {
 				sendRejectPeerMessage(p);

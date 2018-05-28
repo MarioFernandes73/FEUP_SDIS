@@ -1,8 +1,7 @@
-package peer;
+package p;
 
 import java.io.Serializable;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

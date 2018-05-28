@@ -1,20 +1,15 @@
-package peer;
+package p;
 
 
 import client_peer_file_transfer.Partition;
 import filesmanager.Chunk;
-import rmi.RMIInterface;
-import peer.Peer;
 import utils.Constants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 public class Launcher {
@@ -24,7 +19,7 @@ public class Launcher {
         Peer peer = null;
         try{
             peer = new Peer(args);
-            if(args[1].equals(Integer.toString(8001))){
+            /*if(args[1].equals(Integer.toString(8001))){
                 Thread.sleep(5000);
                 File file = new File("C:\\Users\\Mario\\Desktop\\teste.jpg");
                 String encryptedFileName = peer.encryptFileName(file.getName(), "Mario");
@@ -34,8 +29,8 @@ public class Launcher {
                 Thread.sleep(5000);
                 peer.restore("Mario",file.getName());
                 temp(peer,"Mario","teste.jpg");
-                //peer.delete("Mario", file.getName());
-            }
+                //p.delete("Mario", file.getName());
+            }*/
         } catch ( Exception e){
             e.printStackTrace();
             return;
@@ -46,11 +41,11 @@ public class Launcher {
 
 
        /* try {
-            RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
+            RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(p, 0);
             System.out.println("Passou");
             // Bind remote object to rmi registry
-            Naming.rebind(peer.getAccessPoint(), stub);
-            System.out.println("Server ready for RMI communication " + "\n \tAccess point: " + peer.getAccessPoint());
+            Naming.rebind(p.getAccessPoint(), stub);
+            System.out.println("Server ready for RMI communication " + "\n \tAccess point: " + p.getAccessPoint());
 
         } catch (RemoteException e) {
             e.printStackTrace();

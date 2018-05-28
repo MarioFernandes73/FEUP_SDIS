@@ -1,8 +1,8 @@
 package protocols.initiators;
 
 import filesmanager.BackedUpFileInfo;
-import peer.ChunkInfo;
-import peer.Peer;
+import p.ChunkInfo;
+import p.Peer;
 import protocols.protocols.ChunkDeleteProtocol;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class DeleteInitiator extends ProtocolInitiator implements Runnable {
         //			anunciar que chunk tal, foi deletado e todos os outros dao update nos backedupfilesinfo deles
         //		se nao obtiver todas as respostas para determinado chunk
         //			anunciar quem fez delete, ou seja, os outros peers atualizam os owners daquele chunk daquele backedupfilesinfo
-        //			mandar um announce que peer X quando se ligar a rede tem de fazer delete
+        //			mandar um announce que p X quando se ligar a rede tem de fazer delete
 
 
 

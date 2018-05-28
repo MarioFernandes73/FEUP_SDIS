@@ -5,7 +5,7 @@ import java.net.SocketException;
 
 import messages.MessageBuilder;
 import messages.peerscommunications.MessageAcceptPeerRequest;
-import peer.Peer;
+import p.Peer;
 import utils.Constants;
 
 public class CheckIfNeedConnections implements Runnable{
@@ -28,15 +28,15 @@ public class CheckIfNeedConnections implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(peer.getNumberConnections() >= (peer.getPeerLimit() / 3))
+            peer.getRecords().clearRequestPeerMessage();
+			if(peer.getNumberConnections() * 1.0 >= (peer.getPeerLimit() / 2.0))
 				continue;
 			
 			String[] messageArgs = new String[] {
 					Constants.MessageType.REQUEST_PEER.toString(),
 					peer.getId(),
 					peer.getId(),
-					peer.getIP(),
-					Integer.toString(peer.getPort())
+					peer.getIP() + ":" + Integer.toString(peer.getPort())
 			};
 			
 			try {
@@ -60,8 +60,7 @@ public class CheckIfNeedConnections implements Runnable{
 			String[] messageArgs2 = new String[] {
 					Constants.MessageType.ACCEPT_PEER_REQUEST_CONNECTION.toString(),
 					peer.getId(),
-					peer.getIP(),
-					Integer.toString(peer.getPort())
+					peer.getIP() + ":" + Integer.toString(peer.getPort())
 			};
 			
 			try {
@@ -70,9 +69,7 @@ public class CheckIfNeedConnections implements Runnable{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			peer.getRecords().clearAcceptPeerRequestMessages();
-				
+
 		}
 		
 	}

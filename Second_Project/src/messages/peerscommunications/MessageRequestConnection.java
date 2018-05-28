@@ -6,23 +6,19 @@ import java.net.UnknownHostException;
 
 import messages.Message;
 import messages.MessageBuilder;
-import peer.Address;
-import peer.Peer;
+import p.Address;
+import p.Peer;
 import utils.Constants;
 
 public class MessageRequestConnection extends Message{
 
-	Address addressToAdd;
+	private Address addressToAdd;
 	
 	public MessageRequestConnection(String[] args) {
 		super(Constants.MessageType.REQUEST_CONNECTION, args[1]);
 		try {
 			this.addressToAdd = new Address(args[2]);
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -44,18 +40,19 @@ public class MessageRequestConnection extends Message{
 			return;
 		
 		try {
-			if(p.getNumberConnections() < p.getPeerLimit()){
-				p.addPeer(senderId, addressToAdd);
-				sendAcceptPeerMessage(p);
+			if(p.getNumberConnections() >= p.getPeerLimit()){
+                //sendRejectPeerMessage(p);
+                p.changePeerLimit(p.getPeerLimit() + 1);
+                String[] message2Args = new String[]{
+                        Constants.MessageType.CHANGE_CONNECTION_LIMIT.toString(),
+                        p.getId(),
+                        Integer.toString(p.getPeerLimit())
+                };
+                p.sendFloodMessage(MessageBuilder.build(message2Args));
 			}
-			else {
-				sendRejectPeerMessage(p);
-			}
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+            p.addPeer(senderId, addressToAdd);
+            sendAcceptPeerMessage(p);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -1,12 +1,13 @@
 package filesmanager;
 
-import peer.ChunkInfo;
+import p.ChunkInfo;
 import utils.Constants;
 import utils.Utils;
 
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FilesManager {
@@ -165,5 +166,20 @@ public class FilesManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void addBackedUpFileInfo(ArrayList<BackedUpFileInfo> filesInfo) {
+        this.backedUpFilesInfo.addAll(filesInfo);
+    }
+
+    public String getAllBackedUpFilesInfo() {
+        StringBuilder filesInfo = new StringBuilder();
+        for(int i = 0; i < this.backedUpFilesInfo.size(); i++){
+            filesInfo.append(this.backedUpFilesInfo.get(i).toString());
+            if(i != this.backedUpFilesInfo.size() - 1){
+                filesInfo.append("~");
+            }
+        }
+        return filesInfo.toString();
     }
 }

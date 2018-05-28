@@ -2,7 +2,7 @@ package messages.peerscommunications;
 
 import filesmanager.BackedUpFileInfo;
 import messages.Message;
-import peer.Peer;
+import p.Peer;
 import utils.Constants;
 
 import java.net.UnknownHostException;

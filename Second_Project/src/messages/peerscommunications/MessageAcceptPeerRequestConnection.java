@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 
 import messages.Message;
 import messages.MessageBuilder;
-import peer.Address;
-import peer.Peer;
+import p.Address;
+import p.Peer;
 import utils.Constants;
 
 public class MessageAcceptPeerRequestConnection extends Message{

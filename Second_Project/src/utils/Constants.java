@@ -6,7 +6,6 @@ import messages.commands.MessageSendDeleteChunk;
 import messages.commands.MessageSendFileInfo;
 import messages.peerscommunications.*;
 import messages.responses.*;
-import peer.Address;
 
 import java.util.HashMap;
 
@@ -56,6 +55,7 @@ public class Constants {
         REQUEST_PEER,
         ACCEPT_PEER_REQUEST,
         ACCEPT_PEER_REQUEST_CONNECTION,
+        SEND_ALL_BACKED_UP_FILES_INFO,
         SEND_BACKED_UP_FILE_INFO
     }
 
@@ -82,6 +82,7 @@ public class Constants {
         messageHashMap.put("SEND_FILE_INFO", MessageSendFileInfo.class);
         messageHashMap.put("SEND_DELETE_CHUNK", MessageSendDeleteChunk.class);
         messageHashMap.put("RECEIVE_DELETE_CHUNK", MessageReceiveDeleteChunk.class);
+        messageHashMap.put("SEND_ALL_BACKED_UP_FILES_INFO",MessageSendAllBackedUpFilesInfo.class);
     }
 
     public enum FileType {BACKEDUP, RESTORED}

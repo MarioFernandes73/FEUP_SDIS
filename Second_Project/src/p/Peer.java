@@ -1,8 +1,6 @@
-package peer;
+package p;
 
-import client.Client;
 import client_peer_file_transfer.ClientChunkTransfer;
-import client_peer_file_transfer.Partition;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import filesmanager.FilesManager;
@@ -203,8 +201,11 @@ public class Peer implements RMIInterface {
     public void updateBackupTable(HashMap<String, Address> backupForwardingTable)
     {
     	this.backupForwardingTable.clear();
-    	for(Entry<String, Address> entry : backupForwardingTable.entrySet())
-			this.backupForwardingTable.put(entry.getKey(), entry.getValue());
+    	for(Entry<String, Address> entry : backupForwardingTable.entrySet()){
+    	    if(!entry.getKey().equals(this.id)){
+                this.backupForwardingTable.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
     
     public ConcurrentHashMap<String, Address> getBackupForwardingTable()
@@ -220,19 +221,19 @@ public class Peer implements RMIInterface {
     
     
     /**
-     * Returns address of the peer with the id peerID if it exists in the forwardingTable and null otherwise
-     * @param peerID String with the id of the peer
-     * @return address of the peer if it exists in forwardingTable and null otherwise
+     * Returns address of the p with the id peerID if it exists in the forwardingTable and null otherwise
+     * @param peerID String with the id of the p
+     * @return address of the p if it exists in forwardingTable and null otherwise
      */
     public TCPSendChannel getConnectionAddress(String peerID) {
         return forwardingTable.get(peerID);
     }
     
     /**
-     * Adds a peer to the forwardingTable storing its' address using its' id as key
+     * Adds a p to the forwardingTable storing its' address using its' id as key
      * Doesn't check if connection limit is exceeded
-     * @param peerId String with the new peer's Id
-     * @param addressToAdd new peer's Address
+     * @param peerId String with the new p's Id
+     * @param addressToAdd new p's Address
      */
     public void addPeer(String peerId, Address addressToAdd) throws SocketException {
 		forwardingTable.put(peerId, new TCPSendChannel(this, addressToAdd));
@@ -244,7 +245,7 @@ public class Peer implements RMIInterface {
 	}
     
     /**
-     * Returns the number of connections this peer has
+     * Returns the number of connections this p has
      * @return number of entries in the forwardingTable
      */
     public int getNumberConnections() {
@@ -252,7 +253,7 @@ public class Peer implements RMIInterface {
 	}
     
     /**
-     * Returns the peer's current limit of connections
+     * Returns the p's current limit of connections
      * @return peerLimit
      */
     public int getPeerLimit() {
@@ -524,5 +525,22 @@ public class Peer implements RMIInterface {
 
     public void addChunkInfo(ChunkInfo chunkInfo){
 	    this.filesManager.addChunkInfo(chunkInfo);
+    }
+
+    public boolean hasPeerConnection(String peerId){
+	    for(Map.Entry<String, TCPSendChannel> connection : this.forwardingTable.entrySet()){
+	        if(connection.getKey().equals(peerId)){
+	            return true;
+            }
+        }
+	    return false;
+    }
+
+    public void saveAllBackedUpFilesInfo(ArrayList<BackedUpFileInfo> filesInfo){
+	    this.filesManager.addBackedUpFileInfo(filesInfo);
+    }
+
+    public String getBackedUpFilesInfo() {
+	    return this.filesManager.getAllBackedUpFilesInfo();
     }
 }

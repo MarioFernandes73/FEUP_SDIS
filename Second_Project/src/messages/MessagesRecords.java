@@ -7,8 +7,8 @@ import messages.responses.MessageChunk;
 import messages.responses.MessageReceiveDeleteChunk;
 import messages.responses.MessageReceiveFileInfo;
 import messages.responses.MessageStored;
-import peer.Address;
-import peer.ChunkInfo;
+import p.Address;
+import p.ChunkInfo;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -168,5 +168,9 @@ public class MessagesRecords {
             }
         }
         return null;
+    }
+
+    public void clearRequestPeerMessage() {
+        this.requestPeerMessages.clear();
     }
 }

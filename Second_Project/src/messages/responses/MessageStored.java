@@ -1,8 +1,8 @@
 package messages.responses;
 
 import messages.Message;
-import peer.Address;
-import peer.Peer;
+import p.Address;
+import p.Peer;
 import utils.Constants;
 import utils.Utils;
 

@@ -3,9 +3,9 @@ package messages.commands;
 import filesmanager.Chunk;
 import messages.Message;
 import messages.MessageBuilder;
-import peer.Address;
-import peer.ChunkInfo;
-import peer.Peer;
+import p.Address;
+import p.ChunkInfo;
+import p.Peer;
 import utils.Constants;
 import utils.Utils;
 

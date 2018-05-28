@@ -145,4 +145,8 @@ public class PartitionedFile {
 
         createFileFromPartitions();
 	}
+
+	public String getFileName(){
+	    return this.fileName;
+    }
 }

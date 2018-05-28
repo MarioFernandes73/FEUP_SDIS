@@ -169,7 +169,7 @@ public class Client {
 	            return false;
 			}
 			if(backupFile.uploadToEndpoint(stub)) {
-				response = stub.backup(this.id, this.fileName, this.replicationDeg);
+				response = stub.backup(this.id, backupFile.getFileName(), this.replicationDeg);
 			}
 			break;
 			

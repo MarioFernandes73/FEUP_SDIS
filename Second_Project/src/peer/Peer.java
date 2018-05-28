@@ -484,7 +484,7 @@ public class Peer implements RMIInterface {
 
         //Search on file chunks
         for(Chunk c: fileChunks) {
-            if(c.getChunkId() == chunk.getChunkId()) {
+            if(c.getChunkId().equals(chunk.getChunkId())) {
                 return true;
             }
         }
@@ -497,6 +497,8 @@ public class Peer implements RMIInterface {
             ArrayList<Chunk> newFileChunks = new ArrayList<Chunk>();
             newFileChunks.add(chunk);
             clientTransferChunks.putIfAbsent(fileId, newFileChunks);
+        } else {
+            fileChunks.add(chunk);
         }
     }
     public ArrayList<Chunk> getClientTransferFileChunks(String fileId) {

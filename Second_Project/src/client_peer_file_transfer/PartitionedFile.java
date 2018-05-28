@@ -67,9 +67,13 @@ public class PartitionedFile {
 	}
 	
 	private void createFileFromPartitions() {
+		File dir = new File(Constants.getRestoredFilesDir(clientId));
+		if(!dir.exists() || !dir.isDirectory()){
+            dir.mkdirs();
+        }
 		FileOutputStream out;
 		try {
-			out = new FileOutputStream(Constants.RESTORED_FILES_DIR + fileName, false);
+			out = new FileOutputStream(Constants.getRestoredFilesDir(clientId) + "/" + fileName, false);
 			
 			for (Partition partition : partitions) {
 				out.write(partition.getData());
@@ -121,19 +125,22 @@ public class PartitionedFile {
 	
 	public void downloadFromEndpoint(RMIInterface endpoint) {
 		boolean reachedFinalPartition = false;
-		
+
 		for (int partitionNo = 0; !reachedFinalPartition; partitionNo++) {
-            byte[] partitionData = new byte[0];
-            try {
-                partitionData = endpoint.getFileChunk(this.clientId, this.fileName, partitionNo);
-            } catch (RemoteException e) {
-                System.out.println("ERROR! Couldn't extract partition no. " + partitionNo + " from file " + this.fileName + " on client " + this.clientId);
-            }
+			byte[] partitionData = new byte[0];
+			try {
+				partitionData = endpoint.getFileChunk(clientId, fileName, partitionNo);
+				if(partitionData.length < Constants.MAX_CHUNK_SIZE){
+					reachedFinalPartition = true;
+				}
+			} catch (RemoteException e) {
+				System.out.println("ERROR! Couldn't extract partition no. " + partitionNo + " from file " + fileName + " on client " + clientId);
+			}
 
-            if(partitionData == null)
-                break;
+			if(partitionData == null)
+				break;
 
-            partitions.add(new Partition(partitionData, partitionNo));
+			partitions.add(new Partition(partitionData, partitionNo));
 		}
 
         createFileFromPartitions();

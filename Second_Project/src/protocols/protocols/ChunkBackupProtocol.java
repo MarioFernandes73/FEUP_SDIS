@@ -64,7 +64,9 @@ public class ChunkBackupProtocol implements Runnable {
                     int j = 0;
                     for (Map.Entry<String, Address> randomPeer : nextContacts.entrySet()) {
                         if (j == randomConnection) {
-                            this.peer.sendMessageToAddress(randomPeer.getValue(), MessageBuilder.build(msgArgs));
+                            Message newMessage = MessageBuilder.build(msgArgs);
+                            newMessage.setData(this.data);
+                            this.peer.sendMessageToAddress(randomPeer.getValue(), newMessage);
                             nextContacts.remove(randomPeer.getKey());
                             break;
                         }

@@ -395,14 +395,19 @@ public class Peer implements RMIInterface {
         }
 
         if(!clientTransferChunks.containsKey(fileId)) {
-            System.out.println("File " + fileName + " was not previously transfered from client " + clientId);
+            System.out.println("File " + fileName + " was not previously transferred from client " + clientId);
             return Constants.FILE_CHUNKS_NOT_RECEIVED;
         }
 
 		System.out.println("Starting to backup " + fileName);
 		Thread thread = new Thread(new BackupInitiator(this, clientId, fileName, replicationDegree));
 		thread.start();
-		return 0;
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return 0;
 	}
 
     public int restore(String clientId, String fileName) throws RemoteException {

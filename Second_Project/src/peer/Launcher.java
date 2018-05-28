@@ -30,11 +30,11 @@ public class Launcher {
                 String encryptedFileName = peer.encryptFileName(file.getName(), "Mario");
                 ArrayList<Chunk> chunks = peer.splitToChunks(file, encryptedFileName);
                 peer.addClientTransferChunks(encryptedFileName, chunks);
-                peer.backup("Mario", file.getName(), 1);
+                peer.backup("Mario", file.getName(), 2);
                 Thread.sleep(5000);
-                peer.delete("Mario", file.getName());
-                //peer.restore("Mario",file.getName());
-                //temp(peer,"Mario","teste.jpg");
+                peer.restore("Mario",file.getName());
+                temp(peer,"Mario","teste.jpg");
+                //peer.delete("Mario", file.getName());
             }
         } catch ( Exception e){
             e.printStackTrace();

@@ -1,7 +1,7 @@
 package messages.peerscommunications;
 
 import messages.Message;
-import p.Peer;
+import peer.Peer;
 import utils.Constants;
 
 public class MessageAcceptPeer extends Message{

@@ -1,6 +1,6 @@
 package messages;
 
-import p.Peer;
+import peer.Peer;
 
 import java.nio.charset.Charset;
 

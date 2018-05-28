@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import messages.Message;
 import messages.MessageBuilder;
-import p.Peer;
+import peer.Peer;
 import utils.Constants;
 
 public class MessageChangeConnectionLimit extends Message{

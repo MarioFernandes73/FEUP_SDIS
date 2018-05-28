@@ -1,7 +1,7 @@
 package messages.peerscommunications;
 
-import p.Address;
-import p.Peer;
+import peer.Address;
+import peer.Peer;
 import utils.Constants;
 
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public class MessageAlive extends Message {
 	@Override
 	public void handleMessage(Object... args) {
 		Peer p = (Peer) args[0];
-		
+
 		p.setAlivePeer(senderId);
 		p.updateBackupTable(backupForwardingTable);
 	}

@@ -5,7 +5,7 @@ import java.net.SocketException;
 
 import messages.MessageBuilder;
 import messages.peerscommunications.MessageAcceptPeerRequest;
-import p.Peer;
+import peer.Peer;
 import utils.Constants;
 
 public class CheckIfNeedConnections implements Runnable{

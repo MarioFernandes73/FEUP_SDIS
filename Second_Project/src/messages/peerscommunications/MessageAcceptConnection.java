@@ -1,8 +1,8 @@
 package messages.peerscommunications;
 
 import messages.Message;
-import p.Address;
-import p.Peer;
+import peer.Address;
+import peer.Peer;
 import utils.Constants;
 
 import java.net.SocketException;

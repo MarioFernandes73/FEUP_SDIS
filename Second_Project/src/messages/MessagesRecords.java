@@ -7,8 +7,8 @@ import messages.responses.MessageChunk;
 import messages.responses.MessageReceiveDeleteChunk;
 import messages.responses.MessageReceiveFileInfo;
 import messages.responses.MessageStored;
-import p.Address;
-import p.ChunkInfo;
+import peer.Address;
+import peer.ChunkInfo;
 
 import java.util.HashMap;
 import java.util.Random;

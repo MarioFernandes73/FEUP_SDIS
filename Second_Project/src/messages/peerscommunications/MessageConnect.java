@@ -2,9 +2,9 @@ package messages.peerscommunications;
 
 import messages.Message;
 import messages.MessageBuilder;
-import p.Address;
-import p.Peer;
-import p.TCPSendChannel;
+import peer.Address;
+import peer.Peer;
+import peer.TCPSendChannel;
 import utils.Constants;
 
 import java.io.IOException;

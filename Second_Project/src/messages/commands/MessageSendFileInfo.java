@@ -3,7 +3,7 @@ package messages.commands;
 import filesmanager.BackedUpFileInfo;
 import messages.Message;
 import messages.MessageBuilder;
-import p.Peer;
+import peer.Peer;
 import utils.Constants;
 
 public class MessageSendFileInfo extends Message {

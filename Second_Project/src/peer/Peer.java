@@ -1,4 +1,4 @@
-package p;
+package peer;
 
 import client_peer_file_transfer.ClientChunkTransfer;
 import filesmanager.BackedUpFileInfo;
@@ -221,19 +221,19 @@ public class Peer implements RMIInterface {
     
     
     /**
-     * Returns address of the p with the id peerID if it exists in the forwardingTable and null otherwise
-     * @param peerID String with the id of the p
-     * @return address of the p if it exists in forwardingTable and null otherwise
+     * Returns address of the peer with the id peerID if it exists in the forwardingTable and null otherwise
+     * @param peerID String with the id of the peer
+     * @return address of the peer if it exists in forwardingTable and null otherwise
      */
     public TCPSendChannel getConnectionAddress(String peerID) {
         return forwardingTable.get(peerID);
     }
     
     /**
-     * Adds a p to the forwardingTable storing its' address using its' id as key
+     * Adds a peer to the forwardingTable storing its' address using its' id as key
      * Doesn't check if connection limit is exceeded
-     * @param peerId String with the new p's Id
-     * @param addressToAdd new p's Address
+     * @param peerId String with the new peer's Id
+     * @param addressToAdd new peer's Address
      */
     public void addPeer(String peerId, Address addressToAdd) throws SocketException {
 		forwardingTable.put(peerId, new TCPSendChannel(this, addressToAdd));
@@ -245,7 +245,7 @@ public class Peer implements RMIInterface {
 	}
     
     /**
-     * Returns the number of connections this p has
+     * Returns the number of connections this peer has
      * @return number of entries in the forwardingTable
      */
     public int getNumberConnections() {
@@ -253,7 +253,7 @@ public class Peer implements RMIInterface {
 	}
     
     /**
-     * Returns the p's current limit of connections
+     * Returns the peer's current limit of connections
      * @return peerLimit
      */
     public int getPeerLimit() {

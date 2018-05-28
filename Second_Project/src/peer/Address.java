@@ -1,4 +1,4 @@
-package p;
+package peer;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

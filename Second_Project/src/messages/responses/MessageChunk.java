@@ -2,8 +2,8 @@ package messages.responses;
 
 import filesmanager.Chunk;
 import messages.Message;
-import p.Address;
-import p.Peer;
+import peer.Address;
+import peer.Peer;
 import utils.Constants;
 import utils.Utils;
 

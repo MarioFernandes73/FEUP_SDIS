@@ -1,4 +1,4 @@
-package p;
+package peer;
 
 import messages.PacketHandler;
 import utils.Constants;

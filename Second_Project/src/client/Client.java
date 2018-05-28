@@ -191,7 +191,7 @@ public class Client {
 			break;
 			
 		case Constants.FILE_CHUNKS_NOT_RECEIVED:
-			System.out.println("ERROR! File has been incorrectly uploaded to p");
+			System.out.println("ERROR! File has been incorrectly uploaded to peer");
 			break;
 			
 		case Constants.FILE_NOT_BACKEDUP:

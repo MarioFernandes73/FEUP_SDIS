@@ -1,9 +1,9 @@
 package protocols.protocols;
 
 import messages.MessageBuilder;
-import p.Address;
-import p.ChunkInfo;
-import p.Peer;
+import peer.Address;
+import peer.ChunkInfo;
+import peer.Peer;
 import utils.Constants;
 
 import java.util.Map;

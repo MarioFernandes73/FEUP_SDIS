@@ -101,9 +101,9 @@ public class PartitionedFile {
 				if (endpoint.transferFileChunk(this.clientId, this.fileName, partition.getPartitionNo(), partition.getData()) == Constants.FILE_CHUNK_TRANSFER_ERROR) {
 					partitionTransfTries++;
 					
-					System.out.println("ERROR! File transfer to p failed on Chunk no. " + partition.getPartitionNo());
+					System.out.println("ERROR! File transfer to peer failed on Chunk no. " + partition.getPartitionNo());
 					if (partitionTransfTries == Constants.MAX_CHUNK_TRANSFER_TRIES) {
-						System.out.println("Max transfer tries have been reached! Could not transfer file to p");
+						System.out.println("Max transfer tries have been reached! Could not transfer file to peer");
 						return false;
 					}
 					

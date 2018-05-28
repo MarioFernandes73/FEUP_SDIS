@@ -1,6 +1,6 @@
 package utils;
 
-import p.Address;
+import peer.Address;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;

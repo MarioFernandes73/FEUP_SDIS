@@ -3,7 +3,7 @@ package protocols.protocols;
 import java.util.Date;
 import java.util.Map.Entry;
 
-import p.*;
+import peer.*;
 
 public class CheckContactsAlive implements Runnable {
 

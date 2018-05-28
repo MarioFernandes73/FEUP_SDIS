@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import messages.MessageBuilder;
-import p.Address;
-import p.Peer;
+import peer.Address;
+import peer.Peer;
 import utils.Constants;
 
 public class ReplaceDeadConnection implements Runnable{

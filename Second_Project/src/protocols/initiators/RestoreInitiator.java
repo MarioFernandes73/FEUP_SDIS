@@ -2,8 +2,8 @@ package protocols.initiators;
 
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
-import p.ChunkInfo;
-import p.Peer;
+import peer.ChunkInfo;
+import peer.Peer;
 import protocols.protocols.ChunkRestoreProtocol;
 
 import java.security.NoSuchAlgorithmException;

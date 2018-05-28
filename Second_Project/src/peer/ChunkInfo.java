@@ -1,4 +1,4 @@
-package p;
+package peer;
 
 import java.io.Serializable;
 import java.net.UnknownHostException;

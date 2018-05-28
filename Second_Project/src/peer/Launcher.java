@@ -1,8 +1,7 @@
-package p;
+package peer;
 
 
 import client_peer_file_transfer.Partition;
-import filesmanager.Chunk;
 import utils.Constants;
 
 import java.io.File;
@@ -29,7 +28,7 @@ public class Launcher {
                 Thread.sleep(5000);
                 peer.restore("Mario",file.getName());
                 temp(peer,"Mario","teste.jpg");
-                //p.delete("Mario", file.getName());
+                //peer.delete("Mario", file.getName());
             }*/
         } catch ( Exception e){
             e.printStackTrace();
@@ -41,11 +40,11 @@ public class Launcher {
 
 
        /* try {
-            RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(p, 0);
+            RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(peer, 0);
             System.out.println("Passou");
             // Bind remote object to rmi registry
-            Naming.rebind(p.getAccessPoint(), stub);
-            System.out.println("Server ready for RMI communication " + "\n \tAccess point: " + p.getAccessPoint());
+            Naming.rebind(peer.getAccessPoint(), stub);
+            System.out.println("Server ready for RMI communication " + "\n \tAccess point: " + peer.getAccessPoint());
 
         } catch (RemoteException e) {
             e.printStackTrace();

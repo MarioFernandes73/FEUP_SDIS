@@ -2,7 +2,7 @@ package protocols.initiators;
 
 import filesmanager.BackedUpFileInfo;
 import messages.MessageBuilder;
-import p.Peer;
+import peer.Peer;
 import utils.Constants;
 
 public abstract class ProtocolInitiator {

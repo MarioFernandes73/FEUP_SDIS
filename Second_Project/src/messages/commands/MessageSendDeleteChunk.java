@@ -2,8 +2,8 @@ package messages.commands;
 
 import messages.Message;
 import messages.MessageBuilder;
-import p.Address;
-import p.Peer;
+import peer.Address;
+import peer.Peer;
 import utils.Constants;
 
 import java.io.IOException;

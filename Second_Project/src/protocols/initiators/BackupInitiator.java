@@ -3,8 +3,8 @@ package protocols.initiators;
 import filesmanager.BackedUpFileInfo;
 import filesmanager.Chunk;
 import messages.MessageBuilder;
-import p.ChunkInfo;
-import p.Peer;
+import peer.ChunkInfo;
+import peer.Peer;
 import protocols.protocols.ChunkBackupProtocol;
 import utils.Constants;
 

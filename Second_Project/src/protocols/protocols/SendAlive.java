@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Map.Entry;
 
 import messages.MessageBuilder;
-import p.Peer;
-import p.TCPSendChannel;
+import peer.Peer;
+import peer.TCPSendChannel;
 import utils.Constants;
 
 public class SendAlive implements Runnable{

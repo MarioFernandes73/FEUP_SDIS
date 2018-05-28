@@ -1,6 +1,6 @@
 package filesmanager;
 
-import p.ChunkInfo;
+import peer.ChunkInfo;
 import utils.Constants;
 import utils.Utils;
 

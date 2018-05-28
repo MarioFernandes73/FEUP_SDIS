@@ -2,7 +2,7 @@ package messages.responses;
 
 import filesmanager.BackedUpFileInfo;
 import messages.Message;
-import p.Peer;
+import peer.Peer;
 import utils.Constants;
 
 public class MessageReceiveFileInfo  extends Message {

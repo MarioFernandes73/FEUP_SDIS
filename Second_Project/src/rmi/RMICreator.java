@@ -1,6 +1,6 @@
 package rmi;
 
-import p.Peer;
+import peer.Peer;
 import utils.Constants;
 
 import java.net.MalformedURLException;

@@ -1,7 +1,7 @@
 package client_peer_file_transfer;
 
 import filesmanager.Chunk;
-import p.Peer;
+import peer.Peer;
 
 public class ClientChunkTransfer implements Runnable{
 

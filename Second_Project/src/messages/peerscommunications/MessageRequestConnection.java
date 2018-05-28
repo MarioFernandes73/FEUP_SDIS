@@ -1,13 +1,11 @@
 package messages.peerscommunications;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import messages.Message;
 import messages.MessageBuilder;
-import p.Address;
-import p.Peer;
+import peer.Address;
+import peer.Peer;
 import utils.Constants;
 
 public class MessageRequestConnection extends Message{
@@ -41,7 +39,7 @@ public class MessageRequestConnection extends Message{
 		
 		try {
 			if(p.getNumberConnections() >= p.getPeerLimit()){
-                //sendRejectPeerMessage(p);
+                //sendRejectPeerMessage(peer);
                 p.changePeerLimit(p.getPeerLimit() + 1);
                 String[] message2Args = new String[]{
                         Constants.MessageType.CHANGE_CONNECTION_LIMIT.toString(),

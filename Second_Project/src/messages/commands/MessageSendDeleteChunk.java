@@ -40,6 +40,7 @@ public class MessageSendDeleteChunk extends Message {
         String success = "false";
         if(peer.deleteChunk(this.chunkId)){
             success = "true";
+            peer.deleteChunkInfo(this.chunkId);
         }
         String[] msgArgs = new String[]{
                 Constants.MessageType.RECEIVE_DELETE_CHUNK.toString(),

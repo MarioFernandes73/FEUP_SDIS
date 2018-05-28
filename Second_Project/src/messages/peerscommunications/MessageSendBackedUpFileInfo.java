@@ -14,7 +14,9 @@ public class MessageSendBackedUpFileInfo extends Message {
     public MessageSendBackedUpFileInfo(String[] args){
         super(Constants.MessageType.SEND_BACKED_UP_FILE_INFO, args[1]);
         try {
-            backedUpFileInfo = new BackedUpFileInfo(args[2]);
+            if(args[2].length() > 5){
+                backedUpFileInfo = new BackedUpFileInfo(args[2]);
+            }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

@@ -545,4 +545,8 @@ public class Peer implements RMIInterface {
     public String getBackedUpFilesInfo() {
 	    return this.filesManager.getAllBackedUpFilesInfo();
     }
+
+    public void deleteChunkInfo(String chunkId) {
+	    this.filesManager.deleteChunkInfo(chunkId);
+    }
 }

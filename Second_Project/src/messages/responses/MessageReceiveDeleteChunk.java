@@ -24,7 +24,7 @@ public class MessageReceiveDeleteChunk extends Message {
 
     @Override
     public byte[] getBytes() {
-        return new byte[0];
+            return getHeader().getBytes();
     }
 
     @Override

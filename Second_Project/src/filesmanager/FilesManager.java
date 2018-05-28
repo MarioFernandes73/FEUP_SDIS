@@ -182,4 +182,14 @@ public class FilesManager {
         }
         return filesInfo.toString();
     }
+
+    public void deleteChunkInfo(String chunkId) {
+        int i = 0;
+        for(ChunkInfo chunkInfo : this.chunksInfo){
+            if(chunkInfo.getChunkId().equals(chunkId)){
+                this.chunksInfo.remove(i);
+            }
+            i++;
+        }
+    }
 }

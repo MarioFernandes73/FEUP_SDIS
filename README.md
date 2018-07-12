@@ -43,3 +43,9 @@ Instructions to run the first project:
 	example connecting to peer 2 default port running on different machine with ip 192.32.16.47: java cli/TestApp //192.32.16.47/peer2 BACKUP example.pdf 3
 	
 The second project's theme was proposed by the students and this group's proposal was to create a serverless backend cloud-like system which clients could connect to it and upload and download their files. Much like torrent systems, the backend system is not supposed to have peers that are constantly online making fault tolerance, replication and the general well being of the peer network a difficult obstacle to overcome. This project also was implemented considering that the peers would communciate with other peers over the internet. This being said, TCP was used for the communication between peers and a lot of work on the project involved in maintaining a scalabe peer network, such as limiting the number of connections each peer should have, which peer should a new peer be connected to, how to handle a peer going offline and its connections, limiting the message traffic of the network, etc.
+
+Credits:
+* [Mário Fernandes](https://github.com/MarioFernandes73)
+* [André Baptista](https://github.com/carbap)
+* [José Cunha](https://github.com/JoseLuisOliveiraCunha)
+* [Nelson Almeida](https://github.com/PoiSoNz)

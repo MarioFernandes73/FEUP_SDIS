@@ -2,7 +2,7 @@
 
 Repository for the course "Sistemas distribuídos" (EIC0036) of the second semester of the third year of MIEIC in FEUP.
 
-In this repository there are the two practical assignments of the course in the lective year of 2018/2019.
+In this repository there are the two practical assignments of the course in the lective year of 2017/2018.
 
 This course provides students a more in depth knowledge on web applications especially on how they can scale and how backend systems can deal with a big number of clients using the application. To do this, stuents were challenged to create Java peer-to-peer applications on the first project and to further develop that system on the second project.
 
